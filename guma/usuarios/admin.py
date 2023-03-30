@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Animal
+from .models import Animal, Tutor
 
 
-admin.site.register(Animal)
+admin.site.register((Animal, Tutor))
 
 # Register your models here.

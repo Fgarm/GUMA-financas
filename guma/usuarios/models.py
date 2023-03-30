@@ -8,6 +8,9 @@ class Tutor(models.Model):
 
     def __str__(self):
         return self.nome
+    
+    class Meta:
+        verbose_name_plural = 'Tutores'
 
 
 class Animal(models.Model): # forma de que vai trabalhar com o banco de dados
@@ -19,10 +22,7 @@ class Animal(models.Model): # forma de que vai trabalhar com o banco de dados
 
     def __str__(self):
         return self.nome
+    
+    class Meta:
+        verbose_name_plural = 'Animais'
 
-
-
-
-
-
-     
