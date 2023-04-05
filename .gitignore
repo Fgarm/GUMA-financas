@@ -1,0 +1,6 @@
+GUMA_investimentos/__pycache__
+**/__pycache__
+pyvenv.cfg
+db.sqlite3
+Scripts/
+Lib/
