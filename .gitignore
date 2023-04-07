@@ -2,3 +2,28 @@ BACK/GUMA_investimentos/__pycache__/
 BACK/pyvenv.cfg
 BACK/Lib/
 BACK/Scripts/
+
+# Logs
+FRONT/logs
+FRONT/*.log
+FRONT/npm-debug.log*
+FRONT/yarn-debug.log*
+FRONT/yarn-error.log*
+FRONT/pnpm-debug.log*
+FRONT/lerna-debug.log*
+
+FRONT/node_modules
+FRONT/dist
+FRONT/dist-ssr
+FRONT/*.local
+
+# Editor directories and files
+FRONT/.vscode/*
+FRONT/!.vscode/extensions.json
+FRONT/.idea
+FRONT/.DS_Store
+FRONT/*.suo
+FRONT/*.ntvs*
+FRONT/*.njsproj
+FRONT/*.sln
+FRONT/*.sw?
