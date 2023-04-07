@@ -22,10 +22,10 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: npm install
-        uses: bahmutov/npm-install@v1
-        with:
-          working-directory: ./FRONT
+        - run: npm install
+        - uses: bahmutov/npm-install@v1
+          with:
+            working-directory: ./FRONT
 
       - name: Build project
         run: npm run build
