@@ -4,3 +4,5 @@ pyvenv.cfg
 db.sqlite3
 Scripts/
 Lib/
+Include/
+venv/
