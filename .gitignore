@@ -2,3 +2,5 @@ BACK/GUMA_investimentos/__pycache__/
 BACK/pyvenv.cfg
 BACK/Lib/
 BACK/Scripts/
+BACK/GUMA_investimentos/local_settings.py
+**/__pycache__/
