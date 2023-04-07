@@ -4,19 +4,13 @@ import Button from '../../components/button';
 
 import './style.css'
 
-import { FaEyeSlash, FaEye } from 'react-icons/fa';
-import { Outlet } from 'react-router-dom';
-
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function LogUp() {
 
   const [isShown, setIsShown] = useState(false)
-  
-  const [output, setOutput] = useState('')
 
   const createUserFormSchema = z.object(
     {
@@ -56,22 +50,21 @@ export default function LogUp() {
     }
   )
 
-
-  function createUser(data) {
-     setOutput(JSON.stringify(data, null, 4))
-     console.log(output)
-     console.log(data)
-  }
-
-  const togglePassword = ()=>{
-    setIsShown(!isShown)
+  const onSubmit = (data) => {
+    axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
     return (
 
             <main>
 
-              <form className='formUp' onSubmit={handleSubmit(createUser)}>
+              <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
 

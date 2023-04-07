@@ -1,23 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 import Button from '../../components/button';
 
-import './style.css'
+import './style.css';
 
-import { FaEyeSlash, FaEye } from 'react-icons/fa';
 
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import axios from 'axios';
 
 
 export default function LogUp() {
-
-  const [eye, setEye] = useState(false)
-  const eyeSlashIcon = <FaEyeSlash/>;
-  const eyeIcon = <FaEye/>;
-  
-  const [output, setOutput] = useState('')
 
   const createUserFormSchema = z.object(
     {
@@ -44,22 +39,21 @@ export default function LogUp() {
   )
 
 
-  function createUser(data) {
-     setOutput(JSON.stringify(data, null, 4))
-     console.log(output)
-     console.log(data)
+  const onSubmit = (data) => {
+    axios.get('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
-
-
-  const togglePassword = () => {
-    setPasswordShowned(!setPasswordShowned);
-  };
 
     return (
 
             <main>
 
-              <form className='formUp' onSubmit={handleSubmit(createUser)}>
+              <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
 
@@ -91,7 +85,7 @@ export default function LogUp() {
 
                   </div>
 
-                  <Button type="submit" text="Registrar"/>
+                  <Button type="submit" text="Entrar"/>
                   
               </form>
 
