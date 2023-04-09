@@ -4,7 +4,6 @@ import Button from '../../components/button';
 
 import './style.css';
 
-
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';

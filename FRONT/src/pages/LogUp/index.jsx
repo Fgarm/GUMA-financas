@@ -8,6 +8,8 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import axios from 'axios';
+
 export default function LogUp() {
 
   const [isShown, setIsShown] = useState(false)
@@ -51,6 +53,7 @@ export default function LogUp() {
   )
 
   const onSubmit = (data) => {
+
     axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
       .then(response => {
         console.log(response);
