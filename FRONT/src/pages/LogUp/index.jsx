@@ -1,6 +1,4 @@
-import React, { useState } from 'react'
-
-import Button from '../../components/button';
+import React, { useState, useCallback } from 'react';
 
 import './style.css'
 
@@ -10,9 +8,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import axios from 'axios';
 
-export default function LogUp() {
+import Button from '../../components/button';
+import ShowHidePassword from '../../components/showHidePassword';
 
-  const [isShown, setIsShown] = useState(false)
+export default function LogUp() {
 
   const createUserFormSchema = z.object(
     {
@@ -40,6 +39,11 @@ export default function LogUp() {
         .min(6, 'Mínimo de 6 caracteres')
     }
   )
+  
+  const [visible, setVisible] = useState(false)
+  const handleVisibleChange = useCallback(() => {
+    setVisible((prevState) => !prevState);
+  }, []);
   
 
   const { 
@@ -120,15 +124,16 @@ export default function LogUp() {
                     <br></br>
 
                     <input
-                    type={isShown ? 'text' : 'password'}
+                    type={visible ? 'text' : 'password'}
                     id='password'
                     {...register('password')}
                     />
                     
-                    
                     {errors.password && <span>{errors.password.message} </span>}
 
                   </div>
+
+                  <ShowHidePassword click={handleVisibleChange}/>
 
                   <Button type="submit" text="Registrar"/>
 

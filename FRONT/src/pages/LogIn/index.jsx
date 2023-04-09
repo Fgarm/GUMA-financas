@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-
-import Button from '../../components/button';
+import React, { useState, useCallback } from 'react';
 
 import './style.css';
 
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+
+import Button from '../../components/button';
+import ShowHidePassword from '../../components/showHidePassword';
 
 import axios from 'axios';
 
@@ -26,6 +27,12 @@ export default function LogUp() {
     }
   )
   
+
+const [visible, setVisible] = useState(false)
+const handleVisibleChange = useCallback(() => {
+  setVisible((prevState) => !prevState);
+}, []);
+
 
   const { 
     register,
@@ -75,7 +82,7 @@ export default function LogUp() {
                     <br></br>
 
                     <input
-                    type="password"
+                    type={visible ? 'text' : 'password'}
                     id='password'
                     {...register('password')}
                     />
@@ -83,6 +90,8 @@ export default function LogUp() {
                     {errors.password && <span>{errors.password.message} </span>}
 
                   </div>
+
+                  <ShowHidePassword click={handleVisibleChange}/>
 
                   <Button type="submit" text="Entrar"/>
                   
