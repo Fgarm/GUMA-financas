@@ -6,13 +6,13 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import axios from 'axios';
+import { Navigate } from "react-router-dom";
 
-//import Button from '../../components/button';
 import ShowHidePassword from '../../components/showHidePassword';
 
 import Button from 'react-bootstrap/Button';
 
+import axios from 'axios';
 
 export default function LogUp() {
 
@@ -136,10 +136,12 @@ export default function LogUp() {
 
                   </div>
 
+
                   <ShowHidePassword click={handleVisibleChange}/>
 
                   <Button type="submit">Registrar</Button>
 
+                  <p>Já possui cadastro&#63; <a href="/login" target="_blank">Login</a></p>
               </form>
 
             </main>
