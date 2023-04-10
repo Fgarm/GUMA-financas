@@ -8,8 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import axios from 'axios';
 
-import Button from '../../components/button';
+//import Button from '../../components/button';
 import ShowHidePassword from '../../components/showHidePassword';
+
+import Button from 'react-bootstrap/Button';
+
 
 export default function LogUp() {
 
@@ -135,7 +138,7 @@ export default function LogUp() {
 
                   <ShowHidePassword click={handleVisibleChange}/>
 
-                  <Button type="submit" text="Registrar"/>
+                  <Button type="submit">Registrar</Button>
 
               </form>
 

@@ -6,8 +6,10 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import Button from '../../components/button';
+//import Button from '../../components/button';
 import ShowHidePassword from '../../components/showHidePassword';
+
+import Button from 'react-bootstrap/Button';
 
 import axios from 'axios';
 
@@ -93,7 +95,7 @@ const handleVisibleChange = useCallback(() => {
 
                   <ShowHidePassword click={handleVisibleChange}/>
 
-                  <Button type="submit" text="Entrar"/>
+                  <Button type="submit">Entrar</Button>
                   
               </form>
 

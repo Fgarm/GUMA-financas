@@ -1,9 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LogUp from './pages/LogUp'
-import './index.css'
-import LogIn from './pages/LogIn'
+import './index.css';
+
+import LogUp from './pages/LogUp';
+import LogIn from './pages/LogIn';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const router = createBrowserRouter([
   { 
