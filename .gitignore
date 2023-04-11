@@ -27,6 +27,7 @@ FRONT/dist-ssr
 FRONT/*.local
 
 # Editor directories and files
+FRONT/.vercel
 FRONT/.vscode/*
 FRONT/!.vscode/extensions.json
 FRONT/.idea
