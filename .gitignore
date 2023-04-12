@@ -1,13 +1,9 @@
-GUMA_investimentos/__pycache__
-**/__pycache__
-pyvenv.cfg
-db.sqlite3
-Scripts/
+venv/
 Lib/
 Include/
-venv/
-
-BACK/GUMA_investimentos/__pycache__/
+Scripts/
+pyvenv.cfg
+**/__pycache__/
 BACK/pyvenv.cfg
 BACK/Lib/
 BACK/Scripts/
