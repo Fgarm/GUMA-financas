@@ -60,14 +60,18 @@ export default function LogUp() {
   )
 
   const onSubmit = (data) => {
-
-    axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    
+    localStorage.setItem('dados', data);
+    
+    window.location.href = '/home'; // Substitua "/minha-rota" pela rota desejada
+    
+    // axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+    // .then(response => {
+    //   console.log(response);
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
   }
 
     return (
@@ -141,7 +145,6 @@ export default function LogUp() {
 
                   <Button type="submit">Registrar</Button>
 
-                  <p>Já possui cadastro&#63; <a href="/login" target="_blank">Login</a></p>
               </form>
 
             </main>

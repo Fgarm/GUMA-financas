@@ -14,7 +14,7 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
 
-export default function LogUp() {
+export default function LogIn() {
 
   const createUserFormSchema = z.object(
     {
@@ -96,6 +96,8 @@ const handleVisibleChange = useCallback(() => {
                   <ShowHidePassword click={handleVisibleChange}/>
 
                   <Button type="submit">Entrar</Button>
+
+                  <p>Não possui conta&#63; <a href="/logup">Cadastre-se</a></p>
                   
               </form>
 
