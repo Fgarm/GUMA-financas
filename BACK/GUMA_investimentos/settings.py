@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Gastos',
     'User'
 ]
 
@@ -78,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'guma_financas',
-        'USER': 'root',
-        'PASSWORD': '161023@Fr',
+        'USER': 'USER_DB',
+        'PASSWORD': 'SENHA_DB',
         'HOST': 'localhost',
         'PORT': '3306',
     }
