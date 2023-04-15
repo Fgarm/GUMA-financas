@@ -15,7 +15,7 @@ class GastoApiView(APIView):
             return Response(serializer.data)
     
     @api_view(['POST'])
-    def post (request): # parâmetro self removido
+    def post_gastos (request): # parâmetro self removido
         if request.method == 'POST':
             serializer = GastoSerializer(data=request.data)
             if serializer.is_valid():
@@ -25,7 +25,7 @@ class GastoApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     @api_view(['PUT'])
-    def put (request, id):
+    def put_gasto (request, id):
         try:
             gasto = Gasto.objects.get(id=id)
         except Gasto.DoesNotExist:
@@ -39,7 +39,7 @@ class GastoApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['DELETE'])
-    def delete (request, id):
+    def delete_gasto (request, id):
         try:
             gasto = Gasto.objects.get(id=id)
         except Gasto.DoesNotExist:
