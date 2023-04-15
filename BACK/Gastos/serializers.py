@@ -7,6 +7,7 @@ class GastoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gasto
         fields = (
+            'id',
             'nome',
             'valor',
             'data',
