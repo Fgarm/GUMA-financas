@@ -15,9 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from Gastos.views import GastoApiView
 
 urlpatterns = [
-    path('gastos/', include('Gastos.urls')),
     path('admin/', admin.site.urls),
+    # path('gastos/', include('Gastos.urls')),
+    #re_path(r'^api/gastos/$', GastoApiView.get_gastos),
+    re_path(r'^api/gastos/$', GastoApiView.post_gastos),
+    re_path(r'^api/gastos/([0-9])$', GastoApiView.delete_gasto),
 ]
