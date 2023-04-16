@@ -50,8 +50,9 @@ export default function Home(){
       data,
       pago
     };
-  
-    axios.post('/rota', dados)
+    
+    console.log(JSON.stringify(dados));
+    axios.post('http://localhost:8000/api/gastos/', dados)
       .then(response => {
         console.log('Dados enviados com sucesso:', response.data);
         onClose(); 

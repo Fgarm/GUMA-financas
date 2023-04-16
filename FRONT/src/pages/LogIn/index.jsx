@@ -26,7 +26,7 @@ export default function LogIn() {
         .email('Formato de email inválido')
         .toLowerCase(),
 
-     password: z.string()
+     senha: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
@@ -105,7 +105,7 @@ export default function LogIn() {
                       </InputRightElement>
                     </InputGroup>
 
-                    {errors.password && <span className='error'>{errors.password.message} </span>}
+                    {errors.senha && <span className='error'>{errors.senha.message} </span>}
 
                   </div>
 
