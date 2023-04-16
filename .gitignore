@@ -1,7 +1,13 @@
-BACK/GUMA_investimentos/__pycache__/
+venv/
+Lib/
+Include/
+Scripts/
+pyvenv.cfg
+**/__pycache__/
 BACK/pyvenv.cfg
 BACK/Lib/
 BACK/Scripts/
+BACK/GUMA_investimentos/local_settings.py
 
 # Logs
 FRONT/logs
@@ -18,6 +24,7 @@ FRONT/dist-ssr
 FRONT/*.local
 
 # Editor directories and files
+FRONT/.vercel
 FRONT/.vscode/*
 FRONT/!.vscode/extensions.json
 FRONT/.idea

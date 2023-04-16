@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-hbse-$!!)9$knvira^rt38*$ar#=j%$p1lwv515askgt#uuwbl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    'http://localhost:5173',
+]
 
 
 # Application definition
@@ -37,11 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'rest_framework',
+    'corsheaders',
+    
+    'Gastos',
+    'User'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,14 +79,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GUMA_investimentos.wsgi.application'
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'guma_financas',
+        'USER': 'USER_DB',
+        'PASSWORD': 'SENHA_DB',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

@@ -50,11 +50,12 @@ export default function Home(){
       data,
       pago
     };
-    
+
     console.log(JSON.stringify(dados));
     axios.post('http://localhost:8000/api/gastos/', dados)
+
       .then(response => {
-        console.log('Dados enviados com sucesso:', response.data);
+        console.log('Dados enviados com sucesso:', response.dados);
         onClose(); 
     })
     .catch(error => {
