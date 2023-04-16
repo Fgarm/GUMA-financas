@@ -27,7 +27,6 @@ import {
   Text
 } from '@chakra-ui/react'
 
-import Axios from 'axios';
 import axios from 'axios';
 
 export default function Home(){
@@ -35,21 +34,21 @@ export default function Home(){
   // const [tags, setTags] = useState([]);
   //const[posts, setPosts] = useState([])
 
-  const [selectedDate, setSelectedDate] = useState('');
-  const [valor, setValor] = useState(0);
-  const [status, setStatus] = useState('')
   const [nome, setNome] = useState('')
+  const [valor, setValor] = useState(0);
+  const [data, setSelectedDate] = useState('');
+  const [pago, setPago] = useState(false)
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
 
   const handleSubmit = () => {
-    const data = {
+    const dados = {
       nome,
-      selectedDate,
       valor,
-      status
+      data,
+      pago
     };
     console.log(JSON.stringify(data));
     axios.post('http://localhost:8000/api/gastos/', data)
@@ -118,7 +117,11 @@ export default function Home(){
                 <label>Status</label>
                 <br></br>
                 <Select placeholder='Selecione uma opção' onChange={(e) => {
-                    setStatus(e.target.value)
+                    if(e.target.value == 'pago'){
+                      setPago(true)
+                    } else if(e.target.value == 'nao-pago'){
+                      setPago(false)
+                    }
                 }}>
                   <option value='pago'>Pago</option>
                   <option value='nao-pago'>Não Pago</option>
