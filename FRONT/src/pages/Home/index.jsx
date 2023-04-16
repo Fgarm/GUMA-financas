@@ -50,6 +50,7 @@ export default function Home(){
       data,
       pago
     };
+
     console.log(JSON.stringify(dados));
     axios.post('http://localhost:8000/api/gastos/', dados)
 
