@@ -27,7 +27,6 @@ import {
   Text
 } from '@chakra-ui/react'
 
-import Axios from 'axios';
 import axios from 'axios';
 
 export default function Home(){
@@ -35,25 +34,27 @@ export default function Home(){
   // const [tags, setTags] = useState([]);
   //const[posts, setPosts] = useState([])
 
-  const [selectedDate, setSelectedDate] = useState('');
+  const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
-  const [status, setStatus] = useState('')
+  const [data, setSelectedDate] = useState('');
+  const [pago, setPago] = useState(false)
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
 
   const handleSubmit = () => {
-    const data = {
-      selectedDate,
+    const dados = {
+      nome,
       valor,
-      status
+      data,
+      pago
     };
-    console.log(data);
-    axios.post('/rota', data)
+    console.log(JSON.stringify(dados));
+    axios.post('http://localhost:8000/api/gastos/', dados)
 
       .then(response => {
-        console.log('Dados enviados com sucesso:', response.data);
+        console.log('Dados enviados com sucesso:', response.dados);
         onClose(); 
     })
     .catch(error => {
@@ -86,6 +87,15 @@ export default function Home(){
             <ModalHeader mb={0}>Criando Gasto</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
+
+            <FormControl mt={4}>
+                <label >Nome</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setNome(e.target.value)         
+                }}/>
+              </FormControl>
+
               <FormControl mt={4}>
                 <label >Valor</label>
                 <br></br>
@@ -107,7 +117,11 @@ export default function Home(){
                 <label>Status</label>
                 <br></br>
                 <Select placeholder='Selecione uma opção' onChange={(e) => {
-                    setStatus(e.target.value)
+                    if(e.target.value == 'pago'){
+                      setPago(true)
+                    } else if(e.target.value == 'nao-pago'){
+                      setPago(false)
+                    }
                 }}>
                   <option value='pago'>Pago</option>
                   <option value='nao-pago'>Não Pago</option>
