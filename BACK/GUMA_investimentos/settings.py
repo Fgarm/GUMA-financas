@@ -45,11 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     
     'Gastos',
-<<<<<<< HEAD
     'Usuario'
-=======
-    'User'
->>>>>>> origin
 ]
 
 MIDDLEWARE = [
