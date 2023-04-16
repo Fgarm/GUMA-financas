@@ -3,7 +3,6 @@ Lib/
 Include/
 Scripts/
 pyvenv.cfg
-
 BACK/GUMA_investimentos/__pycache__/
 BACK/pyvenv.cfg
 BACK/Lib/
