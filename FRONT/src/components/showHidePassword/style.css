@@ -1,0 +1,25 @@
+div.show-hide-password{
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+  
+    gap: 10px; 
+    
+  }
+  
+  
+  div.show-hide-password span{
+  
+      color: #000;
+      margin-left: 0px;
+  
+  }
+  
+  div.show-hide-password input{
+  
+    width: 15px;
+    height: 15px;
+  
+  }
