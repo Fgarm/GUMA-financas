@@ -21,6 +21,7 @@ from Gastos.views import GastoApiView
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('gastos/', include('Gastos.urls')),
-    re_path(r'^api/gastos/$', GastoApiView.get_gastos),
+    #re_path(r'^api/gastos/$', GastoApiView.get_gastos),
+    re_path(r'^api/gastos/$', GastoApiView.post_gastos),
     re_path(r'^api/gastos/([0-9])$', GastoApiView.delete_gasto),
 ]

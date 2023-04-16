@@ -51,8 +51,8 @@ export default function Home(){
       valor,
       status
     };
-    console.log(data);
-    axios.post('/rota', data)
+    console.log(JSON.stringify(data));
+    axios.post('http://localhost:8000/api/gastos/', data)
 
       .then(response => {
         console.log('Dados enviados com sucesso:', response.data);
