@@ -1,23 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react';
 
-import Button from '../../components/button';
-
-import './style.css'
-
-import { FaEyeSlash, FaEye } from 'react-icons/fa';
+import './style.css';
 
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from '@hookform/resolvers/zod';
 
 
-export default function LogUp() {
+import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
-  const [eye, setEye] = useState(false)
-  const eyeSlashIcon = <FaEyeSlash/>;
-  const eyeIcon = <FaEye/>;
-  
-  const [output, setOutput] = useState('')
+import { useNavigate } from 'react-router-dom';
+
+import axios from 'axios';
+
+
+export default function LogIn() {
+
+  const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
     {
@@ -33,6 +33,13 @@ export default function LogUp() {
   )
   
 
+  const [visible, setVisible] = useState(false)
+
+  const handleVisibleChange = useCallback(() => {
+    setVisible((prevState) => !prevState);
+  }, []);
+
+
   const { 
     register,
     handleSubmit, 
@@ -41,38 +48,39 @@ export default function LogUp() {
     {
       resolver: zodResolver(createUserFormSchema)
     }
-  )
-
-
-  function createUser(data) {
-     setOutput(JSON.stringify(data, null, 4))
-     console.log(output)
-     console.log(data)
+    )
+    
+    
+    const onSubmit = (data) => {
+      localStorage.setItem('dados', data);
+      axios.get('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+        .then(response => {
+        console.log(response);
+        navigate('/home', {replace: true});
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
-
-
-  const togglePassword = () => {
-    setPasswordShowned(!setPasswordShowned);
-  };
 
     return (
 
-            <main>
-
-              <form className='formUp' onSubmit={handleSubmit(createUser)}>
+              <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
 
                     <label htmlFor="email">E-mail</label>
                     <br></br>
 
-                    <input
+                    <Input
                     type="email"
                     id='email'
                     {...register('email')}
+                    htmlSize={27}
+                    width='auto'
                     />
 
-                    {errors.email && <span>{errors.email.message}</span>}
+                    {errors.email && <span className='error'>{errors.email.message}</span>}
 
                   </div>
 
@@ -81,22 +89,32 @@ export default function LogUp() {
                     <label htmlFor="password">Senha</label>
                     <br></br>
 
-                    <input
-                    type="password"
-                    id='password'
-                    {...register('password')}
-                    />
+                    <InputGroup size='md'>
+                      <Input
+                        pr='4.5rem'
+                        type={visible ? 'text' : 'password'}
+                        id='password'
+                        {...register('password')}
+                      />
+                      
+                      <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
+                       
+                      {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon/>}
+                        
+                       
+                      </InputRightElement>
+                    </InputGroup>
 
-                    {errors.password && <span>{errors.password.message} </span>}
+                    {errors.password && <span className='error'>{errors.password.message} </span>}
 
                   </div>
 
-                  <Button type="submit" text="Registrar"/>
+
+                  <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
+
+                  <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
                   
               </form>
-
-            </main>
-
     )
     
 }
