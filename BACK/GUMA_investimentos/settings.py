@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-hbse-$!!)9$knvira^rt38*$ar#=j%$p1lwv515askgt#uuwbl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    'http://localhost:5173',
+]
 
 
 # Application definition
@@ -76,6 +79,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GUMA_investimentos.wsgi.application'
 
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+]
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
