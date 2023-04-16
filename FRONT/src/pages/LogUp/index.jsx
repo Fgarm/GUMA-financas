@@ -1,20 +1,20 @@
 import React, { useState, useCallback } from 'react';
-
 import './style.css'
 
 import { useForm, useFieldArray } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-import { Navigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-import ShowHidePassword from '../../components/showHidePassword';
-
-import Button from 'react-bootstrap/Button';
+import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 import axios from 'axios';
 
 export default function LogUp() {
+
+  const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
     {
@@ -25,12 +25,17 @@ export default function LogUp() {
           return name[0].toLocaleUpperCase().concat(name.substring(1))
         }),
 
-     lastName: z.string()
-       .nonempty('Este item é obrigatório')
-       .regex(/^[^0-9]*$/, 'O nome não pode conter números')
-       .transform(lastName => {
-        return lastName[0].toLocaleUpperCase().concat(lastName.substring(1))
-      }),
+        
+      lastName: z.string()
+        .nonempty('Este item é obrigatório')
+        .regex(/^[^0-9]*$/, 'O nome não pode conter números')
+        .transform(lastName => {
+          return lastName[0].toLocaleUpperCase().concat(lastName.substring(1))
+        }),
+        
+      userName: z.string()
+        .nonempty('Este item é obrigatório')
+        .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos'),
 
      email: z.string()
         .nonempty('Este item é obrigatório')
@@ -44,6 +49,7 @@ export default function LogUp() {
   )
   
   const [visible, setVisible] = useState(false)
+
   const handleVisibleChange = useCallback(() => {
     setVisible((prevState) => !prevState);
   }, []);
@@ -63,15 +69,14 @@ export default function LogUp() {
     
     localStorage.setItem('dados', data);
     
-    window.location.href = '/home'; // Substitua "/minha-rota" pela rota desejada
-    
-    // axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
-    // .then(response => {
-    //   console.log(response);
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
+    axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+    .then(response => {
+      console.log(response);
+      navigate('/home', {replace: true});
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
     return (
@@ -85,13 +90,15 @@ export default function LogUp() {
                     <label htmlFor='name'>Nome</label>
                     <br></br>
 
-                    <input
+                    <Input
                     type="text"
                     id='Name'
                     {...register('name')}
+                    htmlSize={27}
+                     width='auto'
                     />
               
-                    {errors.name && <span>{errors.name.message} </span>}
+                    {errors.name && <span className='error'>{errors.name.message} </span>}
 
                   </div>
 
@@ -100,13 +107,32 @@ export default function LogUp() {
                     <label htmlFor="lastName">Sobrenome</label>
                     <br></br>
 
-                    <input
+                    <Input
                     type="text"
                     id='lastName'
                     {...register('lastName')}
+                    htmlSize={27}
+                    width='auto'
                     />
 
-                    {errors.lastName && <span>{errors.lastName.message} </span>}
+                    {errors.lastName && <span className='error'>{errors.lastName.message} </span>}
+
+                  </div>
+
+                  <div>
+
+                    <label htmlFor="userName">Username</label>
+                    <br></br>
+
+                    <Input
+                    type="text"
+                    id='userName'
+                    {...register('userName')}
+                    htmlSize={27}
+                     width='auto'
+                    />
+
+                    {errors.userName && <span className='error'>{errors.userName.message} </span>}
 
                   </div>
 
@@ -115,35 +141,43 @@ export default function LogUp() {
                     <label htmlFor="email">E-mail</label>
                     <br></br>
 
-                    <input
+                    <Input
                     type="email"
                     id='email'
                     {...register('email')}
+                    htmlSize={27}
+                     width='auto'
                     />
 
-                    {errors.email && <span>{errors.email.message}</span>}
+                    {errors.email && <span className='error'>{errors.email.message}</span>}
 
                   </div>
 
-                  <div className='password-container'>
+                  <div>
 
                     <label htmlFor="password">Senha</label>
                     <br></br>
 
-                    <input
-                    type={visible ? 'text' : 'password'}
-                    id='password'
-                    {...register('password')}
-                    />
-                    
-                    {errors.password && <span>{errors.password.message} </span>}
+                    <InputGroup size='md'>
+                      <Input
+                        pr='4.5rem'
+                        type={visible ? 'text' : 'password'}
+                        id='password'
+                        {...register('password')}
+                      />
+                      
+                      <InputRightElement width='2.5rem' onClick={handleVisibleChange}>                    
+                        {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon/>}                   
+                      </InputRightElement>
+                    </InputGroup>
+
+                    {errors.password && <span className='error'>{errors.password.message} </span>}
 
                   </div>
 
+                  <Button type="submit" colorScheme='teal' variant='solid' size="md">Registrar</Button>
 
-                  <ShowHidePassword click={handleVisibleChange}/>
-
-                  <Button type="submit">Registrar</Button>
+                  <Link href="/"  color='blue.500'>Já tem uma conta&#63;</Link>
 
               </form>
 

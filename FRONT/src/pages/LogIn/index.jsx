@@ -6,15 +6,18 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-//import Button from '../../components/button';
-import ShowHidePassword from '../../components/showHidePassword';
 
-import Button from 'react-bootstrap/Button';
+import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+
+import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
 
 
 export default function LogIn() {
+
+  const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
     {
@@ -30,10 +33,11 @@ export default function LogIn() {
   )
   
 
-const [visible, setVisible] = useState(false)
-const handleVisibleChange = useCallback(() => {
-  setVisible((prevState) => !prevState);
-}, []);
+  const [visible, setVisible] = useState(false)
+
+  const handleVisibleChange = useCallback(() => {
+    setVisible((prevState) => !prevState);
+  }, []);
 
 
   const { 
@@ -44,13 +48,15 @@ const handleVisibleChange = useCallback(() => {
     {
       resolver: zodResolver(createUserFormSchema)
     }
-  )
-
-
-  const onSubmit = (data) => {
-    axios.get('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
-      .then(response => {
+    )
+    
+    
+    const onSubmit = (data) => {
+      localStorage.setItem('dados', data);
+      axios.get('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+        .then(response => {
         console.log(response);
+        navigate('/home', {replace: true});
       })
       .catch(error => {
         console.log(error);
@@ -59,8 +65,6 @@ const handleVisibleChange = useCallback(() => {
 
     return (
 
-            <main>
-
               <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
@@ -68,13 +72,15 @@ const handleVisibleChange = useCallback(() => {
                     <label htmlFor="email">E-mail</label>
                     <br></br>
 
-                    <input
+                    <Input
                     type="email"
                     id='email'
                     {...register('email')}
+                    htmlSize={27}
+                    width='auto'
                     />
 
-                    {errors.email && <span>{errors.email.message}</span>}
+                    {errors.email && <span className='error'>{errors.email.message}</span>}
 
                   </div>
 
@@ -83,26 +89,32 @@ const handleVisibleChange = useCallback(() => {
                     <label htmlFor="password">Senha</label>
                     <br></br>
 
-                    <input
-                    type={visible ? 'text' : 'password'}
-                    id='password'
-                    {...register('password')}
-                    />
+                    <InputGroup size='md'>
+                      <Input
+                        pr='4.5rem'
+                        type={visible ? 'text' : 'password'}
+                        id='password'
+                        {...register('password')}
+                      />
+                      
+                      <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
+                       
+                      {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon/>}
+                        
+                       
+                      </InputRightElement>
+                    </InputGroup>
 
-                    {errors.password && <span>{errors.password.message} </span>}
+                    {errors.password && <span className='error'>{errors.password.message} </span>}
 
                   </div>
 
-                  <ShowHidePassword click={handleVisibleChange}/>
 
-                  <Button type="submit">Entrar</Button>
+                  <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
 
-                  <p>Não possui conta&#63; <a href="/logup">Cadastre-se</a></p>
+                  <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
                   
               </form>
-
-            </main>
-
     )
     
 }
