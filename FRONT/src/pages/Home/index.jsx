@@ -38,6 +38,7 @@ export default function Home(){
   const [selectedDate, setSelectedDate] = useState('');
   const [valor, setValor] = useState(0);
   const [status, setStatus] = useState('')
+  const [nome, setNome] = useState('')
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const initialRef = React.useRef(null)
@@ -45,6 +46,7 @@ export default function Home(){
 
   const handleSubmit = () => {
     const data = {
+      nome,
       selectedDate,
       valor,
       status
@@ -86,6 +88,15 @@ export default function Home(){
             <ModalHeader mb={0}>Criando Gasto</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
+
+            <FormControl mt={4}>
+                <label >Nome</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setNome(e.target.value)         
+                }}/>
+              </FormControl>
+
               <FormControl mt={4}>
                 <label >Valor</label>
                 <br></br>
