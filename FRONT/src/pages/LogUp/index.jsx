@@ -69,7 +69,7 @@ export default function LogUp() {
     
     localStorage.setItem('dados', data);
     console.log(data);
-    axios.post('http://localhost:8000/api/v1/usuario', data)
+    axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
       console.log(response);
       navigate('/home', {replace: true});
@@ -93,6 +93,7 @@ export default function LogUp() {
                     <Input
                     type="text"
                     id='first_name'
+                    name='first_name'
                     {...register('first_name')}
                     htmlSize={27}
                      width='auto'
@@ -110,6 +111,7 @@ export default function LogUp() {
                     <Input
                     type="text"
                     id='last_name'
+                    name='last_name'
                     {...register('last_name')}
                     htmlSize={27}
                     width='auto'
@@ -127,6 +129,7 @@ export default function LogUp() {
                     <Input
                     type="text"
                     id='username'
+                    name='username'
                     {...register('username')}
                     htmlSize={27}
                      width='auto'
@@ -144,6 +147,7 @@ export default function LogUp() {
                     <Input
                     type="email"
                     id='email'
+                    name='email'
                     {...register('email')}
                     htmlSize={27}
                      width='auto'
@@ -163,6 +167,7 @@ export default function LogUp() {
                         pr='4.5rem'
                         type={visible ? 'text' : 'password'}
                         id='senha'
+                        name='senha'
                         {...register('senha')}
                       />
                       
