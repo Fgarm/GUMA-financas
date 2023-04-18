@@ -1,4 +1,4 @@
-header {
+header.home {
     padding: 20px;
     padding-right: 30px;
     display: flex;
@@ -7,21 +7,11 @@ header {
     background-color: aqua;
 }
 
-.header {
-    
-    height: 50px;
-    margin: 0;
-}
-
 .bt-sb{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 10px;
-}
-
-.input {
-    margin-top: 15px;
 }
 
 header div {

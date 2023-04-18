@@ -50,15 +50,15 @@ export default function LogIn() {
     
     
     const onSubmit = (data) => {
-      localStorage.setItem('dados', data);
       axios.post('http://localhost:8000/auth/login/', data)
         .then(response => {
-        console.log(response);
-        if(response.status === 200){
-          navigate('/home', {replace: true});
-        } else {
-          alert('Usuário não encontrado')
-        }
+          console.log(response);
+          if(response.status === 200){
+            localStorage.setItem('cadastro_user', data.username)
+            navigate('/home', {replace: true});
+          } else {
+            alert('Usuário não encontrado')
+          }
       })
       .catch(error => {
         console.log(error);

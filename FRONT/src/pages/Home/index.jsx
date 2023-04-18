@@ -43,6 +43,8 @@ export default function Home(){
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
 
+  const user = localStorage.getItem('cadastro_user')
+
   function handleTagsChange(tags) {
     setTags(tags);
   }
@@ -70,8 +72,8 @@ export default function Home(){
   return (
   
   <div >
-    <header>
-      <h3>Olá, username</h3>
+    <header className='home'>
+      <h3>Olá, {user}</h3>
         <div className="bt-sb">
           <SearchBar onChange={(e) => {
             setSearchInput(e.target.value);

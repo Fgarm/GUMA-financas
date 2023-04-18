@@ -1,14 +1,21 @@
+p.logup{
+  font-weight: bold;
+}
+
+img.logo{
+  background-color: #fff;
+  width: 20px;
+  height: 20px;
+}
+
 form{
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 
   justify-content: center;
   align-items: center;
-  
-  height: 100vh;
 
-  width: 100vw;
 }
 
 span.error{

@@ -66,23 +66,26 @@ export default function LogUp() {
   )
 
   const onSubmit = (data) => {
-    
-    localStorage.setItem('dados', data);
     console.log(data);
+
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
-      console.log(response);
-      navigate('/home', {replace: true});
-      })
-      .catch(error => {
-        console.log(error);
-      });
+      if(response.status === 200){
+        localStorage.setItem('cadastro_user', data.username)
+        navigate('/home', {replace: true});
+      } else{
+        alert('Usuário já cadastrado')
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
     return (
 
             <main>
-
+            
               <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
