@@ -21,12 +21,10 @@ export default function LogIn() {
 
   const createUserFormSchema = z.object(
     {
-     email: z.string()
-        .nonempty('Este item é obrigatório')
-        .email('Formato de email inválido')
-        .toLowerCase(),
+     username: z.string()
+        .nonempty('Este item é obrigatório'),
 
-     password: z.string()
+     senha: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
@@ -53,7 +51,7 @@ export default function LogIn() {
     
     const onSubmit = (data) => {
       localStorage.setItem('dados', data);
-      axios.get('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+      axios.post('http://localhost:8000/auth/login/', data)
         .then(response => {
         console.log(response);
         navigate('/home', {replace: true});
@@ -69,32 +67,32 @@ export default function LogIn() {
 
                   <div>
 
-                    <label htmlFor="email">E-mail</label>
+                    <label htmlFor="username">Username</label>
                     <br></br>
 
                     <Input
-                    type="email"
-                    id='email'
-                    {...register('email')}
+                    type="text"
+                    id='username'
+                    {...register('username')}
                     htmlSize={27}
                     width='auto'
                     />
 
-                    {errors.email && <span className='error'>{errors.email.message}</span>}
+                    {errors.username && <span className='error'>{errors.username.message}</span>}
 
                   </div>
 
                   <div>
 
-                    <label htmlFor="password">Senha</label>
+                    <label htmlFor="senha">Senha</label>
                     <br></br>
 
                     <InputGroup size='md'>
                       <Input
                         pr='4.5rem'
                         type={visible ? 'text' : 'password'}
-                        id='password'
-                        {...register('password')}
+                        id='senha'
+                        {...register('senha')}
                       />
                       
                       <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
@@ -105,7 +103,7 @@ export default function LogIn() {
                       </InputRightElement>
                     </InputGroup>
 
-                    {errors.password && <span className='error'>{errors.password.message} </span>}
+                    {errors.senha && <span className='error'>{errors.senha.message} </span>}
 
                   </div>
 

@@ -23,5 +23,7 @@ urlpatterns = [
 
     # API de Gastos
     path('api/gastos/', include('Gastos.urls')),
-    # re_path(r'^api/gastos/([0-9])$', GastoApiView.delete_gasto),
+
+    # Usuario rotas
+    path('auth/', include('Usuario.urls'))
 ]

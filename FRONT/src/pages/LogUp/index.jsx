@@ -15,34 +15,34 @@ import axios from 'axios';
 export default function LogUp() {
 
   const navigate = useNavigate();
-
+  
   const createUserFormSchema = z.object(
     {
-     name: z.string()
+      username: z.string()
+        .nonempty('Este item é obrigatório')
+        .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos'),
+
+     first_name: z.string()
         .nonempty('Este item é obrigatório')
         .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos')
         .transform(name => {
           return name[0].toLocaleUpperCase().concat(name.substring(1))
         }),
-
-        
-      lastName: z.string()
+ 
+      last_name: z.string()
         .nonempty('Este item é obrigatório')
         .regex(/^[^0-9]*$/, 'O nome não pode conter números')
-        .transform(lastName => {
-          return lastName[0].toLocaleUpperCase().concat(lastName.substring(1))
+        .transform(last_name => {
+          return last_name[0].toLocaleUpperCase().concat(last_name.substring(1))
         }),
         
-      userName: z.string()
-        .nonempty('Este item é obrigatório')
-        .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos'),
 
      email: z.string()
         .nonempty('Este item é obrigatório')
         .email('Formato de email inválido')
         .toLowerCase(),
 
-     password: z.string()
+     senha: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
@@ -68,8 +68,8 @@ export default function LogUp() {
   const onSubmit = (data) => {
     
     localStorage.setItem('dados', data);
-    
-    axios.post('http://localhost:8000/api/v1/usuario', JSON.stringify(data))
+    console.log(data);
+    axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
       console.log(response);
       navigate('/home', {replace: true});
@@ -87,52 +87,55 @@ export default function LogUp() {
 
                   <div>
 
-                    <label htmlFor='name'>Nome</label>
+                    <label htmlFor='first_name'>Nome</label>
                     <br></br>
 
                     <Input
                     type="text"
-                    id='Name'
-                    {...register('name')}
+                    id='first_name'
+                    name='first_name'
+                    {...register('first_name')}
                     htmlSize={27}
                      width='auto'
                     />
               
-                    {errors.name && <span className='error'>{errors.name.message} </span>}
+                    {errors.first_name && <span className='error'>{errors.first_name.message} </span>}
 
                   </div>
 
                   <div>
 
-                    <label htmlFor="lastName">Sobrenome</label>
+                    <label htmlFor="last_name">Sobrenome</label>
                     <br></br>
 
                     <Input
                     type="text"
-                    id='lastName'
-                    {...register('lastName')}
+                    id='last_name'
+                    name='last_name'
+                    {...register('last_name')}
                     htmlSize={27}
                     width='auto'
                     />
 
-                    {errors.lastName && <span className='error'>{errors.lastName.message} </span>}
+                    {errors.last_name && <span className='error'>{errors.last_name.message} </span>}
 
                   </div>
 
                   <div>
 
-                    <label htmlFor="userName">Username</label>
+                    <label htmlFor="username">Username</label>
                     <br></br>
 
                     <Input
                     type="text"
-                    id='userName'
-                    {...register('userName')}
+                    id='username'
+                    name='username'
+                    {...register('username')}
                     htmlSize={27}
                      width='auto'
                     />
 
-                    {errors.userName && <span className='error'>{errors.userName.message} </span>}
+                    {errors.username && <span className='error'>{errors.username.message} </span>}
 
                   </div>
 
@@ -144,6 +147,7 @@ export default function LogUp() {
                     <Input
                     type="email"
                     id='email'
+                    name='email'
                     {...register('email')}
                     htmlSize={27}
                      width='auto'
@@ -155,15 +159,16 @@ export default function LogUp() {
 
                   <div>
 
-                    <label htmlFor="password">Senha</label>
+                    <label htmlFor="senha">Senha</label>
                     <br></br>
 
                     <InputGroup size='md'>
                       <Input
                         pr='4.5rem'
                         type={visible ? 'text' : 'password'}
-                        id='password'
-                        {...register('password')}
+                        id='senha'
+                        name='senha'
+                        {...register('senha')}
                       />
                       
                       <InputRightElement width='2.5rem' onClick={handleVisibleChange}>                    
@@ -171,7 +176,7 @@ export default function LogUp() {
                       </InputRightElement>
                     </InputGroup>
 
-                    {errors.password && <span className='error'>{errors.password.message} </span>}
+                    {errors.senha && <span className='error'>{errors.senha.message} </span>}
 
                   </div>
 
