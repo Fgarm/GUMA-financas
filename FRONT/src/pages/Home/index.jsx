@@ -31,24 +31,29 @@ import axios from 'axios';
 
 export default function Home(){
 
-  // const [tags, setTags] = useState([]);
   //const[posts, setPosts] = useState([])
-
+  
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
+  const [tags, setTags] = useState([]);
 
   const { isOpen, onClose, onOpen } = useDisclosure();
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
+
+  function handleTagsChange(tags) {
+    setTags(tags);
+  }
 
   const handleSubmit = () => {
     const dados = {
       nome,
       valor,
       data,
-      pago
+      pago, 
+      tags
     };
     
     axios.post('http://localhost:8000/api/gastos/', dados)
@@ -126,6 +131,12 @@ export default function Home(){
                   <option value='pago'>Pago</option>
                   <option value='nao-pago'>Não Pago</option>
                 </Select>
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label >Tipo</label>
+                <br></br>
+                <TagsInput onTagsChange={handleTagsChange}/>
               </FormControl>
             </ModalBody>
 

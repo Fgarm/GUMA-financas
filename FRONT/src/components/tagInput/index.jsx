@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function TagsInput() {
+export default function TagsInput(props) {
 
     const [tags, setTags] =  useState([])
 
@@ -8,12 +8,16 @@ export default function TagsInput() {
         if(e.key !== 'Enter') return
         const value = e.target.value
         if(!value.trim()) return
-        setTags([...tags, value])
+        const newTags = [...tags, value];
+        setTags(newTags);
+        props.onTagsChange(newTags);
         e.target.value = ''
     }
 
     function removeTags(index) {
-        setTags(tags.filter((el, i) => i !== index))
+        const newTags = tags.filter((el, i) => i !== index);
+        setTags(newTags);
+        props.onTagsChange(newTags);
     }
 
     return(
