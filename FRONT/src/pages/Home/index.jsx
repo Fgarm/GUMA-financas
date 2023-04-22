@@ -43,7 +43,6 @@ export default function Home() {
   const [pago, setPago] = useState(false)
   //const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
-  // const [filteredGastos, setFilteredGastos] = useState([])
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');

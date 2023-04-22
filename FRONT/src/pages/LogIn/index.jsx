@@ -24,7 +24,7 @@ export default function LogIn() {
       username: z.string()
         .nonempty('Este item é obrigatório'),
 
-      senha: z.string()
+      password: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
@@ -89,15 +89,15 @@ export default function LogIn() {
 
       <div>
 
-        <label htmlFor="senha">Senha</label>
+        <label htmlFor="password">Senha</label>
         <br></br>
 
         <InputGroup size='md'>
           <Input
             pr='4.5rem'
             type={visible ? 'text' : 'password'}
-            id='senha'
-            {...register('senha')}
+            id='password'
+            {...register('password')}
           />
 
           <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
@@ -108,7 +108,7 @@ export default function LogIn() {
           </InputRightElement>
         </InputGroup>
 
-        {errors.senha && <span className='error'>{errors.senha.message} </span>}
+        {errors.password && <span className='error'>{errors.senha.message} </span>}
 
       </div>
 
