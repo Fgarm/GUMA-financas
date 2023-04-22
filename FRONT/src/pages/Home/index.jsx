@@ -43,9 +43,11 @@ export default function Home() {
   const [pago, setPago] = useState(false)
   //const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
-  const [filteredGastos, setFilteredGastos] = useState([])
+  // const [filteredGastos, setFilteredGastos] = useState([])
+  const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
+  const [searchValue, setSearchValue] = useState('')
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -120,7 +122,7 @@ export default function Home() {
     .then((response) => {
       const data = response.data;
       setGastos(data);
-      setFilteredGastos(data)
+      setShouldRunEffect(true)
     })
     .catch(error => {
       console.log(error);
@@ -141,11 +143,29 @@ export default function Home() {
     getGastos();
   }, []);
 
-  // useEffect(() => {
-  //   const response = axios.get("https://jsonplaceholder.typicode.com/posts/1");
-  //   const filtered = response.data;
-  //   setFilteredGastos(filtered);
-  // }, [searchValue]);
+  useEffect(() => {
+    if (shouldRunEffect) {
+      searchFilter();
+    } else {
+      setShouldRunEffect(true);
+    }
+  }, [searchValue, searchOption]);
+
+  const searchFilter = () => {
+
+    if(searchOption == 'status' && searchValue == false || searchValue == true) {
+      axios.get("https://jsonplaceholder.typicode.com/posts/1")
+      .then((response) => {
+        const data = response.data;
+        setGastos([data]);
+      })
+      .catch(error => {
+        console.log(error);
+      })    
+    }
+ 
+  };
+
 
   function handleSearchType(type){
     console.log(type)
@@ -342,8 +362,8 @@ export default function Home() {
       </div>
 
       <div className="gasto">
-        {filteredGastos.length === 0 ? <p>Carregando...</p> : (
-          filteredGastos.map((gasto, key) => (
+        {gastos.length === 0 ? <p>Carregando...</p> : (
+          gastos.map((gasto, key) => (
             <div className="gasto_information">
               <div className='header'>
                 <h1>
