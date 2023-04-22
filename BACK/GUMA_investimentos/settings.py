@@ -25,11 +25,7 @@ SECRET_KEY = 'django-insecure-hbse-$!!)9$knvira^rt38*$ar#=j%$p1lwv515askgt#uuwbl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-    'http://localhost:5173',
-]
-
+ALLOWED_HOSTS = ['198.211.99.20', 'localhost', '127.0.0.1', 'http://localhost:5173']
 
 # Application definition
 
@@ -42,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     
     'Gastos',
@@ -122,6 +119,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 
 # Internationalization

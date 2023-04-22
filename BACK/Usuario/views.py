@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from Usuario.serializer import UserSerializer
+import requests
 
 
 @csrf_exempt
@@ -27,13 +29,13 @@ def cadastro (request):
             return HttpResponse('Já existe um User com esse nome')
         
         user = User.objects.create_user(
-            username=serializer["username"], 
-            email=serializer["email"], 
-            password=serializer["password"]
+            username=serializer.data["username"], 
+            email=serializer.data["email"], 
+            password=serializer.data["password"]
         )
 
-        user.first_name = serializer["first_name"]
-        user.last_name = serializer["last_name"]
+        user.first_name = serializer.data["first_name"]
+        user.last_name = serializer.data["last_name"]
         user.save()
 
         return HttpResponse('Usuario cadastrado com sucesso')
@@ -46,15 +48,19 @@ def login(request):
     else:
         serializer = UserSerializer(data=request.data)
         serializer.is_valid()
-        dados = serializer.data
         
-        print(dados)
+        user = authenticate(username=serializer.data["username"], password=serializer.data["password"])
 
+        if user:
+            user_data = {"username":"admin","password": "admin"}
+            token = requests.post("http://127.0.0.1:8000/token/", data=user_data)
+            print(token.json())
 
-        return HttpResponse("Email ou senha invalido")
-
-@login_required
-def vips(request):
-
-    return HttpResponse('Entrou na area VIP')
+            response = HttpResponse("Usuario atenticado")
+            expires = datetime.now() + timedelta(days=30)
+            response.set_cookie(token, serializer.data["username"], expires=expires)
+            return response
+        else:
+            return HttpResponse("Usuario ou Senha Invalidos")
+        
 
