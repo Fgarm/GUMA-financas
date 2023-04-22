@@ -1,47 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
 
+import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
+import { BiLogOut } from "react-icons/bi";
+
+import { useNavigate } from 'react-router-dom';
+
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 
 import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Heading,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Icon,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
-  FormControl, 
+  FormControl,
   Input,
   Button,
   useDisclosure,
   ModalHeader,
-  Stack,
+  ModalCloseButton,
   Select,
-  StackDivider,
-  Text
 } from '@chakra-ui/react'
 
 import axios from 'axios';
 
-export default function Home(){
+export default function Home() {
 
-  //const[posts, setPosts] = useState([])
-  
+  const navigate = useNavigate();
+
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState([]);
+  //const [tags, setTags] = useState([]);
+  const [gastos, setGastos] = useState([])
+  const [searchOption, setSearchOption] = useState('');
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
+  const { isOpen: isModalOpen, onClose: onModalClose, onOpen: onModalOpen } = useDisclosure();
+
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
+  const cancelRef = React.useRef()
+  
 
   const user = localStorage.getItem('cadastro_user')
 
@@ -54,31 +64,53 @@ export default function Home(){
       nome,
       valor,
       data,
-      pago, 
-      tags
+      pago,
+      //tags
     };
-    
+
     axios.post('http://localhost:8000/api/gastos/', dados)
 
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
-        onClose(); 
-    })
-    .catch(error => {
-      console.error('Erro ao enviar dados:', error);
-    });
-}
+        onModalClose();
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+  }
+
+  const handleLogOut = () => {
+    localStorage.removeItem('cadastro_user')
+    navigate('/');
+  }
+
+  const getGastos = async () => {
+    try {
+
+      const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
+      const data = response.data;
+      setGastos(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getGastos();
+  }, []);
 
   return (
-  
-  <div >
-    <header className='home'>
-      <h3>Olá, {user}</h3>
+
+
+    <div >
+      <header className='home'>
+        <div className='presentation'>
+          <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
+          <h2>Olá, {user}</h2>
+        </div>
         <div className="bt-sb">
-          <SearchBar onChange={(e) => {
-            setSearchInput(e.target.value);
-          }}/>
-          <Button pr='10px' onClick={onOpen}>Adicionar Gasto</Button>
+          <SearchBar />
+          <Button pr='10px' onClick={onModalOpen}>Adicionar Gasto</Button>
         </div>
       </header>
 
@@ -86,21 +118,20 @@ export default function Home(){
         <Modal
           initialFocusRef={initialRef}
           finalFocusRef={finalRef}
-          isOpen={isOpen}
-          onClose={onClose}
+          isOpen={isModalOpen}
+          onClose={onModalClose}
         >
-          <ModalOverlay/>
+          <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0}>Criando Gasto</ModalHeader>
-            <ModalCloseButton />
+            <ModalHeader mb={0} className='modal_header'>Criando Gasto</ModalHeader>
             <ModalBody>
 
-            <FormControl mt={4}>
+              <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
                 <Input onChange={(e) => {
-                  setNome(e.target.value)         
-                }}/>
+                  setNome(e.target.value)
+                }} />
               </FormControl>
 
               <FormControl mt={4}>
@@ -108,27 +139,27 @@ export default function Home(){
                 <br></br>
                 <Input onChange={(e) => {
                   setValor(e.target.value)
-                 
-                }}/>
+
+                }} />
               </FormControl>
 
               <FormControl mt={4}>
                 <label >Data</label>
                 <br></br>
-                <Input type="date" onChange={(e) => 
+                <Input type="date" onChange={(e) =>
                   setSelectedDate(e.target.value)
-                }/>
+                } />
               </FormControl>
 
               <FormControl mt={4}>
                 <label>Status</label>
                 <br></br>
                 <Select placeholder='Selecione uma opção' onChange={(e) => {
-                    if(e.target.value == 'pago'){
-                      setPago(true)
-                    } else if(e.target.value == 'nao-pago'){
-                      setPago(false)
-                    }
+                  if (e.target.value == 'pago') {
+                    setPago(true)
+                  } else if (e.target.value == 'nao-pago') {
+                    setPago(false)
+                  }
                 }}>
                   <option value='pago'>Pago</option>
                   <option value='nao-pago'>Não Pago</option>
@@ -138,7 +169,7 @@ export default function Home(){
               <FormControl mt={4}>
                 <label >Tipo</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange}/>
+                <TagsInput onTagsChange={handleTagsChange} />
               </FormControl>
             </ModalBody>
 
@@ -146,60 +177,74 @@ export default function Home(){
               <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
                 Criar
               </Button>
-              <Button onClick={onClose}>Cancelar</Button>
+              <Button onClick={onModalClose}>Cancelar</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
       </div>
-    
 
-  </div>
+      <div>
+        <AlertDialog
+          isOpen={isAlertDialogOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onAlertDialogClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                Apagar Gasto
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Tem certeza? Esta ação não pode ser desfeita.
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onAlertDialogClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme='red' onClick={onAlertDialogClose} ml={3}>
+                  Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+      </div>
+
+      <div className="post">
+        {gastos.length === 0 ? <p>Carregando...</p> : (
+          gastos.map((post) => (
+            <div className="post_information">
+              <div className='header'>
+                <h1>
+                  {post.id}
+                </h1>
+                <div>
+                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalOpen} />
+                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={onAlertDialogOpen} />
+                </div>
+              </div>
+              <h2>
+                {post.title}
+              </h2>
+              <h2>
+                {post.body}
+              </h2>
+            </div>
+          ))
+
+        )}
+      </div>
+
+    </div>
 
   )
-  
+
 }
 
 
 
-{/* {posts.length === 0 ? <p>Carregando...</p> : (
-  posts.map((post) => (
-
-    <div className="post" key={post.id}>
-      <Card>
-        <CardHeader>
-          <Heading size='md'>{post.id}</Heading>
-        </CardHeader>
-
-        <CardBody>
-          <Stack divider={<StackDivider />} spacing='4'>
-            <Box>
-              <Heading size='xs' textTransform='uppercase'>
-              {post.title}
-              </Heading>
-              <Text pt='2' fontSize='sm'>
-              {post.body}
-              </Text>
-            </Box>
-          </Stack>
-        </CardBody>
-
-      </Card>
-    </div>
-  ))
-)} */}
 
 
-// const getPosts = async() => {
-//   try {
 
-//     const response = await Axios.get("https://jsonplaceholder.typicode.com/posts");
-//     const data = response.data;
-//     setPosts(data);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-// useEffect(() => {
-//   getPosts();
-// }, []);

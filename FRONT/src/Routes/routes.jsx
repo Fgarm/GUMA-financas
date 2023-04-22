@@ -6,14 +6,17 @@ import Home from "../pages/Home";
 import { createBrowserRouter } from "react-router-dom";
 
 const Routering = createBrowserRouter([
+
     {
         path: "/",
         element: <LogIn/>,
     },
+
     {
         path: "/logup",
         element: <LogUp/>,
     },
+    
     {
         path: "/home",
         element: <Home/>,
