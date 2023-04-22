@@ -43,7 +43,9 @@ export default function Home() {
   const [pago, setPago] = useState(false)
   //const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
+
   const [searchOption, setSearchOption] = useState('');
+  const [searchValue, setSearchValue] = useState('')
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalOpen, onClose: onModalClose, onOpen: onModalOpen } = useDisclosure();
@@ -54,6 +56,7 @@ export default function Home() {
   
 
   const user = localStorage.getItem('cadastro_user')
+  const token = localStorage.getItem('ctoken')
 
   function handleTagsChange(tags) {
     setTags(tags);
@@ -99,6 +102,15 @@ export default function Home() {
     getGastos();
   }, []);
 
+  function handleSearchType(type){
+    setSearchOption(type)
+  }
+
+  function handleSearch(data){
+    setSearchValue(data)
+  }
+
+
   return (
 
 
@@ -109,7 +121,7 @@ export default function Home() {
           <h2>Olá, {user}</h2>
         </div>
         <div className="bt-sb">
-          <SearchBar />
+          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType}/>
           <Button pr='10px' onClick={onModalOpen}>Adicionar Gasto</Button>
         </div>
       </header>
