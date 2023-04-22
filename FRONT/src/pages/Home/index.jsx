@@ -37,26 +37,25 @@ export default function Home() {
 
   const navigate = useNavigate();
 
+  const [idGasto, setIdGasto] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   //const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
-
   const [searchOption, setSearchOption] = useState('');
-  const [searchValue, setSearchValue] = useState('')
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
-  const { isOpen: isModalOpen, onClose: onModalClose, onOpen: onModalOpen } = useDisclosure();
+  const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
+  const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
-  
+
 
   const user = localStorage.getItem('cadastro_user')
-  const token = localStorage.getItem('ctoken')
 
   function handleTagsChange(tags) {
     setTags(tags);
@@ -71,15 +70,58 @@ export default function Home() {
       //tags
     };
 
-    axios.post('http://localhost:8000/api/gastos/', dados)
+    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
-        onModalClose();
+        onModalCreateClose();
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
+  }
+
+  const handleEdit = () => {
+    const dados = {
+      nome,
+      valor,
+      data,
+      pago,
+      //tags
+    };
+
+    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/${idGasto}`, dados)
+
+    .then(response => {
+      console.log('Dados editados com sucesso:', response.dados);
+      onModalEditClose();
+    })
+    .catch(error => {
+      console.error('Erro ao enviar dados:', error);
+    });
+  }
+
+  const handleDelete = () => {
+    axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/${idGasto}`)
+
+      .then(response => {
+        console.log('Gasto deletado com sucesso');
+        onAlertDialogClose();
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+  }
+  
+  const getGastos = () => {
+    axios.get("https://jsonplaceholder.typicode.com/posts")
+    .then((response) => {
+      const data = response.data;
+      setGastos(data);
+    })
+    .catch(error => {
+      console.log(error);
+    })    
   }
 
   const handleLogOut = () => {
@@ -87,29 +129,15 @@ export default function Home() {
     navigate('/');
   }
 
-  const getGastos = async () => {
-    try {
 
-      const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
-      const data = response.data;
-      setGastos(data);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleDeleteClick = (data) => {
+    setIdGasto(data);
+    onAlertDialogOpen();
   }
 
   useEffect(() => {
     getGastos();
   }, []);
-
-  function handleSearchType(type){
-    setSearchOption(type)
-  }
-
-  function handleSearch(data){
-    setSearchValue(data)
-  }
-
 
   return (
 
@@ -121,8 +149,8 @@ export default function Home() {
           <h2>Olá, {user}</h2>
         </div>
         <div className="bt-sb">
-          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType}/>
-          <Button pr='10px' onClick={onModalOpen}>Adicionar Gasto</Button>
+          <SearchBar />
+          <Button pr='10px' onClick={onModalCreateOpen}>Adicionar Gasto</Button>
         </div>
       </header>
 
@@ -130,8 +158,8 @@ export default function Home() {
         <Modal
           initialFocusRef={initialRef}
           finalFocusRef={finalRef}
-          isOpen={isModalOpen}
-          onClose={onModalClose}
+          isOpen={isModalCreateOpen}
+          onClose={onModalCreateClose}
         >
           <ModalOverlay />
           <ModalContent>
@@ -189,7 +217,76 @@ export default function Home() {
               <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
                 Criar
               </Button>
-              <Button onClick={onModalClose}>Cancelar</Button>
+              <Button onClick={onModalCreateClose}>Cancelar</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </div>
+
+      <div>
+        <Modal
+          initialFocusRef={initialRef}
+          finalFocusRef={finalRef}
+          isOpen={isModalEditOpen}
+          onClose={onModalEditClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader mb={0} className='modal_header'>Editando Gasto</ModalHeader>
+            <ModalBody>
+
+              <FormControl mt={4}>
+                <label >Nome</label>
+                <br></br>
+                <Input  defaultValue="João" onChange={(e) => {
+                  setNome(e.target.value)
+                }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label >Valor</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setValor(e.target.value)
+
+                }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label >Data</label>
+                <br></br>
+                <Input type="date" onChange={(e) =>
+                  setSelectedDate(e.target.value)
+                } />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Status</label>
+                <br></br>
+                <Select placeholder='Selecione uma opção' onChange={(e) => {
+                  if (e.target.value == 'pago') {
+                    setPago(true)
+                  } else if (e.target.value == 'nao-pago') {
+                    setPago(false)
+                  }
+                }}>
+                  <option value='pago'>Pago</option>
+                  <option value='nao-pago'>Não Pago</option>
+                </Select>
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label >Tipo</label>
+                <br></br>
+                <TagsInput onTagsChange={handleTagsChange} />
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={handleEdit}>
+                Salvar
+              </Button>
+              <Button onClick={onModalEditClose}>Cancelar</Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -204,19 +301,20 @@ export default function Home() {
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Apagar Gasto
+                Deletar Gastos
               </AlertDialogHeader>
 
               <AlertDialogBody>
-                Tem certeza? Esta ação não pode ser desfeita.
+                Deseja realmente deletar esse gasto?
               </AlertDialogBody>
 
               <AlertDialogFooter>
                 <Button ref={cancelRef} onClick={onAlertDialogClose}>
-                  Cancel
+                  Cancelar
                 </Button>
-                <Button colorScheme='red' onClick={onAlertDialogClose} ml={3}>
-                  Delete
+
+                <Button colorScheme='red' ml={3} onClick={handleDelete}>
+                  Deletar
                 </Button>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -224,24 +322,24 @@ export default function Home() {
         </AlertDialog>
       </div>
 
-      <div className="post">
+      <div className="gasto">
         {gastos.length === 0 ? <p>Carregando...</p> : (
-          gastos.map((post) => (
-            <div className="post_information">
+          gastos.map((gasto, key) => (
+            <div className="gasto_information">
               <div className='header'>
                 <h1>
-                  {post.id}
+                  {gasto.id}
                 </h1>
                 <div>
-                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalOpen} />
-                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={onAlertDialogOpen} />
+                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalEditOpen} />
+                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
                 </div>
               </div>
               <h2>
-                {post.title}
+                {gasto.title}
               </h2>
               <h2>
-                {post.body}
+                {gasto.body}
               </h2>
             </div>
           ))
@@ -250,13 +348,5 @@ export default function Home() {
       </div>
 
     </div>
-
   )
-
 }
-
-
-
-
-
-
