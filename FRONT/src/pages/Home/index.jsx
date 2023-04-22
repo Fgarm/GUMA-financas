@@ -27,7 +27,6 @@ import {
   Button,
   useDisclosure,
   ModalHeader,
-  ModalCloseButton,
   Select,
 } from '@chakra-ui/react'
 
@@ -43,6 +42,7 @@ export default function Home() {
   const [pago, setPago] = useState(false)
   //const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
+  const [filteredGastos, setFilteredGastos] = useState([])
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState('')
@@ -54,7 +54,6 @@ export default function Home() {
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
   
-
   const user = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('ctoken')
 
@@ -71,7 +70,7 @@ export default function Home() {
       //tags
     };
 
-    axios.post('http://localhost:8000/api/gastos/', dados)
+    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
@@ -89,24 +88,33 @@ export default function Home() {
 
   const getGastos = async () => {
     try {
-
+      //axios.get("http://localhost:8000/api/gastos/meusgastos")
       const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
       const data = response.data;
       setGastos(data);
+      setFilteredGastos(data)
     } catch (error) {
       console.log(error);
     }
   }
-
+  
   useEffect(() => {
     getGastos();
   }, []);
 
+  // useEffect(() => {
+  //   const response = axios.get("https://jsonplaceholder.typicode.com/posts/1");
+  //   const filtered = response.data;
+  //   setFilteredGastos(filtered);
+  // }, [searchValue]);
+
   function handleSearchType(type){
+    console.log(type)
     setSearchOption(type)
   }
 
   function handleSearch(data){
+    console.log(data)
     setSearchValue(data)
   }
 
@@ -225,9 +233,9 @@ export default function Home() {
       </div>
 
       <div className="post">
-        {gastos.length === 0 ? <p>Carregando...</p> : (
-          gastos.map((post) => (
-            <div className="post_information">
+        {filteredGastos.length === 0 ? <p>Carregando...</p> : (
+          filteredGastos.map((post) => (
+            <div className="post_information" key={post.id}>
               <div className='header'>
                 <h1>
                   {post.id}

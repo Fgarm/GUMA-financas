@@ -24,13 +24,10 @@ export default function SearchBar(props){
             placeholder="Pesquise seu gasto"
            />
             <select 
-            value={handleTypeInput}
             onChange={handleTypeInput}>     
                 <option value="">Tipo de Pesquisa</option>          
-                <option value="nome">Nome</option>
-                <option value="valor">Valor</option>
-                <option value="data">Data</option>
                 <option value="status">Status</option>
+                <option value="tags">Tags</option> 
             </select>
         </div>
     )
