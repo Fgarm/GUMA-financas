@@ -16,17 +16,16 @@ import requests
 @csrf_exempt
 @api_view(['GET','POST'])
 def cadastro (request):
-    print()
-    print(request.data)
-    print()
-
 
     serializer = UserSerializer(data=request.data)
     if (not serializer.is_valid()): return HttpResponse(HTTPStatus.BAD_REQUEST)
 
-    user = User.objects.filter(username=serializer["username"]).first()
+    user = User.objects.filter(username=serializer.data["username"]).first()
+    email = User.objects.filter(email=serializer.data["email"]).first
 
     if user:
+        return HttpResponse(HTTPStatus.CONFLICT)
+    if email:
         return HttpResponse(HTTPStatus.CONFLICT)
     
     user = User.objects.create_user(
