@@ -42,7 +42,7 @@ export default function LogUp() {
         .email('Formato de email inválido')
         .toLowerCase(),
 
-     senha: z.string()
+     password: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
@@ -159,16 +159,16 @@ export default function LogUp() {
 
                   <div>
 
-                    <label htmlFor="senha">Senha</label>
+                    <label htmlFor="password">password</label>
                     <br></br>
 
                     <InputGroup size='md'>
                       <Input
                         pr='4.5rem'
                         type={visible ? 'text' : 'password'}
-                        id='senha'
-                        name='senha'
-                        {...register('senha')}
+                        id='password'
+                        name='password'
+                        {...register('password')}
                       />
                       
                       <InputRightElement width='2.5rem' onClick={handleVisibleChange}>                    
@@ -176,7 +176,7 @@ export default function LogUp() {
                       </InputRightElement>
                     </InputGroup>
 
-                    {errors.senha && <span className='error'>{errors.senha.message} </span>}
+                    {errors.password && <span className='error'>{errors.password.message} </span>}
 
                   </div>
 
