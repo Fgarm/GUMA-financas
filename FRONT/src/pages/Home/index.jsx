@@ -41,8 +41,9 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  //const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState([]);
   const [gastos, setGastos] = useState([])
+
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
@@ -89,7 +90,7 @@ export default function Home() {
       valor,
       data,
       pago,
-      //tags
+      //tags 
     };
 
     axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/${idGasto}`, dados)
@@ -151,7 +152,7 @@ export default function Home() {
   }, [searchValue, searchOption]);
 
   const searchFilter = () => {
-
+      //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
     if(searchOption == 'status' && searchValue == false || searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
       .then((response) => {
@@ -314,7 +315,7 @@ export default function Home() {
               </FormControl>
 
               <FormControl mt={4}>
-                <label >Tipo</label>
+                <label>Tipo</label>
                 <br></br>
                 <TagsInput onTagsChange={handleTagsChange} />
               </FormControl>

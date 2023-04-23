@@ -9,6 +9,10 @@ export default function TagsInput(props) {
         if(e.key !== 'Enter') return
         const value = e.target.value
         if(!value.trim()) return
+        if (tags.includes(value)){
+            e.target.value = ''
+            return
+        } 
         const newTags = [...tags, value];
         if (tags.length == 4) {
             setShowError(true)
