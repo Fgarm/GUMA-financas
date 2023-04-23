@@ -72,7 +72,6 @@ export default function Home() {
       pago,
       //tags
     };
-
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
       .then(response => {

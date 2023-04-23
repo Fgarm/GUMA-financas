@@ -11,5 +11,6 @@ class GastoSerializer(serializers.ModelSerializer):
             'nome',
             'valor',
             'data',
-            'pago'        
+            'pago',
+            'tag' 
         )

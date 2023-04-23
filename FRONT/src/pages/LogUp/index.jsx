@@ -67,7 +67,6 @@ export default function LogUp() {
 
   const onSubmit = (data) => {
     console.log(data);
-
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
       if(response.status === 200){
@@ -163,6 +162,7 @@ export default function LogUp() {
                   <div>
 
                     <label htmlFor="password">Senha</label>
+
                     <br></br>
 
                     <InputGroup size='md'>
