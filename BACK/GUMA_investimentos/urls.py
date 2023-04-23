@@ -17,5 +17,8 @@ urlpatterns = [
 
     # API de Gastos
     path('api/gastos/', include('Gastos.urls')),
+    
+    # Caminho Tags
+    path('tags/', include('Tags.urls')),
 
 ]

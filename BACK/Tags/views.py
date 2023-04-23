@@ -10,14 +10,14 @@ class TagApiView(APIView):
     @api_view(['GET'])
     def get_tags_user (request): #pega as tags de um usuário e devolve elas
         if request.method == 'GET':
-            tags = Tag.objects.filter(user=request.user)
+            tags = Tag.objects.filter(user=request.data["id"])
             serializer = TagSerializer(tags, context={'request': request}, many=True)
             return Response(serializer.data)
         
     @api_view(['GET'])
     def get_tag_id (request): #pega as tags com um id e devolve ela
         if request.method == 'GET':
-            tags = Tag.objects.get(id=request.id)
+            tags = Tag.objects.get(id=request.data["id"])
             serializer = TagSerializer(tags, context={'request': request}, many=False)
             return Response(serializer.data)
     
@@ -40,10 +40,14 @@ class TagApiView(APIView):
         except Tag.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         if request.method == 'PUT':
-            serializer = TagSerializer(tag, data=request.data, context={'request': request})
+            data = {}
+            data["categoria"] = request.data["categoria"]
+            data["cor"] = request.data["cor"]
+            data["user"] = request.data["user"]
+            serializer = TagSerializer(tag, data=data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_202_ACCEPTED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['DELETE'])
@@ -56,4 +60,4 @@ class TagApiView(APIView):
         
         if request.method == 'DELETE':
             tag.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_202_ACCEPTED)
