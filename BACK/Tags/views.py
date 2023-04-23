@@ -35,12 +35,10 @@ class TagApiView(APIView):
     @api_view(['PUT'])
     def put_tag (request):
         try:
-            print(request.data["id"])
-            reqId = request.data["id"]
-            tag = Tag.objects.get(id=reqId)
+            id = request.data["id"]
+            tag = Tag.objects.get(id=id)
         except Tag.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
         if request.method == 'PUT':
             serializer = TagSerializer(tag, data=request.data, context={'request': request})
             if serializer.is_valid():
@@ -51,9 +49,8 @@ class TagApiView(APIView):
     @api_view(['DELETE'])
     def delete_tag (request):
         try:
-            print(request.data["id"])
-            reqId = request.data["id"]
-            tag = Tag.objects.get(id=reqId)
+            id = request.data["id"]
+            tag = Tag.objects.get(id=id)
         except Tag.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
