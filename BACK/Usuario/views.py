@@ -8,7 +8,6 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from Usuario.serializer import UserSerializer
-import requests
 
 
 @csrf_exempt
@@ -52,13 +51,13 @@ def login(request):
         user = authenticate(username=serializer.data["username"], password=serializer.data["password"])
 
         if user:
-            user_data = {"username":"admin","password": "admin"}
-            token = requests.post("http://127.0.0.1:8000/token/", data=user_data)
-            print(token.json())
+            #user_data = {"username":"admin","password": "admin"}
+            #token = requests.post("http://127.0.0.1:8000/token/", data=user_data)
+            #print(token.json())
 
             response = HttpResponse("Usuario atenticado")
-            expires = datetime.now() + timedelta(days=30)
-            response.set_cookie(token, serializer.data["username"], expires=expires)
+            #expires = datetime.now() + timedelta(days=30)
+            #response.set_cookie(token, serializer.data["username"], expires=expires)
             return response
         else:
             return HttpResponse("Usuario ou Senha Invalidos")
