@@ -10,6 +10,7 @@ class GastoApiView(APIView):
     @api_view(['GET'])
     def get_gastos (request): # parâmetro self removido
         if request.method == 'GET':
+            # onde o username == request.user (mas talvez seja um post tbm)
             gastos = Gasto.objects.all()
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
@@ -25,9 +26,11 @@ class GastoApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     @api_view(['PUT'])
-    def put_gasto (request, id):
+    def put_gasto (request):
         try:
-            gasto = Gasto.objects.get(id=id)
+            print(request.data["id"])
+            reqId = request.data["id"]
+            gasto = Gasto.objects.get(id=reqId)
         except Gasto.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -39,9 +42,11 @@ class GastoApiView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['DELETE'])
-    def delete_gasto (request, id):
+    def delete_gasto (request):
         try:
-            gasto = Gasto.objects.get(id=id)
+            print(request.data["id"])
+            reqId = request.data["id"]
+            gasto = Gasto.objects.get(id=reqId)
         except Gasto.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
