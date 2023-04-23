@@ -7,12 +7,12 @@ from rest_framework.views import APIView
 
 class TAgApiView(APIView):
     def get (self, request):
-        tags = Gasto.objects.all()
-        serializer = GastoSerializer(tags, many=True)
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
     
     def post (self, request):
-        serializer = GastoSerializer(data=request.data) 
+        serializer = TagSerializer(data=request.data) 
         #não há tratamento especial pois virá tratado do front. Ex: cor em RRGGBB em hexa
         serializer.is_valid(raise_exception=True)
         #caso não vier
