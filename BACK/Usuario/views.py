@@ -10,7 +10,6 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from Usuario.serializer import UserSerializer
-import requests
 
 
 @csrf_exempt
@@ -56,5 +55,6 @@ def login(request):
         return HttpResponse(token)
     else:
         return HttpResponse(HTTPStatus.UNAUTHORIZED)
+
         
 

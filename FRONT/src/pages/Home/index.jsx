@@ -51,7 +51,7 @@ export default function Home(){
       pago
     };
     console.log(JSON.stringify(dados));
-    axios.post('http://localhost:8000/api/gastos/', dados)
+    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
