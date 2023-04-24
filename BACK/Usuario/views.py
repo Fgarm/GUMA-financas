@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-import json
 from django.http import HttpResponse
 from http import HTTPStatus
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_django
+import requests
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
