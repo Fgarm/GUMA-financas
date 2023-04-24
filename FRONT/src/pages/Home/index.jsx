@@ -72,7 +72,7 @@ export default function Home() {
       valor,
       data,
       pago,
-      //tags
+      tags
     };
 
     console.log(dados)
@@ -91,6 +91,7 @@ export default function Home() {
 
   const handleEdit = () => {
     const dados = {
+      id,
       nome,
       valor,
       data,
@@ -98,7 +99,11 @@ export default function Home() {
       tags
     };
 
-    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/`, dados)
+    console.log(JSON.stringify(dados))
+    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/`, {
+      data: dados,
+      headers: { 'Content-Type': 'application/json' }
+    })
 
       .then(response => {
         console.log('Dados editados com sucesso:', response.dados);
@@ -144,6 +149,11 @@ export default function Home() {
   const handleDeleteClick = (data) => {
     setId(data);
     onAlertDialogOpen();
+  }
+
+  const handleEditClick = (data) => {
+    setId(data);
+    onModalEditOpen();
   }
 
   useEffect(() => {
@@ -283,7 +293,7 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
-                <Input defaultValue="João" onChange={(e) => {
+                <Input defaultValue={nome} onChange={(e) => {
                   setNome(e.target.value)
                 }} />
               </FormControl>
@@ -376,7 +386,7 @@ export default function Home() {
                   {gasto.nome}
                 </h1>
                 <div>
-                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalEditOpen} />
+                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto.id)} />
                   <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
                 </div>
               </div>
@@ -386,9 +396,8 @@ export default function Home() {
               <h2>
                 {gasto.data}
               </h2>
-              <h2>
-                {gasto.pago}
-              </h2>
+                {gasto.pago > 0 ? <h2>Pago</h2> : <h2>Não Pago</h2>}
+              
             </div>
           ))
 
