@@ -20,7 +20,6 @@ export default function TagsInput(props) {
             return
         }
         setTags(newTags);
-        console.log(tags)
         props.onTagsChange(newTags);
         e.target.value = ''
     }
@@ -41,6 +40,7 @@ export default function TagsInput(props) {
             ))}
 
             <select name="tags" id="tags" className="tags-input" onChange={handleChange}>
+                <option value="">Selecione suas tags</option>
                 <option value="mercado">Mercado</option>
                 <option value="luz">Luz</option>
                 <option value="agua">Água</option>

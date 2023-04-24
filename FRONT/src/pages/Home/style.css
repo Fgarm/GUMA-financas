@@ -93,3 +93,11 @@ span.error-message {
     align-items: center;
     justify-content: space-between;
 }
+
+h2.green {
+    color: green;
+}
+
+h2.red {
+    color: red;
+}

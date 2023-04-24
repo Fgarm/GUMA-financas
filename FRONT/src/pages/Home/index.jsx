@@ -35,7 +35,6 @@ import axios from 'axios';
 export default function Home() {
 
   const navigate = useNavigate();
-  const [, set] = useState(0)
   const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
@@ -61,8 +60,8 @@ export default function Home() {
 
   const username = localStorage.getItem('cadastro_user')
 
-  function handleTagsChange(tags) {
-    setTags(tags);
+  function handleTagsChange(newTags) {
+    setTags(newTags);
   }
 
   const handleSubmit = () => {
