@@ -36,7 +36,7 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  const [idGasto, setIdGasto] = useState('')
+  const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
@@ -98,7 +98,7 @@ export default function Home() {
       //tags 
     };
 
-    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/${idGasto}`, dados)
+    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/${id}`, dados)
 
     .then(response => {
       console.log('Dados editados com sucesso:', response.dados);
@@ -110,7 +110,10 @@ export default function Home() {
   }
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/${idGasto}`)
+    axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
+      data: {id: id},
+      headers: {'Content-Type': 'application/json'}
+    })
       .then(response => {
         console.log('Gasto deletado com sucesso');
         onAlertDialogClose();
@@ -121,8 +124,7 @@ export default function Home() {
   }
   
   const getGastos = () => {
-    //axios.get("http://localhost:8000/api/gastos/meusgastos")
-    axios.get("https://jsonplaceholder.typicode.com/posts")
+    axios.get("http://localhost:8000/api/gastos/meusgastos")
     .then((response) => {
       const data = response.data;
       setGastos(data);
@@ -139,7 +141,7 @@ export default function Home() {
   }
 
   const handleDeleteClick = (data) => {
-    setIdGasto(data);
+    setId(data);
     onAlertDialogOpen();
   }
   
@@ -370,7 +372,7 @@ export default function Home() {
             <div className="gasto_information">
               <div className='header'>
                 <h1>
-                  {gasto.id}
+                  {gasto.nome}
                 </h1>
                 <div>
                   <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalEditOpen} />
@@ -378,10 +380,13 @@ export default function Home() {
                 </div>
               </div>
               <h2>
-                {gasto.title}
+                {gasto.valor}
               </h2>
               <h2>
-                {gasto.body}
+                {gasto.data}
+              </h2>
+              <h2>
+                {gasto.pago}
               </h2>
             </div>
           ))
