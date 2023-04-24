@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from Tags.models import Tag
 
@@ -7,6 +8,7 @@ class Gasto(models.Model):
     data = models.DateField()
     pago = models.BooleanField(default=False)
     tag = models.ForeignKey(Tag, null=True, on_delete=models.SET_NULL, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL, blank=True)
 
     class Meta:
         verbose_name = "Gasto"
