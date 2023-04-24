@@ -5,8 +5,8 @@ export default function TagsInput(props) {
     const [tags, setTags] =  useState([])
     const [showError, setShowError] = useState(false);
 
-    function handleKeyDown(e) {
-        if(e.key !== 'Enter') return
+    function handleChange(e) {
+        //if(e.key !== 'Enter') return
         const value = e.target.value
         if(!value.trim()) return
         if (tags.includes(value)){
@@ -20,6 +20,7 @@ export default function TagsInput(props) {
             return
         }
         setTags(newTags);
+        console.log(tags)
         props.onTagsChange(newTags);
         e.target.value = ''
     }
@@ -38,10 +39,19 @@ export default function TagsInput(props) {
                     <span className="close" onClick={() => removeTags(index)}>&times;</span>
                 </div>
             ))}
-            <input type="text" 
+
+            <select name="tags" id="tags" className="tags-input" onChange={handleChange}>
+                <option value="mercado">Mercado</option>
+                <option value="luz">Luz</option>
+                <option value="agua">Água</option>
+                <option value="internet">Internet</option>
+                <option value="lazer">Lazer</option>
+            </select>
+
+            {/* <input type="text" 
             className="tags-input" 
             placeholder="Digite o tipo de gasto (mercado, carro, ...)" 
-            onKeyDown={handleKeyDown}/>
+            onKeyDown={handleKeyDown}/> */}
 
             {showError && (
                 <span className="error-message">Limite de 4 tags atingido.</span>

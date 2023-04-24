@@ -35,19 +35,20 @@ import axios from 'axios';
 export default function Home() {
 
   const navigate = useNavigate();
-
+  const [, set] = useState(0)
   const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
+
   const [gastos, setGastos] = useState([])
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState(null)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -58,7 +59,7 @@ export default function Home() {
   const cancelRef = React.useRef()
 
 
-  const user = localStorage.getItem('cadastro_user')
+  const username = localStorage.getItem('cadastro_user')
 
   function handleTagsChange(tags) {
     setTags(tags);
@@ -66,12 +67,16 @@ export default function Home() {
 
   const handleSubmit = () => {
     const dados = {
+      username,
       nome,
       valor,
       data,
       pago,
       //tags
     };
+
+    console.log(dados)
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
       .then(response => {
@@ -81,6 +86,7 @@ export default function Home() {
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
+
   }
 
   const handleEdit = () => {
@@ -91,8 +97,6 @@ export default function Home() {
       pago,
       tags
     };
-
-    console.log(JSON.stringify(dados));
 
     axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/`, dados)
 
@@ -106,16 +110,14 @@ export default function Home() {
   }
 
   const handleDelete = () => {
-    console.log(JSON.stringify(data))
-    axios.delete("http://localhost:8000/api/gastos/deletar-gasto/", {
+    axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     })
       .then(response => {
         console.log('Gasto deletado com sucesso');
         onAlertDialogClose();
+        setFlag(flag++)
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -158,7 +160,7 @@ export default function Home() {
 
   const searchFilter = () => {
     //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
-    if (searchOption == 'status' && searchValue == false || searchValue == true) {
+    if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
         .then((response) => {
           const data = response.data;
@@ -185,12 +187,11 @@ export default function Home() {
 
   return (
 
-
     <div >
       <header className='home'>
         <div className='presentation'>
           <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
-          <h2>Olá, {user}</h2>
+          <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
           <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
@@ -367,7 +368,7 @@ export default function Home() {
       </div>
 
       <div className="gasto">
-        {gastos.length === 0 ? <p>Carregando...</p> : (
+        {gastos.length === 0 ? <p></p> : (
           gastos.map((gasto, key) => (
             <div className="gasto_information">
               <div className='header'>
