@@ -36,7 +36,7 @@ export default function Home() {
 
   const navigate = useNavigate();
 
-  const [idGasto, setIdGasto] = useState('')
+  const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
@@ -89,23 +89,30 @@ export default function Home() {
       valor,
       data,
       pago,
-      //tags 
+      tags
     };
 
-    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/${idGasto}`, dados)
+    console.log(JSON.stringify(dados));
 
-    .then(response => {
-      console.log('Dados editados com sucesso:', response.dados);
-      onModalEditClose();
-    })
-    .catch(error => {
-      console.error('Erro ao enviar dados:', error);
-    });
+    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/`, dados)
+
+      .then(response => {
+        console.log('Dados editados com sucesso:', response.dados);
+        onModalEditClose();
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
   }
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/${idGasto}`)
-
+    console.log(JSON.stringify(data))
+    axios.delete("http://localhost:8000/api/gastos/deletar-gasto/", {
+      data: { id: id },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
       .then(response => {
         console.log('Gasto deletado com sucesso');
         onAlertDialogClose();
@@ -114,18 +121,17 @@ export default function Home() {
         console.error('Erro ao enviar dados:', error);
       });
   }
-  
+
   const getGastos = () => {
-    //axios.get("http://localhost:8000/api/gastos/meusgastos")
-    axios.get("https://jsonplaceholder.typicode.com/posts")
-    .then((response) => {
-      const data = response.data;
-      setGastos(data);
-      setShouldRunEffect(true)
-    })
-    .catch(error => {
-      console.log(error);
-    })    
+    axios.get("http://localhost:8000/api/gastos/meus-gastos")
+      .then((response) => {
+        const data = response.data;
+        setGastos(data);
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
   }
 
   const handleLogOut = () => {
@@ -134,10 +140,10 @@ export default function Home() {
   }
 
   const handleDeleteClick = (data) => {
-    setIdGasto(data);
+    setId(data);
     onAlertDialogOpen();
   }
-  
+
   useEffect(() => {
     getGastos();
   }, []);
@@ -151,27 +157,27 @@ export default function Home() {
   }, [searchValue, searchOption]);
 
   const searchFilter = () => {
-      //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
-    if(searchOption == 'status' && searchValue == false || searchValue == true) {
+    //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
+    if (searchOption == 'status' && searchValue == false || searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
-      .then((response) => {
-        const data = response.data;
-        setGastos([data]);
-      })
-      .catch(error => {
-        console.log(error);
-      })    
+        .then((response) => {
+          const data = response.data;
+          setGastos([data]);
+        })
+        .catch(error => {
+          console.log(error);
+        })
     }
- 
+
   };
 
 
-  function handleSearchType(type){
+  function handleSearchType(type) {
     console.log(type)
     setSearchOption(type)
   }
 
-  function handleSearch(data){
+  function handleSearch(data) {
     console.log(data)
     setSearchValue(data)
   }
@@ -187,7 +193,7 @@ export default function Home() {
           <h2>Olá, {user}</h2>
         </div>
         <div className="bt-sb">
-          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType}/>
+          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
           <Button pr='10px' onClick={onModalCreateOpen}>Adicionar Gasto</Button>
         </div>
       </header>
@@ -276,7 +282,7 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
-                <Input  defaultValue="João" onChange={(e) => {
+                <Input defaultValue="João" onChange={(e) => {
                   setNome(e.target.value)
                 }} />
               </FormControl>
@@ -366,7 +372,7 @@ export default function Home() {
             <div className="gasto_information">
               <div className='header'>
                 <h1>
-                  {gasto.id}
+                  {gasto.nome}
                 </h1>
                 <div>
                   <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={onModalEditOpen} />
@@ -374,10 +380,13 @@ export default function Home() {
                 </div>
               </div>
               <h2>
-                {gasto.title}
+                {gasto.valor}
               </h2>
               <h2>
-                {gasto.body}
+                {gasto.data}
+              </h2>
+              <h2>
+                {gasto.pago}
               </h2>
             </div>
           ))
