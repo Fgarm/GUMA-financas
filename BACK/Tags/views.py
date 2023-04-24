@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from http import HTTPStatus
+from django.http import HttpRequest
 
 class TagApiView(APIView):
     @api_view(['GET'])
@@ -24,7 +27,24 @@ class TagApiView(APIView):
     @api_view(['POST'])
     def post_tags (request):
         if request.method == 'POST':
-            serializer = TagSerializer(data=request.data)
+            data = {}
+            data["categoria"] = request.data["categoria"]
+            data["cor"] = request.data["cor"]
+            
+            
+            user_id = User.objects.filter(username=request.data["user"]).first().id
+            print(user_id)
+            if not user_id:
+                return Response(HTTPStatus.BAD_REQUEST)
+            
+            data["user"] = user_id
+            tag_existente = Tag.objects.filter(categoria=request.data["categoria"])
+            if tag_existente:
+                tag_existente = tag_existente.filter(user=user_id)
+                if tag_existente:
+                    return Response(HTTPStatus.BAD_REQUEST)
+                
+            serializer = TagSerializer(data=data)                
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

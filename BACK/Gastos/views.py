@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+from Tags.models import Tag
 
 class GastoApiView(APIView):
     @api_view(['GET'])
@@ -18,9 +20,29 @@ class GastoApiView(APIView):
     @api_view(['POST'])
     def post_gastos (request): # parâmetro self removido
         if request.method == 'POST':
-            serializer = GastoSerializer(data=request.data)
+            data = {}
+            data["nome"] = request.data["nome"]
+            data["valor"] = request.data["valor"]
+            data["data"] = request.data["data"]
+            data["pago"] = request.data["pago"]
+
+            user_id = User.objects.filter(username=request.data["user"]).first()
+            if not user_id: 
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+            user_id = user_id.id
+            data["user"] = user_id
+            tag_id = Tag.objects.filter(categoria=request.data["tag"]).filter(user=data["user"]).first()
+            if not tag_id:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            data["tag"] = tag_id.id
+            serializer = GastoSerializer(data=data, context={'request': request})
+
             if serializer.is_valid():
                 serializer.save()
+                
+                
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
