@@ -36,6 +36,7 @@ export default function Home() {
 
   const navigate = useNavigate();
   const [id, setId] = useState('')
+  const [flag, setFlag] = useState(0)
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
@@ -52,18 +53,18 @@ export default function Home() {
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
-
+  
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
-
-
+  
+  
   const username = localStorage.getItem('cadastro_user')
-
+  
   function handleTagsChange(newTags) {
     setTags(newTags);
   }
-
+  
   const handleSubmit = () => {
     const dados = {
       username,
@@ -73,14 +74,15 @@ export default function Home() {
       pago,
       tags
     };
-
+    
     console.log(dados)
-
+    
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
-
+    
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
         onModalCreateClose();
+        setFlag(flag => flag + 1);
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -95,15 +97,14 @@ export default function Home() {
       valor,
       data,
       pago,
-      tags
+      //tags
     };
 
     console.log(JSON.stringify(dados))
-    axios.put(`http://localhost:8000/api/gastos/atualizar-gasto/`, {
+    axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       data: dados,
       headers: { 'Content-Type': 'application/json' }
     })
-
       .then(response => {
         console.log('Dados editados com sucesso:', response.dados);
         onModalEditClose();
@@ -121,7 +122,7 @@ export default function Home() {
       .then(response => {
         console.log('Gasto deletado com sucesso');
         onAlertDialogClose();
-        setFlag(flag++)
+        setFlag(flag => flag + 1);
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -157,7 +158,7 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
-  }, []);
+  }, [flag]);
 
   useEffect(() => {
     if (shouldRunEffect) {
@@ -395,8 +396,8 @@ export default function Home() {
               <h2>
                 {gasto.data}
               </h2>
-                {gasto.pago > 0 ? <h2>Pago</h2> : <h2>Não Pago</h2>}
-              
+              {gasto.pago > 0 ? <h2>Pago</h2> : <h2>Não Pago</h2>}
+
             </div>
           ))
 
