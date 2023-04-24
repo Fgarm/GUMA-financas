@@ -108,7 +108,7 @@ export default function LogIn() {
           </InputRightElement>
         </InputGroup>
 
-        {errors.password && <span className='error'>{errors.senha.message} </span>}
+        {errors.password && <span className='error'>{errors.password.message} </span>}
 
       </div>
 

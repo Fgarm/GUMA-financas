@@ -42,12 +42,13 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
+  
   const [gastos, setGastos] = useState([])
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState(null)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -58,7 +59,7 @@ export default function Home() {
   const cancelRef = React.useRef()
 
 
-  const user = localStorage.getItem('cadastro_user')
+  const username = localStorage.getItem('cadastro_user')
 
   function handleTagsChange(tags) {
     setTags(tags);
@@ -66,12 +67,15 @@ export default function Home() {
 
   const handleSubmit = () => {
     const dados = {
+      username,
       nome,
       valor,
       data,
       pago,
       //tags
     };
+
+    console.log(dados)
 
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
 
@@ -82,6 +86,7 @@ export default function Home() {
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
+      
   }
 
   const handleEdit = () => {
@@ -106,7 +111,6 @@ export default function Home() {
 
   const handleDelete = () => {
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/${idGasto}`)
-
       .then(response => {
         console.log('Gasto deletado com sucesso');
         onAlertDialogClose();
@@ -153,7 +157,7 @@ export default function Home() {
 
   const searchFilter = () => {
       //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
-    if(searchOption == 'status' && searchValue == false || searchValue == true) {
+    if(searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
       .then((response) => {
         const data = response.data;
@@ -180,12 +184,11 @@ export default function Home() {
 
   return (
 
-
     <div >
       <header className='home'>
         <div className='presentation'>
           <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
-          <h2>Olá, {user}</h2>
+          <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
           <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType}/>

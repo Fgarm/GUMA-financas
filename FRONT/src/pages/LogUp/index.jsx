@@ -72,7 +72,7 @@ export default function LogUp() {
     .then(response => {
       if(response.status === 200){
         localStorage.setItem('cadastro_user', data.username)
-        navigate('/home', {replace: true});
+        navigate('/', {replace: true});
       } else{
         alert('Usuário já cadastrado')
       }
