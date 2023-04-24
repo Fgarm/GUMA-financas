@@ -102,12 +102,16 @@ export default function Home() {
 
     console.log(JSON.stringify(dados))
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
-      data: dados,
-      headers: { 'Content-Type': 'application/json' }
-    })
+        id: id,
+        nome: nome,
+        valor: valor,
+        data: data,
+        pago: pago
+      })
       .then(response => {
         console.log('Dados editados com sucesso:', response.dados);
         onModalEditClose();
+        setFlag(flag => flag + 1);
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -293,7 +297,7 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
-                <Input defaultValue={nome} onChange={(e) => {
+                <Input onChange={(e) => {
                   setNome(e.target.value)
                 }} />
               </FormControl>
