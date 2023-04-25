@@ -69,11 +69,15 @@ export default function LogUp() {
     console.log(data);
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
-      if(response.status === 200){
-        localStorage.setItem('cadastro_user', data.username)
+      if(response.status === 201){
+        //localStorage.setItem('cadastro_user', data.username)
         navigate('/', {replace: true});
+      } else if(response.status === 409){
+        alert('Usuário ou email já cadastrados no sistema')
+      } else if(response.status === 400){
+        alert('Dados de cadastro não estão nos parâmetros aceitos')
       } else{
-        alert('Usuário já cadastrado')
+        alert('Erro de solicitação')
       }
     })
     .catch(error => {

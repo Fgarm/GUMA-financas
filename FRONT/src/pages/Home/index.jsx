@@ -35,8 +35,10 @@ import axios from 'axios';
 export default function Home() {
 
   const navigate = useNavigate();
-  const [id, setId] = useState('')
+  
   const [flag, setFlag] = useState(0)
+  
+  const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
@@ -58,8 +60,8 @@ export default function Home() {
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
   
-  
   const username = localStorage.getItem('cadastro_user')
+  const token = localStorage.getItem('token')
   
   function handleTagsChange(newTags) {
     setTags(newTags);
@@ -72,13 +74,16 @@ export default function Home() {
       valor,
       data,
       pago,
-      tags
+      //tags
     };
     
     console.log(dados)
     
-    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados)
-    
+    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })    
       .then(response => {
         console.log('Dados enviados com sucesso:', response.dados);
         onModalCreateClose();
@@ -100,13 +105,16 @@ export default function Home() {
       //tags
     };
 
-    console.log(JSON.stringify(dados))
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
         id: id,
         nome: nome,
         valor: valor,
         data: data,
         pago: pago
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       })
       .then(response => {
         console.log('Dados editados com sucesso:', response.dados);
@@ -121,7 +129,10 @@ export default function Home() {
   const handleDelete = () => {
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
     })
       .then(response => {
         console.log('Gasto deletado com sucesso');

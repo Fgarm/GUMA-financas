@@ -52,11 +52,12 @@ export default function LogIn() {
   const onSubmit = (data) => {
     axios.post('http://localhost:8000/auth/login/', data)
     .then(response => {
-      console.log(response);
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.token) {
           localStorage.setItem('cadastro_user', data.username)
           localStorage.setItem('token', response.data.token);
           navigate('/home', { replace: true });
+        } else if (response.status == 401){
+          alert("Usuário não autorizado")
         } else {
           alert('Usuário não encontrado')
         }
