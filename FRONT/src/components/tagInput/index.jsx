@@ -4,16 +4,23 @@ export default function TagsInput(props) {
 
     const [tags, setTags] =  useState([])
     const [showError, setShowError] = useState(false);
+    const user = props.user
+    const cor = '#dad8d8'
 
     function handleChange(e) {
         //if(e.key !== 'Enter') return
         const value = e.target.value
         if(!value.trim()) return
-        if (tags.includes(value)){
-            e.target.value = ''
-            return
-        } 
-        const newTags = [...tags, value];
+        if (tags.some(tag => tag.categoria === value)) {
+            e.target.value = '';
+            return;
+        }
+    
+        const categoria = value
+
+        const newTag = {categoria, cor, user}
+
+        const newTags = [...tags, newTag];
         if (tags.length == 4) {
             setShowError(true)
             console.log(tags)
@@ -34,7 +41,7 @@ export default function TagsInput(props) {
         <div className="tags-input-container">
             {tags.map((tag, index) => (
                 <div className="tags-items" key={index}>
-                    <span className="text">{tag}</span>
+                    <span className="text">{tag.categoria}</span>
                     <span className="close" onClick={() => removeTags(index)}>&times;</span>
                 </div>
             ))}

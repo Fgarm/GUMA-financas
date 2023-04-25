@@ -62,6 +62,7 @@ export default function Home() {
   
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
+
   
   function handleTagsChange(newTags) {
     setTags(newTags);
@@ -74,10 +75,7 @@ export default function Home() {
       valor,
       data,
       pago,
-      //tags
     };
-    
-    console.log(dados)
     
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
@@ -85,14 +83,37 @@ export default function Home() {
       }
     })    
       .then(response => {
-        console.log('Dados enviados com sucesso:', response.dados);
-        onModalCreateClose();
-        setFlag(flag => flag + 1);
+        if(response.status == 201){
+          console.log('Dados enviados com sucesso:', response.dados);
+        } else{
+          alert('Erro de dados submetidos')
+          return
+        }
+        //onModalCreateClose();
+        //setFlag(flag => flag + 1);
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
 
+      /* TAGS */
+      axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })    
+        .then(response => {
+          if(response.status == 201){
+            console.log('Dados enviados com sucesso:', response.dados);
+            onModalCreateClose();
+            setFlag(flag => flag + 1);
+          } else if(response.status == 400){
+            alert("Valores inválidos")
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao enviar dados:', error);
+        });
   }
 
   const handleEdit = () => {
@@ -102,8 +123,10 @@ export default function Home() {
       valor,
       data,
       pago,
-      //tags
+      tags
     };
+
+    console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
         id: id,
@@ -117,9 +140,13 @@ export default function Home() {
         }
       })
       .then(response => {
-        console.log('Dados editados com sucesso:', response.dados);
-        onModalEditClose();
-        setFlag(flag => flag + 1);
+        if(response.status == 204){
+          console.log('Dados editados com sucesso:', response.dados);
+          onModalEditClose();
+          setFlag(flag => flag + 1);
+        } else {
+          alert("Erro ao atualizar gasto")
+        }
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
@@ -279,7 +306,7 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Tipo</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} />
+                <TagsInput onTagsChange={handleTagsChange} user={username}/>
               </FormControl>
             </ModalBody>
 
@@ -348,7 +375,7 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Tipo</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} />
+                <TagsInput onTagsChange={handleTagsChange} user={username}/>
               </FormControl>
             </ModalBody>
 
