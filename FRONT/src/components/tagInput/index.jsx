@@ -22,6 +22,7 @@ export default function TagsInput(props) {
 
         const newTags = [...tags, newTag];
         if (tags.length == 4) {
+            e.target.value = '';
             setShowError(true)
             console.log(tags)
             return

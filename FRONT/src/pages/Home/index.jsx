@@ -43,7 +43,7 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState();
 
   const [gastos, setGastos] = useState([])
 
@@ -89,31 +89,31 @@ export default function Home() {
           alert('Erro de dados submetidos')
           return
         }
-        //onModalCreateClose();
-        //setFlag(flag => flag + 1);
+        onModalCreateClose();
+        setFlag(flag => flag + 1);
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
 
-      /* TAGS */
-      axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })    
-        .then(response => {
-          if(response.status == 201){
-            console.log('Dados enviados com sucesso:', response.dados);
-            onModalCreateClose();
-            setFlag(flag => flag + 1);
-          } else if(response.status == 400){
-            alert("Valores inválidos")
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao enviar dados:', error);
-        });
+      // /* TAGS */
+      // axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`
+      //   }
+      // })    
+      //   .then(response => {
+      //     if(response.status == 201){
+      //       console.log('Dados enviados com sucesso:', response.dados);
+      //       onModalCreateClose();
+      //       setFlag(flag => flag + 1);
+      //     } else if(response.status == 400){
+      //       alert("Valores inválidos")
+      //     }
+      //   })
+      //   .catch(error => {
+      //     console.error('Erro ao enviar dados:', error);
+      //   });
   }
 
   const handleEdit = () => {
@@ -247,6 +247,7 @@ export default function Home() {
         </div>
         <div className="bt-sb">
           <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
+          <Button pr='10px'>Adicionar Tags</Button>
           <Button pr='10px' onClick={onModalCreateOpen}>Adicionar Gasto</Button>
         </div>
       </header>
