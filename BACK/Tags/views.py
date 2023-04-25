@@ -13,10 +13,14 @@ class TagApiView(APIView):
     @api_view(['GET'])
     def get_tags_user (request): #pega as tags de um usuário e devolve elas
         if request.method == 'GET':
-            tags = Tag.objects.filter(user=request.data["id"])
+            user_id = User.objects.filter(username=request.data["user"]).first()
+            if not user_id:
+                return Response(HTTPStatus.BAD_REQUEST)
+            tags = Tag.objects.filter(user=user_id.id)
             serializer = TagSerializer(tags, context={'request': request}, many=True)
             return Response(serializer.data)
         
+
         
     @api_view(['GET'])
     def get_tag_id (request): #pega as tags com um id e devolve ela
@@ -33,12 +37,12 @@ class TagApiView(APIView):
             data["cor"] = request.data["cor"]
             
             
-            user_id = User.objects.filter(username=request.data["user"]).first().id
-            print(user_id)
+            user_id = User.objects.filter(username=request.data["user"]).first()
+            #print(user_id)
             if not user_id:
                 return Response(HTTPStatus.BAD_REQUEST)
             
-            data["user"] = user_id
+            data["user"] = user_id.id
             tag_existente = Tag.objects.filter(categoria=request.data["categoria"])
             if tag_existente:
                 tag_existente = tag_existente.filter(user=user_id)
