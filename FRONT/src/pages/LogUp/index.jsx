@@ -69,7 +69,7 @@ export default function LogUp() {
     console.log(data);
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
-      if(response.status === 201){
+      if(response.status === 200){
         //localStorage.setItem('cadastro_user', data.username)
         navigate('/', {replace: true});
       } else if(response.status === 409){

@@ -35,9 +35,9 @@ import axios from 'axios';
 export default function Home() {
 
   const navigate = useNavigate();
-  
+
   const [flag, setFlag] = useState(0)
-  
+
   const [id, setId] = useState('')
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0);
@@ -52,22 +52,24 @@ export default function Home() {
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
 
+  const [valorError, setValorError] = useState(false)
+
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
-  
+
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
-  
+
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  
+
   function handleTagsChange(newTags) {
     setTags(newTags);
   }
-  
+
   const handleSubmit = () => {
     const dados = {
       username,
@@ -76,16 +78,16 @@ export default function Home() {
       data,
       pago,
     };
-    
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
-    })    
+    })
       .then(response => {
-        if(response.status == 201){
+        if (response.status == 201) {
           console.log('Dados enviados com sucesso:', response.dados);
-        } else{
+        } else {
           alert('Erro de dados submetidos')
           return
         }
@@ -96,24 +98,24 @@ export default function Home() {
         console.error('Erro ao enviar dados:', error);
       });
 
-      // /* TAGS */
-      // axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`
-      //   }
-      // })    
-      //   .then(response => {
-      //     if(response.status == 201){
-      //       console.log('Dados enviados com sucesso:', response.dados);
-      //       onModalCreateClose();
-      //       setFlag(flag => flag + 1);
-      //     } else if(response.status == 400){
-      //       alert("Valores inválidos")
-      //     }
-      //   })
-      //   .catch(error => {
-      //     console.error('Erro ao enviar dados:', error);
-      //   });
+    // /* TAGS */
+    // axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
+    //   headers: {
+    //     'Authorization': `Bearer ${token}`
+    //   }
+    // })    
+    //   .then(response => {
+    //     if(response.status == 201){
+    //       console.log('Dados enviados com sucesso:', response.dados);
+    //       onModalCreateClose();
+    //       setFlag(flag => flag + 1);
+    //     } else if(response.status == 400){
+    //       alert("Valores inválidos")
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error('Erro ao enviar dados:', error);
+    //   });
   }
 
   const handleEdit = () => {
@@ -129,18 +131,18 @@ export default function Home() {
     console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
-        id: id,
-        nome: nome,
-        valor: valor,
-        data: data,
-        pago: pago
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      id: id,
+      nome: nome,
+      valor: valor,
+      data: data,
+      pago: pago
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(response => {
-        if(response.status == 204){
+        if (response.status == 204) {
           console.log('Dados editados com sucesso:', response.dados);
           onModalEditClose();
           setFlag(flag => flag + 1);
@@ -156,7 +158,7 @@ export default function Home() {
   const handleDelete = () => {
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
@@ -172,7 +174,17 @@ export default function Home() {
   }
 
   const getGastos = () => {
-    axios.get("http://localhost:8000/api/gastos/meus-gastos")
+    
+    console.log(JSON.stringify(username))
+    axios({
+      method: "post",
+      url: "http://localhost:8000/api/gastos/obter-gasto/",
+      data: {
+        user: username,
+      },
+    })
+    // axios.get("http://localhost:8000/api/gastos/meus-gastos/")
+    
       .then((response) => {
         const data = response.data;
         setGastos(data);
@@ -276,10 +288,19 @@ export default function Home() {
                 <label >Valor</label>
                 <br></br>
                 <Input onChange={(e) => {
-                  setValor(e.target.value)
 
+                  const regex = /^[0-9.]+$/; // Expressão regular que permite apenas números e pontos
+                  if (regex.test(e.target.value)) {
+                    setValor(e.target.value);
+                  } else {
+                    setValorError(true)
+                  }
                 }} />
               </FormControl>
+
+              {valorError && (
+                <span className="error-message">Digite apenas números e pontos</span>
+              )}
 
               <FormControl mt={4}>
                 <label >Data</label>
@@ -305,9 +326,9 @@ export default function Home() {
               </FormControl>
 
               <FormControl mt={4}>
-                <label >Tipo</label>
+                <label >Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username}/>
+                <TagsInput onTagsChange={handleTagsChange} user={username} />
               </FormControl>
             </ModalBody>
 
@@ -374,9 +395,9 @@ export default function Home() {
               </FormControl>
 
               <FormControl mt={4}>
-                <label>Tipo</label>
+                <label>Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username}/>
+                <TagsInput onTagsChange={handleTagsChange} user={username} />
               </FormControl>
             </ModalBody>
 
