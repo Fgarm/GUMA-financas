@@ -172,7 +172,7 @@ export default function Home() {
   }
 
   const getGastos = () => {
-    axios.get("http://localhost:8000/api/gastos/meus-gastos")
+    axios.get("http://localhost:8000/api/gastos/obter-gasto/")
       .then((response) => {
         const data = response.data;
         setGastos(data);
