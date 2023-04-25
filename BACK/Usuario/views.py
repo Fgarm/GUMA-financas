@@ -20,7 +20,7 @@ def cadastro (request):
     if (not serializer.is_valid()): return HttpResponse(HTTPStatus.BAD_REQUEST)
 
     user = User.objects.filter(username=serializer.data["username"]).first()
-    email = User.objects.filter(email=serializer.data["email"]).first
+    email = User.objects.filter(email=serializer.data["email"]).first()
 
     if user:
         return HttpResponse(HTTPStatus.CONFLICT)
@@ -49,7 +49,7 @@ def login(request):
     user = authenticate(username=serializer.data["username"], password=serializer.data["password"])
 
     if user:
-        user_data = {"username":"admin","password": "admin"}
+        user_data = {"username":request.data["username"],"password": request.data["password"]}
         token = requests.post("http://127.0.0.1:8000/token/", data=user_data)
 
         return HttpResponse(token)
