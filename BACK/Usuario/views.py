@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from rest_framework.response import Response
+from rest_framework import status
 from django.http import HttpResponse
 from http import HTTPStatus
 from django.shortcuts import render
@@ -23,9 +24,9 @@ def cadastro (request):
     email = User.objects.filter(email=serializer.data["email"]).first
 
     if user:
-        return HttpResponse(HTTPStatus.CONFLICT)
+        return Response(status=status.HTTP_409_CONFLICT)
     if email:
-        return HttpResponse(HTTPStatus.CONFLICT)
+        return Response(status=status.HTTP_409_CONFLICT)
     
     user = User.objects.create_user(
         username=serializer.data["username"], 

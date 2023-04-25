@@ -17,6 +17,7 @@ class TagApiView(APIView):
             serializer = TagSerializer(tags, context={'request': request}, many=True)
             return Response(serializer.data)
         
+        
     @api_view(['GET'])
     def get_tag_id (request): #pega as tags com um id e devolve ela
         if request.method == 'GET':
