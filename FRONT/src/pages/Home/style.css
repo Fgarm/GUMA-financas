@@ -1,68 +1,32 @@
-header {
+header.home {
     padding: 20px;
     padding-right: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: aqua;
+    width: 100%;
 }
 
-.header {
-    
-    height: 50px;
-    margin: 0;
+.presentation {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
 }
 
-.bt-sb{
+.bt-sb {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 10px;
 }
 
-.input {
-    margin-top: 15px;
-}
-
-header div {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.home h1 {
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.post {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #777;
-}
-
-.sidebar{
-    height: 100%;
-    width: 215px;
+.modal_header {
     background-color: aqua;
 }
 
-.sidebar-list{
-    height: auto;
-    width: 100%;
-    padding: 0;
-}
-
-.sidebar-list .row{
-    width: 100%;
-    height: 50px;
-    background-color: orange;
-}
-
-.tags-input-container{
+.tags-input-container {
     border: 1px solid rgb(197, 197, 197);
     padding: .5em;
     border-radius: 5px;
@@ -73,33 +37,77 @@ header div {
     gap: .5em;
 }
 
-
-.tags-items{
+.tags-items {
     background-color: rgb(218, 216, 216);
     display: inline-block;
     padding: .5em .75em;
     border-radius: 20px;
 }
 
-.tags-items .close{
+.tags-items .close {
     height: 20px;
     width: 20px;
     background-color: rgba(48, 48, 48);
     display: inline-block;
     color: #fff;
     border-radius: 50%;
- 
     display: inline-flex;
     justify-content: center;
     align-items: center;
     margin-left: .5em;
     font-size: 18px;
-} 
+}
 
-.tags-input{
+.tags-input {
     flex-grow: 1;
     padding: .5em 0;
     border: none;
     outline: none;
 }
 
+.create-tag{
+    margin-top: 5px;
+}
+
+.create-tag input{
+    border: 1px solid gray;
+    outline: none;
+}
+
+
+span.error-message {
+    color: red;
+}
+
+.gasto {
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.gasto_information {
+    margin-top: 15px;
+    padding: 20px;
+    border: 0.5px solid;
+    border-radius: 5px;
+    width: 30%;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+h2.green {
+    color: green;
+}
+
+h2.red {
+    color: red;
+}

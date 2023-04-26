@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import './style.css'
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -15,7 +15,7 @@ import axios from 'axios';
 export default function LogUp() {
 
   const navigate = useNavigate();
-  
+
   const createUserFormSchema = z.object(
     {
       username: z.string()
@@ -66,23 +66,29 @@ export default function LogUp() {
   )
 
   const onSubmit = (data) => {
-    
-    localStorage.setItem('dados', data);
     console.log(data);
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
-      console.log(response);
-      navigate('/home', {replace: true});
-      })
-      .catch(error => {
-        console.log(error);
-      });
+      if(response.status === 200){
+        
+        navigate('/', {replace: true});
+      } else if(response.status === 409){
+        alert('Usuário ou email já cadastrados no sistema')
+      } else if(response.status === 400){
+        alert('Dados de cadastro não estão nos parâmetros aceitos')
+      } else{
+        alert('Erro de solicitação')
+      }
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
     return (
 
             <main>
-
+            
               <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
                   <div>
@@ -159,7 +165,8 @@ export default function LogUp() {
 
                   <div>
 
-                    <label htmlFor="password">password</label>
+                    <label htmlFor="password">Senha</label>
+
                     <br></br>
 
                     <InputGroup size='md'>

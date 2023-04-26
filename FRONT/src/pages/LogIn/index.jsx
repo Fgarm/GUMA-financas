@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 
 import './style.css';
 
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -21,15 +21,15 @@ export default function LogIn() {
 
   const createUserFormSchema = z.object(
     {
-     username: z.string()
+      username: z.string()
         .nonempty('Este item é obrigatório'),
 
-     password: z.string()
+      password: z.string()
         .nonempty('Este item é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
   )
-  
+
 
   const [visible, setVisible] = useState(false)
 
@@ -38,82 +38,88 @@ export default function LogIn() {
   }, []);
 
 
-  const { 
+  const {
     register,
-    handleSubmit, 
-    formState: { errors }  
-    } = useForm (
+    handleSubmit,
+    formState: { errors }
+  } = useForm(
     {
       resolver: zodResolver(createUserFormSchema)
     }
-    )
-    
-    
-    const onSubmit = (data) => {
-      localStorage.setItem('dados', data);
-      axios.post('http://localhost:8000/auth/login/', data)
-        .then(response => {
-        console.log(response);
-        navigate('/home', {replace: true});
+  )
+
+
+  const onSubmit = (data) => {
+    axios.post('http://localhost:8000/auth/login/', data)
+    .then(response => {
+      if (response.status === 200 && response.data.access) {
+          localStorage.setItem('cadastro_user', data.username)
+          console.log(response.data.access)
+          localStorage.setItem('token', response.data.token);
+          navigate('/home', { replace: true });
+        } else if (response.status == 401){
+          alert("Usuário não autorizado")
+        } else {
+          alert('Usuário ou senha incorretos')
+        }
       })
       .catch(error => {
         console.log(error);
       });
   }
 
-    return (
+  return (
 
-              <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
+    <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
 
-                  <div>
+      <div>
 
-                    <label htmlFor="username">Username</label>
-                    <br></br>
+        <label htmlFor="username">Username</label>
+        <br></br>
 
-                    <Input
-                    type="text"
-                    id='username'
-                    {...register('username')}
-                    htmlSize={27}
-                    width='auto'
-                    />
+        <Input
+          type="text"
+          id='username'
+          {...register('username')}
+          htmlSize={27}
+          width='auto'
+        />
 
-                    {errors.username && <span className='error'>{errors.username.message}</span>}
+        {errors.username && <span className='error'>{errors.username.message}</span>}
 
-                  </div>
+      </div>
 
-                  <div>
+      <div>
 
-                    <label htmlFor="password">password</label>
-                    <br></br>
+        <label htmlFor="password">Senha</label>
+        <br></br>
 
-                    <InputGroup size='md'>
-                      <Input
-                        pr='4.5rem'
-                        type={visible ? 'text' : 'password'}
-                        id='password'
-                        {...register('password')}
-                      />
-                      
-                      <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
-                       
-                      {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon/>}
-                        
-                       
-                      </InputRightElement>
-                    </InputGroup>
+        <InputGroup size='md'>
+          <Input
+            pr='4.5rem'
+            type={visible ? 'text' : 'password'}
+            id='password'
+            {...register('password')}
+          />
 
-                    {errors.password && <span className='error'>{errors.password.message} </span>}
+          <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
 
-                  </div>
+            {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon />}
+
+          </InputRightElement>
+        </InputGroup>
+
+        {errors.password && <span className='error'>{errors.password.message} </span>}
+
+      </div>
 
 
-                  <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
+      <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
 
-                  <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
-                  
-              </form>
-    )
-    
+      <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
+
+    </form>
+  )
+
 }
 
