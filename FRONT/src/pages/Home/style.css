@@ -65,6 +65,16 @@ header.home {
     outline: none;
 }
 
+.create-tag{
+    margin-top: 5px;
+}
+
+.create-tag input{
+    border: 1px solid gray;
+    outline: none;
+}
+
+
 span.error-message {
     color: red;
 }

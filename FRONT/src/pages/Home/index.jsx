@@ -77,8 +77,9 @@ export default function Home() {
       valor,
       data,
       pago,
+      tags
     };
-
+    console.log(tags)
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -125,7 +126,6 @@ export default function Home() {
       valor,
       data,
       pago,
-      tags
     };
 
     console.log(dados)
@@ -226,7 +226,7 @@ export default function Home() {
   }, [searchValue, searchOption]);
 
   const searchFilter = () => {
-    //axios.get("http://localhost:8000/api/gastos/meusgastos?type=searchGastos&value=searchValue")
+    //axios.get(`http://localhost:8000/api/gastos/meusgastos?type=${searchOption}&value=${searchValue}`)
     if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
         .then((response) => {
@@ -262,7 +262,6 @@ export default function Home() {
         </div>
         <div className="bt-sb">
           <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
-          <Button pr='10px'>Adicionar Tags</Button>
           <Button pr='10px' onClick={onModalCreateOpen}>Adicionar Gasto</Button>
         </div>
       </header>
@@ -291,8 +290,7 @@ export default function Home() {
                 <label >Valor</label>
                 <br></br>
                 <Input onChange={(e) => {
-
-                  const regex = /^[0-9.]+$/; // Expressão regular que permite apenas números e pontos
+                  const regex = /^[0-9]+(.[0-9]{1,2})?$/;
                   if (regex.test(e.target.value)) {
                     setValor(e.target.value);
                   } else {
@@ -302,7 +300,7 @@ export default function Home() {
               </FormControl>
 
               {valorError && (
-                <span className="error-message">Digite apenas números e pontos</span>
+                <span className="error-message">Digite apenas valores decimais</span>
               )}
 
               <FormControl mt={4}>
