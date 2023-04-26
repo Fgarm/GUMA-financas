@@ -20,9 +20,12 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
         
-    @api_view(['GET'])
+    @api_view(['GET', 'POST'])
     def get_gasto_username(request):
+        print("parametros?:", request.query_params)
+        print("dados?:", request.data)
         username = request.data["user"]
+        print(request.data)
         user_id = User.objects.filter(username=username).first()
         #Virificando se User existe
         if not user_id:
@@ -35,7 +38,10 @@ class GastoApiView(APIView):
         if not user_id:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        
+
+        serializer = GastoSerializer(gastos, context={'request': request}, many=True)
+        return Response(serializer.data)
+
         gastos_j = {"alunos": []}
         for gasto in gastos:
             data_j = str(gasto.data)
