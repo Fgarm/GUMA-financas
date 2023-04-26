@@ -9,6 +9,7 @@ class TagSerializer(serializers.ModelSerializer):
         unique_together = ('categoria', 'user')
         model = Tag
         fields = (
+            'id',
             'categoria',
             'cor',
             'user'        
