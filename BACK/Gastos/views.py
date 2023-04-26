@@ -27,14 +27,14 @@ class GastoApiView(APIView):
         username = request.data["user"]
         print(request.data)
         user_id = User.objects.filter(username=username).first()
-        #Virificando se User existe
+        #Verificando se User existe
         if not user_id:
             return Response(status=status.HTTP_404_NOT_FOUND)
         else:
             user_id = user_id.id
 
         gastos = Gasto.objects.filter(user_id=user_id)
-        #Virificando de possui gastos
+        #Verificando de possui gastos
         if not user_id:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
@@ -59,7 +59,7 @@ class GastoApiView(APIView):
                 "pago": gasto.pago,
                 "tag": tag_j,
                 "user": user_j
-            }
+            } 
     )
 
         gastos_j = json.dumps(gastos_j, indent=4)
