@@ -47,7 +47,7 @@ class TagApiView(APIView):
             if tag_existente:
                 tag_existente = tag_existente.filter(user=user_id)
                 if tag_existente:
-                    return Response(HTTPStatus.BAD_REQUEST)
+                    return Response("EXISTE OUTRA TAG COM ESSE NOME", status=status.HTTP_400_BAD_REQUEST)
                 
             serializer = TagSerializer(data=data)                
             if serializer.is_valid():
@@ -58,7 +58,8 @@ class TagApiView(APIView):
         #pode ser form errado ou pode ser por que o user já tem essa tag
         
     @api_view(['PUT'])
-    def put_tag (request):
+    #atualizar tag está por id, é possível mudar para por nome
+    def atualizar_tag (request):
         try:
             id = request.data["id"]
             tag = Tag.objects.get(id=id)
@@ -68,7 +69,6 @@ class TagApiView(APIView):
             data = {}
             data["categoria"] = request.data["categoria"]
             data["cor"] = request.data["cor"]
-            data["user"] = request.data["user"]
             serializer = TagSerializer(tag, data=data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
