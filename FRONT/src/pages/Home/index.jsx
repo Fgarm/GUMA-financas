@@ -65,6 +65,10 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
+  window.addEventListener('unload', function(event) {
+    localStorage.removeItem('cadastro_user')
+  });
+  
 
   function handleTagsChange(newTags) {
     setTags(newTags);
@@ -79,7 +83,7 @@ export default function Home() {
       pago,
       tags
     };
-    console.log(tags)
+    console.log(JSON.stringify(tags))
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`

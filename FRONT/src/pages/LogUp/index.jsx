@@ -15,7 +15,7 @@ import axios from 'axios';
 export default function LogUp() {
 
   const navigate = useNavigate();
-  
+
   const createUserFormSchema = z.object(
     {
       username: z.string()
@@ -70,7 +70,7 @@ export default function LogUp() {
     axios.post('http://localhost:8000/auth/cadastro/', data)
     .then(response => {
       if(response.status === 200){
-        //localStorage.setItem('cadastro_user', data.username)
+        
         navigate('/', {replace: true});
       } else if(response.status === 409){
         alert('Usuário ou email já cadastrados no sistema')
