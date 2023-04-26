@@ -174,13 +174,16 @@ export default function Home() {
   }
 
   const getGastos = () => {
-    
-    console.log(JSON.stringify(username))
+    // const dados = {
+    //   user: username,
+    //   token: token,
+    // }
+    // console.log(JSON.stringify(token))
     axios({
       method: "post",
       url: "http://localhost:8000/api/gastos/obter-gasto/",
       data: {
-        user: username,
+        user: username
       },
     })
     // axios.get("http://localhost:8000/api/gastos/meus-gastos/")
