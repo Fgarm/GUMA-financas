@@ -20,50 +20,37 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
         
+
+    @api_view(['POST'])
+    def pegar_gasto_tag(request):
+        if request.method == 'POST':
+            user_id = User.objects.filter(username=request.data["user"]).first()
+            if not user_id:
+                return Response("sem user", status=HTTPStatus.BAD_REQUEST)
+            tag = Tag.objects.filter(user=user_id.id, categoria=request.data["tag"]).first()
+            if not tag:
+                return Response("sem tag", status=HTTPStatus.BAD_REQUEST)
+            gasto = Gasto.objects.filter(user=user_id.id, tag=tag)
+            serializer = GastoSerializer(gasto, context={'request': request}, many=True)
+            return Response(serializer.data, status=HTTPStatus.ACCEPTED)
+
     @api_view(['GET', 'POST'])
     def get_gasto_username(request):
-        print("parametros?:", request.query_params)
-        print("dados?:", request.data)
+        #print("parametros?:", request.query_params)
+        #print("dados?:", request.data)
         username = request.data["user"]
-        print(request.data)
         user_id = User.objects.filter(username=username).first()
         #Virificando se User existe
         if not user_id:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response("user errado", status=status.HTTP_404_NOT_FOUND)
         else:
             user_id = user_id.id
 
         gastos = Gasto.objects.filter(user_id=user_id)
         #Virificando de possui gastos
-        if not user_id:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
 
         serializer = GastoSerializer(gastos, context={'request': request}, many=True)
         return Response(serializer.data)
-
-        gastos_j = {"alunos": []}
-        for gasto in gastos:
-            data_j = str(gasto.data)
-            user_j = str(gasto.user)
-
-            #Verificando se a tag existe ou vai ser nula
-            if gasto.tag: tag_j = gasto.tag.categoria
-            else: tag_j = None
-
-            gastos_j["alunos"].append(
-            {
-                "nome": gasto.nome,
-                "valor": gasto.valor,
-                "data": data_j,
-                "pago": gasto.pago,
-                "tag": tag_j,
-                "user": user_j
-            }
-    )
-
-        gastos_j = json.dumps(gastos_j, indent=4)
-        return HttpResponse(gastos_j)
     
     @api_view(['POST'])
     def post_gastos (request): # parâmetro self removido
@@ -76,20 +63,18 @@ class GastoApiView(APIView):
 
             user_id = User.objects.filter(username=request.data["user"]).first()
             if not user_id: 
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response("user errado", status=status.HTTP_400_BAD_REQUEST)
 
             user_id = user_id.id
             data["user"] = user_id
             tag_id = Tag.objects.filter(categoria=request.data["tag"]).filter(user=data["user"]).first()
             if not tag_id:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response("n tem essa tag", status=status.HTTP_400_BAD_REQUEST)
             data["tag"] = tag_id.id
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
                 serializer.save()
-                
-                
 
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -98,17 +83,26 @@ class GastoApiView(APIView):
     @api_view(['PUT'])
     def put_gasto (request):
         try:
-            print(request.data["id"])
+            #print(request.data["id"])
             reqId = request.data["id"]
             gasto = Gasto.objects.get(id=reqId)
         except Gasto.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response("Não há gasto com esse id", status=status.HTTP_404_NOT_FOUND)
+        data = {}
+        data["nome"] = request.data["nome"]
+        data["valor"] = request.data["valor"]
+        data["data"] = request.data["data"]
+        data["pago"] = request.data["pago"]
+        tag = Tag.objects.filter(user=gasto.user, categoria=request.data["tag"]).first()
+        if tag:
+            data["tag"] = tag.id
+        
 
         if request.method == 'PUT':
-            serializer = GastoSerializer(gasto, data=request.data, context={'request': request})
+            serializer = GastoSerializer(gasto, data=data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['DELETE'])

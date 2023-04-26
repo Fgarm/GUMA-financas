@@ -1,5 +1,21 @@
 input{
+    padding: 7px;
     border: 1px solid #000;
-    padding: 5px;
     border-radius: 5px;
+    margin-right: 5px;
+    width: 300px;
+    
+}
+
+
+select{
+    margin: 0;
+    padding: 4px;
+
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-color: #fff;
+
+    width: 150px;
+    height: 40px;
 }

@@ -1,12 +1,13 @@
-venv/
-Lib/
-Include/
-Scripts/
-pyvenv.cfg
+**/venv/
+**/Include/
 **/__pycache__/
-BACK/pyvenv.cfg
-BACK/Lib/
-BACK/Scripts/
+**/pyvenv.cfg
+**/Lib/
+**/Scripts/
+**/bin/
+**/lib/
+**/lib64/
+lib64/
 BACK/GUMA_investimentos/local_settings.py
 
 # Logs
