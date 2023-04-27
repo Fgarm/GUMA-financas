@@ -44,8 +44,7 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState('');
-  const [category, setCategory] = useState([])
-
+  // const [category, setCategory] = useState([])
   const [gastos, setGastos] = useState([])
 
   const [createdTag, setCreatedTag] = useState('')
@@ -54,8 +53,6 @@ export default function Home() {
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
-
-  const [valorError, setValorError] = useState(false)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -69,42 +66,28 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  window.addEventListener("beforeunload", function(event) {
-    // Cria um objeto PerformanceNavigationTiming
+  window.addEventListener("beforeunload", function (event) {
     const perfTiming = performance.getEntriesByType("navigation")[0];
-    // Verifica o tipo de navegação
     if (perfTiming.type === "reload") {
-      // Armazena os dados de token e cadstr_user no localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("cadastro_user", username);
-      // Adiciona a chave "reloading" ao sessionStorage
       sessionStorage.setItem("reloading", "true");
     } else {
-      // Remove os dados de token e cadstr_user do localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("cadastro_user");
     }
   });
 
-  // window.addEventListener("beforeunload", function(event) {
-  //   // Verifica se a página está sendo recarregada
-  //   if (performance.navigation.type == 1) {
-  //     // Armazena os dados de token e cadstr_user no localStorage
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("cadstr_user", cadstr_user);
-  //     // Adiciona a chave "reloading" ao sessionStorage
-  //     sessionStorage.setItem("reloading", "true");
-  //   } else {
-  //     // Remove os dados de token e cadstr_user do localStorage
-  //     localStorage.removeItem("token");
-  //     localStorage.removeItem("cadstr_user");
-  //   }
-  // });
-  
-  
-
   function handleTagsChange(newTags) {
     setTags(newTags[0]);
+  }
+
+  function formatarData(data) {
+    const partesData = data.split('-');
+    const dia = partesData[2];
+    const mes = partesData[1];
+    const ano = partesData[0];
+    return `${dia}/${mes}/${ano}`;
   }
 
   const handleSubmit = () => {
@@ -196,11 +179,6 @@ export default function Home() {
   }
 
   const getGastos = () => {
-    // const dados = {
-    //   user: username,
-    //   token: token,
-    // }
-    // console.log(JSON.stringify(token))
     axios({
       method: "post",
       url: "http://localhost:8000/api/gastos/obter-gasto/",
@@ -208,10 +186,10 @@ export default function Home() {
         user: username
       },
     })
-      // axios.get("http://localhost:8000/api/gastos/meus-gastos/")
 
       .then((response) => {
         const data = response.data;
+        console.log(data)
         setGastos(data);
         setShouldRunEffect(true)
       })
@@ -220,33 +198,32 @@ export default function Home() {
       })
   }
 
-  const getTags = () => {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/tags/tag-per-user/",
-      data: {
-        user: username
-      },
-    })
-      .then((response) => {
-        console.log(JSON.stringify(response.data))
-        setCategory(data);
-        setShouldRunEffect(true)
-      })
-      .catch(error => {
-        console.log(error);
-      })
-  }
-
+  // const getTags = () => {
+  //   axios({
+  //     method: "post",
+  //     url: "http://localhost:8000/tags/tag-per-user/",
+  //     data: {
+  //       user: username
+  //     },
+  //   })
+  //     .then((response) => {
+  //       console.log(JSON.stringify(response.data))
+  //       setCategory(data);
+  //       setShouldRunEffect(true)
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }
 
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
     localStorage.removeItem('token')
     navigate('/');
   }
-  
+
   const handleCreateClick = (data) => {
-    getTags();
+    // getTags();
     onModalCreateOpen();
   }
 
@@ -273,13 +250,39 @@ export default function Home() {
   }, [searchValue, searchOption]);
 
   const searchFilter = () => {
-    data: {}
-  axios.post(`http://localhost:8000/api/gastos/meusgastos?type=${searchOption}&value=${searchValue}`)
     if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
-      axios.get("https://jsonplaceholder.typicode.com/posts/1")
+      axios({
+        method: "post",
+        url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
+        data: {
+          user: username,
+          pago: searchValue
+        },
+      })
         .then((response) => {
-          const data = response.data;
-          setGastos([data]);
+          console.log(response.data)
+          if (response.status == 200) {
+            const data = response.data;
+            setGastos(data);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    } else if (searchOption == 'tags') {
+      axios({
+        method: "post",
+        url: "http://localhost:8000/api/gastos/gastos-per-tag/",
+        data: {
+          user: username,
+          tag: searchValue
+        },
+      })
+        .then((response) => {
+          if (response.statusCode == 200) {
+            const data = response.data;
+            setGastos(data);
+          }
         })
         .catch(error => {
           console.log(error);
@@ -299,33 +302,33 @@ export default function Home() {
     setSearchValue(data)
   }
 
-  function handleCreateTag(){
+  function handleCreateTag() {
 
     const categoria = createdTag
     const cor = 'dad8d8'
     const user = localStorage.getItem('cadastro_user')
-    const newTag = {categoria, cor, user}
+    const newTag = { categoria, cor, user }
     const tag = newTag
     axios.post('http://localhost:8000/tags/criar-tag/', tag, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(response => {
+        console.log()
+        if (response.status == 201) {
+          console.log('Dados enviados com sucesso:', response.dados);
+          setCreatedTag('')
+          onModalTagClose()
+          setFlag(flag => flag + 1);
+        } else if (response.status == 400){
+          alert("Tag já existente")
         }
       })
-        // axios.post('http://localhost:8000/tags/criar-tag/', tags, {
-        .then(response => {
-          if (response.status == 201) {
-            console.log('Dados enviados com sucesso:', response.dados);
-            setCreatedTag('')
-            onModalTagClose()
-            setFlag(flag => flag + 1);
-          } else if (response.status == 400) {
-            alert("Valores inválidos")
-          }
-        })
-        .catch(error => {
-          console.error('Erro ao enviar dados:', error);
-        });
-}
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+  }
 
 
   return (
@@ -345,10 +348,10 @@ export default function Home() {
 
       <div>
         <Modal
-        isOpen={isModalTagOpen}
-        onClose={onModalTagClose}
+          isOpen={isModalTagOpen}
+          onClose={onModalTagClose}
         >
-        <ModalOverlay />
+          <ModalOverlay />
           <ModalContent>
             <ModalHeader mb={0} className='modal_header'>Criando Tag</ModalHeader>
             <ModalBody>
@@ -363,7 +366,7 @@ export default function Home() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}> 
+              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}>
                 Criar
               </Button>
               <Button onClick={onModalTagClose}>Cancelar</Button>
@@ -541,7 +544,7 @@ export default function Home() {
       <div className="gasto">
         {gastos.length === 0 ? <p></p> : (
           gastos.map((gasto, key) => (
-            <div className="gasto_information">
+            <div key={gasto.id} className="gasto_information">
               <div className='header'>
                 <h1>
                   {gasto.nome}
@@ -552,15 +555,14 @@ export default function Home() {
                 </div>
               </div>
               <h2>
-                {gasto.valor}
+                R$ {gasto.valor}
               </h2>
               <h2>
-                {gasto.data}
+                {formatarData(gasto.data)}
               </h2>
               <h2>
               </h2>
-              {gasto.pago > 0 ? <h2>Pago</h2> : <h2>Não Pago</h2>}
-              {gasto.tag}
+              {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
 
             </div>
           ))

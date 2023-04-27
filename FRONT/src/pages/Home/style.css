@@ -4,7 +4,7 @@ header.home {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: aqua;
+    background-color: teal;
     width: 100%;
 }
 
@@ -23,7 +23,7 @@ header.home {
 }
 
 .modal_header {
-    background-color: aqua;
+    background-color: teal;
 }
 
 .tags-input-container {
@@ -65,15 +65,14 @@ header.home {
     outline: none;
 }
 
-.create-tag{
+.create-tag {
     margin-top: 5px;
 }
 
-.create-tag input{
+.create-tag input {
     border: 1px solid gray;
     outline: none;
 }
-
 
 span.error-message {
     color: red;
@@ -110,4 +109,27 @@ h2.green {
 
 h2.red {
     color: red;
+}
+
+.gasto_information h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.gasto_information h2 {
+    font-size: 18px;
+    margin-bottom: px;
+}
+
+.gasto_information .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.gasto_information .header div {
+    display: flex;
+    align-items: center;
 }
