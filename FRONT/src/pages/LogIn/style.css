@@ -1,29 +1,26 @@
-form{
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  
-  justify-content: center;
-  align-items: center;
-    
-  height: 100vh;
+form {
+    gap: 20px;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
-  
-label{
-  font-weight: bold;
+
+label {
+    font-weight: bold;
 }
-  
-  
-span.error{
-  display: block;
-  color: red;
-  font-size: 12px;
+
+span.error {
+    color: red;
+    display: block;
+    font-size: 12px;
 }
-  
+
 @media (max-width: 768px) {
-  form {
-    height: auto;
-    width: 100%;
-    padding: 20px;
-  }
+    form {
+        height: auto;
+        width: 100%;
+        padding: 20px;
+    }
 }

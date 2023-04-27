@@ -1,33 +1,31 @@
-p.logup{
-  font-weight: bold;
+p.logup {
+    font-weight: bold;
 }
 
-img.logo{
-  background-color: #fff;
-  width: 20px;
-  height: 20px;
+img.logo {
+    background-color: #fff;
+    width: 20px;
+    height: 20px;
 }
 
-form{
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-
-  justify-content: center;
-  align-items: center;
-
+form {
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-span.error{
-  display: block;
-  color: red;
-  font-size: 12px;
+span.error {
+    display: block;
+    color: red;
+    font-size: 12px;
 }
 
 @media (max-width: 768px) {
-  form {
-    height: auto;
-    width: 100%;
-    padding: 20px;
-  }
+    form {
+        height: auto;
+        width: 100%;
+        padding: 20px;
+    }
 }

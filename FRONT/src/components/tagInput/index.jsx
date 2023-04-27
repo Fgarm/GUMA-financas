@@ -1,5 +1,4 @@
-import { useState, useCallback } from "react";
-import { Button } from "@chakra-ui/react";
+import { useState } from "react";
 
 export default function TagsInput(props) {
 
@@ -10,7 +9,6 @@ export default function TagsInput(props) {
     const cor = 'dad8d8' 
 
     function handleChange(e) {
-        //if(e.key !== 'Enter') return
         const value = e.target.value
         if(!value.trim()) return
         if (tags.some(tag => tag.categoria === value)) {
