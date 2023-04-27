@@ -124,3 +124,46 @@ class GastoApiView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
 
+    @api_view(['GET', 'POST'])
+    def get_gasto_filter_pago(request):
+
+        # print("parametros: ", request.query_params)
+        # print("dados: ", request.data)
+        # print(request.data)
+
+        # obtendo o user selecionado
+        username = request.data["user"]
+        user_id = User.objects.filter(username=username).first()
+
+        # verificando se o user selecionado existe
+        if not user_id:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+
+        # Obtendo todos os gastos do usuario selecionado
+        user_id = user_id.id
+        gastos = Gasto.objects.filter(user_id=user_id)
+
+        # verificando se o user tem algum gasto
+        if not gastos:
+            return Response("Nenhum gasto encontrado", status=status.HTTP_404_NOT_FOUND)
+        
+        # verificando qual é o filtro desejado (pago ou não pago)
+        if request.data["pago"]:
+            gastos_pagos = gastos.filter(pago=True)
+
+            # verificando se existe algum gasto pago no resultado da consulta
+            if not gastos_pagos:
+                return Response("Nenhum gasto 'pago' encontrado", status=status.HTTP_404_NOT_FOUND)
+
+            serializer = GastoSerializer(gastos_pagos, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        elif request.data["pago"] == False:
+            gastos_nao_pagos = gastos.filter(pago=False)
+
+            # verificando se existe algum gasto não pago no resultado da consulta
+            if not gastos_nao_pagos:
+                return Response("Nenhum gasto 'não pago' encontrado", status=status.HTTP_404_NOT_FOUND)
+
+            serializer = GastoSerializer(gastos_nao_pagos, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
