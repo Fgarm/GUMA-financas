@@ -5,8 +5,8 @@ Aplicação web desenvolvida conjuntamente nas disciplinas de Projeto Integrador
 </p>
 <br>
 
-### :green_circle: Como executar o Back-end
-<br>
+## Como executar o Back-end
+
 
 ### Crie um Ambiente Virtual
 
@@ -72,7 +72,7 @@ make migrate
 make runserver
 ```
 
-<br><br>
+<br>
 
 ### :mortar_board: Autores
 
