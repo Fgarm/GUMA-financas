@@ -43,9 +43,12 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState();
+  const [tags, setTags] = useState('');
+  const [category, setCategory] = useState([])
 
   const [gastos, setGastos] = useState([])
+
+  const [createdTag, setCreatedTag] = useState('')
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
@@ -57,6 +60,7 @@ export default function Home() {
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
+  const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
@@ -65,25 +69,54 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  window.addEventListener('unload', function(event) {
-    localStorage.removeItem('cadastro_user')
+  window.addEventListener("beforeunload", function(event) {
+    // Cria um objeto PerformanceNavigationTiming
+    const perfTiming = performance.getEntriesByType("navigation")[0];
+    // Verifica o tipo de navegação
+    if (perfTiming.type === "reload") {
+      // Armazena os dados de token e cadstr_user no localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("cadastro_user", username);
+      // Adiciona a chave "reloading" ao sessionStorage
+      sessionStorage.setItem("reloading", "true");
+    } else {
+      // Remove os dados de token e cadstr_user do localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("cadastro_user");
+    }
   });
+
+  // window.addEventListener("beforeunload", function(event) {
+  //   // Verifica se a página está sendo recarregada
+  //   if (performance.navigation.type == 1) {
+  //     // Armazena os dados de token e cadstr_user no localStorage
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("cadstr_user", cadstr_user);
+  //     // Adiciona a chave "reloading" ao sessionStorage
+  //     sessionStorage.setItem("reloading", "true");
+  //   } else {
+  //     // Remove os dados de token e cadstr_user do localStorage
+  //     localStorage.removeItem("token");
+  //     localStorage.removeItem("cadstr_user");
+  //   }
+  // });
+  
   
 
   function handleTagsChange(newTags) {
-    setTags(newTags);
+    setTags(newTags[0]);
   }
 
   const handleSubmit = () => {
     const dados = {
-      username,
+      user: username,
       nome,
       valor,
       data,
       pago,
-      tags
+      tag: tags.categoria
     };
-    console.log(JSON.stringify(tags))
+    console.log(JSON.stringify(dados))
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -103,24 +136,6 @@ export default function Home() {
         console.error('Erro ao enviar dados:', error);
       });
 
-    // /* TAGS */
-    // axios.post('http://localhost:8000/api/tags/criar-tag/', tags, {
-    //   headers: {
-    //     'Authorization': `Bearer ${token}`
-    //   }
-    // })    
-    //   .then(response => {
-    //     if(response.status == 201){
-    //       console.log('Dados enviados com sucesso:', response.dados);
-    //       onModalCreateClose();
-    //       setFlag(flag => flag + 1);
-    //     } else if(response.status == 400){
-    //       alert("Valores inválidos")
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.error('Erro ao enviar dados:', error);
-    //   });
   }
 
   const handleEdit = () => {
@@ -130,16 +145,19 @@ export default function Home() {
       valor,
       data,
       pago,
+      tag: tags.categoria
     };
 
     console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
+      user: username,
       id: id,
       nome: nome,
       valor: valor,
       data: data,
-      pago: pago
+      pago: pago,
+      tag: tags.categoria
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -190,8 +208,8 @@ export default function Home() {
         user: username
       },
     })
-    // axios.get("http://localhost:8000/api/gastos/meus-gastos/")
-    
+      // axios.get("http://localhost:8000/api/gastos/meus-gastos/")
+
       .then((response) => {
         const data = response.data;
         setGastos(data);
@@ -202,9 +220,34 @@ export default function Home() {
       })
   }
 
+  const getTags = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/tags/tag-per-user/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => {
+        console.log(JSON.stringify(response.data))
+        setCategory(data);
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
+    localStorage.removeItem('token')
     navigate('/');
+  }
+  
+  const handleCreateClick = (data) => {
+    getTags();
+    onModalCreateOpen();
   }
 
   const handleDeleteClick = (data) => {
@@ -230,7 +273,8 @@ export default function Home() {
   }, [searchValue, searchOption]);
 
   const searchFilter = () => {
-    //axios.get(`http://localhost:8000/api/gastos/meusgastos?type=${searchOption}&value=${searchValue}`)
+    data: {}
+  axios.post(`http://localhost:8000/api/gastos/meusgastos?type=${searchOption}&value=${searchValue}`)
     if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
       axios.get("https://jsonplaceholder.typicode.com/posts/1")
         .then((response) => {
@@ -255,6 +299,34 @@ export default function Home() {
     setSearchValue(data)
   }
 
+  function handleCreateTag(){
+
+    const categoria = createdTag
+    const cor = 'dad8d8'
+    const user = localStorage.getItem('cadastro_user')
+    const newTag = {categoria, cor, user}
+    const tag = newTag
+    axios.post('http://localhost:8000/tags/criar-tag/', tag, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        // axios.post('http://localhost:8000/tags/criar-tag/', tags, {
+        .then(response => {
+          if (response.status == 201) {
+            console.log('Dados enviados com sucesso:', response.dados);
+            setCreatedTag('')
+            onModalTagClose()
+            setFlag(flag => flag + 1);
+          } else if (response.status == 400) {
+            alert("Valores inválidos")
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao enviar dados:', error);
+        });
+}
+
 
   return (
 
@@ -266,10 +338,39 @@ export default function Home() {
         </div>
         <div className="bt-sb">
           <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
-          <Button pr='10px' onClick={onModalCreateOpen}>Adicionar Gasto</Button>
+          <Button pr='10px' onClick={onModalTagOpen}>Adicionar Tag</Button>
+          <Button pr='10px' onClick={handleCreateClick}>Adicionar Gasto</Button>
         </div>
       </header>
 
+      <div>
+        <Modal
+        isOpen={isModalTagOpen}
+        onClose={onModalTagClose}
+        >
+        <ModalOverlay />
+          <ModalContent>
+            <ModalHeader mb={0} className='modal_header'>Criando Tag</ModalHeader>
+            <ModalBody>
+              <FormControl mt={4}>
+                <label>Categoria</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setCreatedTag(e.target.value)
+                }} />
+
+              </FormControl>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}> 
+                Criar
+              </Button>
+              <Button onClick={onModalTagClose}>Cancelar</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </div>
       <div>
         <Modal
           initialFocusRef={initialRef}
@@ -294,18 +395,9 @@ export default function Home() {
                 <label >Valor</label>
                 <br></br>
                 <Input onChange={(e) => {
-                  const regex = /^[0-9]+(.[0-9]{1,2})?$/;
-                  if (regex.test(e.target.value)) {
-                    setValor(e.target.value);
-                  } else {
-                    setValorError(true)
-                  }
+                  setValor(e.target.value);
                 }} />
               </FormControl>
-
-              {valorError && (
-                <span className="error-message">Digite apenas valores decimais</span>
-              )}
 
               <FormControl mt={4}>
                 <label >Data</label>
@@ -465,7 +557,10 @@ export default function Home() {
               <h2>
                 {gasto.data}
               </h2>
+              <h2>
+              </h2>
               {gasto.pago > 0 ? <h2>Pago</h2> : <h2>Não Pago</h2>}
+              {gasto.tag}
 
             </div>
           ))

@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@chakra-ui/react";
 
 export default function TagsInput(props) {
 
     const [tags, setTags] =  useState([])
     const [showError, setShowError] = useState(false);
-    const [createdTag, setCreatedTag] = useState('')
 
     const user = props.user
-    const cor = '#dad8d8'
+    const cor = 'dad8d8' 
 
     function handleChange(e) {
         //if(e.key !== 'Enter') return
@@ -24,7 +23,7 @@ export default function TagsInput(props) {
         const newTag = {categoria, cor, user}
 
         const newTags = [...tags, newTag];
-        if (tags.length == 4) {
+        if (tags.length == 1) {
             e.target.value = '';
             setShowError(true)
             console.log(tags)
@@ -39,30 +38,6 @@ export default function TagsInput(props) {
         const newTags = tags.filter((el, i) => i !== index);
         setTags(newTags);
         props.onTagsChange(newTags);
-    }
-
-    function handleCreateTag(){
-
-        if(!createdTag.trim()) return
-        if (tags.some(tag => tag.categoria === createdTag)) {
-            setCreatedTag('');
-            return;
-        }
-    
-        const categoria = createdTag
-
-        const newTag = {categoria, cor, user}
-
-        const newTags = [...tags, newTag];
-        if (tags.length == 4) {
-            setCreatedTag('')
-            setShowError(true)
-            console.log(tags)
-            return
-        }
-        setTags(newTags);
-        props.onTagsChange(newTags);
-        setCreatedTag('')
     }
 
     return(
@@ -84,22 +59,10 @@ export default function TagsInput(props) {
                 <option value="internet">Internet</option>
                 <option value="lazer">Lazer</option>
             </select>
-            
-            {/* <input type="text" 
-            className="tags-input" 
-            placeholder="Digite o tipo de gasto (mercado, carro, ...)" 
-        onKeyDown={handleKeyDown}/> */}
 
             {showError && (
-                <span className="error-message">Limite de 4 tags atingido.</span>
+                <span className="error-message">Limite de 1 tag atingido.</span>
             )}
-        </div>
-
-        <div className="create-tag">
-            <input type="text" placeholder="Digite uma nova tag" value={createdTag} onChange={(e) => {
-                setCreatedTag(e.target.value);
-            }}/>
-            <Button size='xs' colorScheme="blue" mt={2} onClick={handleCreateTag}>Adicionar Tags</Button>
         </div>
 
     </div>
