@@ -10,9 +10,9 @@ from http import HTTPStatus
 from django.http import HttpRequest
 
 class TagApiView(APIView):
-    @api_view(['GET'])
+    @api_view(['POST'])
     def get_tags_user (request): #pega as tags de um usuário e devolve elas
-        if request.method == 'GET':
+        if request.method == 'POST':
             user_id = User.objects.filter(username=request.data["user"]).first()
             if not user_id:
                 return Response(HTTPStatus.BAD_REQUEST)
@@ -22,9 +22,9 @@ class TagApiView(APIView):
         
 
         
-    @api_view(['GET'])
+    @api_view(['POST'])
     def get_tag_id (request): #pega as tags com um id e devolve ela
-        if request.method == 'GET':
+        if request.method == 'POST':
             tags = Tag.objects.get(id=request.data["id"])
             serializer = TagSerializer(tags, context={'request': request}, many=False)
             return Response(serializer.data)

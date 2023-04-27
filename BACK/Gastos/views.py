@@ -60,6 +60,7 @@ class GastoApiView(APIView):
             data["valor"] = request.data["valor"]
             data["data"] = request.data["data"]
             data["pago"] = request.data["pago"]
+            print("0:  ", data)
 
             user_id = User.objects.filter(username=request.data["user"]).first()
             if not user_id: 
@@ -67,10 +68,14 @@ class GastoApiView(APIView):
 
             user_id = user_id.id
             data["user"] = user_id
-            tag_id = Tag.objects.filter(categoria=request.data["tag"]).filter(user=data["user"]).first()
-            if not tag_id:
-                return Response("n tem essa tag", status=status.HTTP_400_BAD_REQUEST)
-            data["tag"] = tag_id.id
+            try:
+                tag_id = Tag.objects.filter(categoria=request.data["tag"]).filter(user=data["user"]).first()
+                if tag_id:
+                    data["tag"] = tag_id.id
+            except KeyError:
+                pass
+                #return Response("n tem essa tag", status=status.HTTP_400_BAD_REQUEST)
+            print("1:  ",data)
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
