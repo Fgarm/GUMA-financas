@@ -43,9 +43,15 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState([]);
   // const [category, setCategory] = useState([])
   const [gastos, setGastos] = useState([])
+  const [editGastos, setEditGastos] = useState()
+  const [editNome, setEditNome] = useState('')
+  const [editValor, setEditValor] = useState(0)
+  const [editData, setEditData] = useState('')
+  const [editStatus, setEditStatus] = useState(false)
+  const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
 
@@ -79,7 +85,8 @@ export default function Home() {
   });
 
   function handleTagsChange(newTags) {
-    setTags(newTags[0]);
+    setTags(newTags);
+    console.log(tags)
   }
 
   function formatarData(data) {
@@ -99,7 +106,7 @@ export default function Home() {
       pago,
       tag: tags.categoria
     };
-    console.log(JSON.stringify(dados))
+    // console.log(JSON.stringify(dados))
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -107,7 +114,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
         } else {
           alert('Erro de dados submetidos')
           return
@@ -122,16 +129,6 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-    const dados = {
-      id,
-      nome,
-      valor,
-      data,
-      pago,
-      tag: tags.categoria
-    };
-
-    console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
@@ -148,7 +145,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
-          console.log('Dados editados com sucesso:', response.dados);
+          // console.log('Dados editados com sucesso:', response.dados);
           onModalEditClose();
           setFlag(flag => flag + 1);
         } else {
@@ -189,7 +186,7 @@ export default function Home() {
 
       .then((response) => {
         const data = response.data;
-        console.log(data)
+        // console.log(data);
         setGastos(data);
         setShouldRunEffect(true)
       })
@@ -198,23 +195,23 @@ export default function Home() {
       })
   }
 
-  // const getTags = () => {
-  //   axios({
-  //     method: "post",
-  //     url: "http://localhost:8000/tags/tag-per-user/",
-  //     data: {
-  //       user: username
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log(JSON.stringify(response.data))
-  //       setCategory(data);
-  //       setShouldRunEffect(true)
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
+  const getTags = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/tags/tag-per-user/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => { 
+        setTags(response.data);
+        console.log(tags)
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
 
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
@@ -223,7 +220,7 @@ export default function Home() {
   }
 
   const handleCreateClick = (data) => {
-    // getTags();
+    getTags();
     onModalCreateOpen();
   }
 
@@ -233,7 +230,19 @@ export default function Home() {
   }
 
   const handleEditClick = (data) => {
-    setId(data);
+    getTags()
+    setId(data.id);
+    setEditNome(data.nome)
+    setEditValor(data.valor)
+    setEditData(data.data)
+    if(data.pago == true){
+      setEditStatus('pago')
+    } else if(data.pago == false){
+      setEditStatus('nao-pago')
+    }
+    // console.log(data.tag)
+    // let editedTags=data.tag.categoria
+    // setEditTags(editTags.toLowerCase())
     onModalEditOpen();
   }
 
@@ -260,7 +269,7 @@ export default function Home() {
         },
       })
         .then((response) => {
-          console.log(response.data)
+          //console.log(response.data)
           if (response.status == 200) {
             const data = response.data;
             setGastos(data);
@@ -293,12 +302,12 @@ export default function Home() {
 
 
   function handleSearchType(type) {
-    console.log(type)
+    //console.log(type)
     setSearchOption(type)
   }
 
   function handleSearch(data) {
-    console.log(data)
+    //console.log(data)
     setSearchValue(data)
   }
 
@@ -315,9 +324,9 @@ export default function Home() {
       }
     })
       .then(response => {
-        console.log()
+        
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
           setCreatedTag('')
           onModalTagClose()
           setFlag(flag => flag + 1);
@@ -340,9 +349,20 @@ export default function Home() {
           <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
-          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
-          <Button pr='10px' onClick={onModalTagOpen}>Adicionar Tag</Button>
-          <Button pr='10px' onClick={handleCreateClick}>Adicionar Gasto</Button>
+          <SearchBar 
+            setValueSearch={handleSearch} 
+            setSearchType={handleSearchType} 
+          />
+          <Button 
+            pr='10px' 
+            onClick={onModalTagOpen}>
+            Adicionar Tag
+          </Button>
+          <Button 
+            pr='10px' 
+            onClick={handleCreateClick}>
+            Adicionar Gasto
+            </Button>
         </div>
       </header>
 
@@ -353,7 +373,13 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Tag</ModalHeader>
+
+            <ModalHeader
+              mb={0} 
+              className='modal_header'>
+              Criando Tag
+            </ModalHeader>
+
             <ModalBody>
               <FormControl mt={4}>
                 <label>Categoria</label>
@@ -366,7 +392,10 @@ export default function Home() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}>
+              <Button 
+                colorScheme='blue' 
+                mr={3} 
+                onClick={handleCreateTag}>
                 Criar
               </Button>
               <Button onClick={onModalTagClose}>Cancelar</Button>
@@ -383,7 +412,11 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Gasto</ModalHeader>
+            <ModalHeader 
+              mb={0} 
+              className='modal_header'>
+              Criando Gasto
+            </ModalHeader>
             <ModalBody>
 
               <FormControl mt={4}>
@@ -405,7 +438,9 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Data</label>
                 <br></br>
-                <Input type="date" onChange={(e) =>
+                <Input 
+                  type="date"
+                  onChange={(e) =>
                   setSelectedDate(e.target.value)
                 } />
               </FormControl>
@@ -413,7 +448,9 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Status</label>
                 <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
+                <Select
+                 placeholder='Selecione uma opção' 
+                 onChange={(e) => {
                   if (e.target.value == 'pago') {
                     setPago(true)
                   } else if (e.target.value == 'nao-pago') {
@@ -428,12 +465,19 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
+                <TagsInput
+                  tags={tags} 
+                  defaultValue={editTags}
+                  onTagsChange={handleTagsChange} 
+                  user={username} />
               </FormControl>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+              <Button 
+                colorScheme='blue' 
+                mr={3} 
+                onClick={handleSubmit}>
                 Criar
               </Button>
               <Button onClick={onModalCreateClose}>Cancelar</Button>
@@ -451,21 +495,29 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Editando Gasto</ModalHeader>
+            <ModalHeader 
+              mb={0} 
+              className='modal_header'>
+              Editando Gasto
+            </ModalHeader>
             <ModalBody>
 
               <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
-                <Input onChange={(e) => {
-                  setNome(e.target.value)
-                }} />
+                <Input 
+                  defaultValue={editNome}
+                  onChange={(e) => {
+                    setNome(e.target.value)
+                  }} />
               </FormControl>
 
               <FormControl mt={4}>
                 <label >Valor</label>
                 <br></br>
-                <Input onChange={(e) => {
+                <Input 
+                  defaultValue={editValor}
+                  onChange={(e) => {
                   setValor(e.target.value)
 
                 }} />
@@ -474,7 +526,10 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Data</label>
                 <br></br>
-                <Input type="date" onChange={(e) =>
+                <Input 
+                  defaultValue={editData}
+                  type="date" 
+                  onChange={(e) =>
                   setSelectedDate(e.target.value)
                 } />
               </FormControl>
@@ -482,7 +537,9 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Status</label>
                 <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
+                <Select
+                  defaultValue={editStatus}
+                 placeholder='Selecione uma opção' onChange={(e) => {
                   if (e.target.value == 'pago') {
                     setPago(true)
                   } else if (e.target.value == 'nao-pago') {
@@ -497,12 +554,20 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
+                <TagsInput 
+                  tags={tags} 
+                  defaultValue={editTags}
+                  onTagsChange={handleTagsChange} 
+                  user={username} 
+                />
               </FormControl>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleEdit}>
+              <Button 
+                colorScheme='blue'
+                mr={3} 
+                onClick={handleEdit}>
                 Salvar
               </Button>
               <Button onClick={onModalEditClose}>Cancelar</Button>
@@ -519,7 +584,9 @@ export default function Home() {
         >
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              <AlertDialogHeader 
+                fontSize='lg' 
+                fontWeight='bold'>
                 Deletar Gastos
               </AlertDialogHeader>
 
@@ -550,8 +617,20 @@ export default function Home() {
                   {gasto.nome}
                 </h1>
                 <div>
-                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto.id)} />
-                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                  <Icon 
+                    as={MdOutlineModeEditOutline} 
+                    w={5} 
+                    h={5} 
+                    mr={2} 
+                    onClick={() => handleEditClick(gasto)} 
+                  />
+                  <Icon 
+                    as={MdDelete} 
+                    color='red.500' 
+                    w={5} 
+                    h={5} 
+                    onClick={() => handleDeleteClick(gasto.id)} 
+                  />
                 </div>
               </div>
               <h2>
@@ -563,6 +642,9 @@ export default function Home() {
               <h2>
               </h2>
               {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
+              <h2>
+              {gasto.tag}
+              </h2>
 
             </div>
           ))
