@@ -1,0 +1,55 @@
+from uuid import uuid4
+from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings
+
+def upload_image_book(instance, filename):
+    return f"{instance.grupo_id}-{filename}"
+
+
+class Grupo(models.Model):
+    grupo_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    nome = models.CharField(max_length=255)
+    descricao= models.TextField(blank=True)
+    image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
+
+    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user")
+
+    class Meta:
+        verbose_name = "Grupo"
+        verbose_name_plural = "Grupos"
+    
+
+class Gastos_Grupo(models.Model):
+    grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    valor_total = models.DecimalField(max_digits=19, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Gasto_grupo"
+        verbose_name_plural = "Gastos_grupos"
+
+class Itens(models.Model):
+    item_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    preco = models.DecimalField(max_digits=19, decimal_places=2)
+
+    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_itens", through="Iten_User")
+
+    class Meta:
+        verbose_name = "Item"
+        verbose_name_plural = "Itens"
+
+class Iten_User(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item = models.ForeignKey(Itens, on_delete=models.CASCADE)
+    peso = models.DecimalField(max_digits=15, decimal_places=9)
+
+    class Meta:
+        verbose_name = "Item_Usuario"
+        verbose_name_plural = "Itens_Usuarios"
+
+
+
+
+    
+
+
