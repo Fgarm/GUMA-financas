@@ -92,12 +92,12 @@ export default function Home() {
 
   const handleSubmit = () => {
     const dados = {
-      user: username,
       nome,
       valor,
       data,
       pago,
-      tag: tags.categoria
+      tag: tags.categoria,
+      user: username
     };
     console.log(JSON.stringify(dados))
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
@@ -121,7 +121,7 @@ export default function Home() {
 
   }
 
-  const handleEdit = () => {
+  const handleEdit = () => {  // não envia o user?
     const dados = {
       id,
       nome,
@@ -134,7 +134,7 @@ export default function Home() {
     console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
-      user: username,
+      user: username,   // trocar ordem
       id: id,
       nome: nome,
       valor: valor,
