@@ -19,7 +19,7 @@ class GastoApiView(APIView):
             gastos = Gasto.objects.all()
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
-        
+
 
     @api_view(['POST'])
     def pegar_gasto_tag(request):
@@ -38,6 +38,7 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(gasto, context={'request': request}, many=True)
             return Response(serializer.data, status=HTTPStatus.ACCEPTED)
 
+
     @api_view(['GET', 'POST'])
     def get_gasto_username(request):
         #print("parametros?:", request.query_params)
@@ -53,10 +54,13 @@ class GastoApiView(APIView):
 
         serializer = GastoSerializer(gastos, context={'request': request}, many=True)
         return Response(serializer.data)
-    
+
+
     @api_view(['POST'])
-    def post_gastos (request): # parâmetro self removido
+    def post_gastos (request):
+        
         if request.method == 'POST':
+        
             data = {}
             data["nome"] = request.data["nome"]
             data["valor"] = request.data["valor"]
@@ -89,19 +93,23 @@ class GastoApiView(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+
     @api_view(['PUT'])
     def put_gasto (request):
+
         try:
             gasto = Gasto.objects.get(id=request.data["id"])
         except Gasto.DoesNotExist:
             return Response("Não há gasto com esse id", status=status.HTTP_404_NOT_FOUND)
+        
         data = {}
         data["nome"] = request.data["nome"]
         data["valor"] = request.data["valor"]
         data["data"] = request.data["data"]
         data["pago"] = request.data["pago"]
         data["tag"] = gasto.tag
+        
         if "tag" in request.data:
             try:
                 if request.data["tag"] == "":
@@ -124,6 +132,7 @@ class GastoApiView(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     @api_view(['DELETE'])
     def delete_gasto (request):
