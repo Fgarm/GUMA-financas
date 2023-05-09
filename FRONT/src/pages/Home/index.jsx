@@ -84,9 +84,8 @@ export default function Home() {
     }
   });
 
-  function handleTagsChange(newTags) {
-    setTags(newTags);
-    console.log(tags)
+  function handleTagsChange(newTag) { 
+    setTags(newTag);
   }
 
   function formatarData(data) {
@@ -98,15 +97,18 @@ export default function Home() {
   }
 
   const handleSubmit = () => {
+
+    const tag_submit = tags.pop();
+    
     const dados = {
       user: username,
       nome,
       valor,
       data,
       pago,
-      tag: tags.categoria
+      tag: tag_submit.categoria
     };
-    // console.log(JSON.stringify(dados))
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -130,6 +132,9 @@ export default function Home() {
 
   const handleEdit = () => {
 
+    const tag_edit = tags.pop();
+    console.log(tag_edit)
+
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -138,6 +143,7 @@ export default function Home() {
       data: data,
       pago: pago,
       tag: tags.categoria
+      // tag: tag_edit.categoria
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -145,8 +151,11 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
-          // console.log('Dados editados com sucesso:', response.dados);
           onModalEditClose();
+          setEditNome('');
+          setEditValor(0);
+          setEditData('');
+          setEditStatus(false);
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
@@ -518,8 +527,8 @@ export default function Home() {
                 <Input 
                   defaultValue={editValor}
                   onChange={(e) => {
+                  setEditValor(e.target.value)
                   setValor(e.target.value)
-
                 }} />
               </FormControl>
 
