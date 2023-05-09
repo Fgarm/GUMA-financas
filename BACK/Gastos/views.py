@@ -13,9 +13,8 @@ from django.http import HttpResponse
 
 class GastoApiView(APIView):
     @api_view(['GET'])
-    def get_gastos (request): # parâmetro self removido
+    def get_gastos (request):
         if request.method == 'GET':
-            # onde o username == request.user (mas talvez seja um post tbm)
             gastos = Gasto.objects.all()
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
@@ -23,26 +22,29 @@ class GastoApiView(APIView):
 
     @api_view(['POST'])
     def pegar_gasto_tag(request):
+        
         if request.method == 'POST':
             try:
                 user = User.objects.get(username=request.data["user"])
             except User.DoesNotExist:
                 return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+            
             try:
                 tag = Tag.objects.get(user=user.username, categoria=request.data["tag"])
             except Tag.DoesNotExist:
                 return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
+            
             gasto = Gasto.objects.filter(user=user.username, tag=tag.categoria)
             serializer = GastoSerializer(gasto, context={'request': request}, many=True)
+            
             return Response(serializer.data, status=HTTPStatus.ACCEPTED)
 
 
     @api_view(['GET', 'POST'])
     def get_gasto_username(request):
-        #print("parametros?:", request.query_params)
-        #print("dados?:", request.data)
+        
         try:
             user = User.objects.get(username=request.data["user"])
         except User.DoesNotExist:
@@ -81,7 +83,7 @@ class GastoApiView(APIView):
                     data["tag"] = tag.categoria
                 except Tag.DoesNotExist:
                     #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
-                    #TODO: descomentar esse code depois da apresentação do Hubner
+                    # ToDo: descomentar esse code depois da apresentação do Hubner
                     pass
                 except Tag.MultipleObjectsReturned:
                     return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
@@ -109,16 +111,29 @@ class GastoApiView(APIView):
         data["data"] = request.data["data"]
         data["pago"] = request.data["pago"]
         data["tag"] = gasto.tag
-        
+
+        print("\nrequest.data antes if: ", request.data)
+        print("\ntag em request: ", request.data["tag"])
+
         if "tag" in request.data:
             try:
                 if request.data["tag"] == "":
+
+                    print("\nCAIU AQUI 1\n")
                     data["tag"] = None
+
                 elif request.data["tag"] is None:
+
+                    print("\nCAIU AQUI 2\n")
                     data["tag"] = None
+
                 else:
-                    tag = Tag.objects.get(categoria=request.data["tag"], user=gasto.user)
+                    print("\nDEU BAO CARAI\n")
+                    tag = Tag.objects.get(categoria=request.data["tag"], user=gasto.user) # mas esta linha "não executa"
+                    print("tag: ", tag)
+                    print("tag.categoria: ", tag.categoria)
                     data["tag"] = tag.categoria
+
             except Tag.DoesNotExist:
                 #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
                 #TODO: descomentar esse code depois da apresentação do Hubner
@@ -126,8 +141,12 @@ class GastoApiView(APIView):
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
 
+        print("request: ", request.data)
+        print("data: ", data)
+        
         if request.method == 'PUT':
             serializer = GastoSerializer(gasto, data=data, context={'request': request})
+            print("serializer: ", serializer.initial_data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
@@ -148,10 +167,6 @@ class GastoApiView(APIView):
 
     @api_view(['GET', 'POST'])
     def get_gasto_filter_pago(request):
-
-        # print("parametros: ", request.query_params)
-        # print("dados: ", request.data)
-        # print(request.data)
 
         # obtendo o user selecionado
         try:
