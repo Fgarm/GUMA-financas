@@ -45,12 +45,10 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
-  // const [category, setCategory] = useState([])
+
+  const [tagsList, setTagsList] = useState({})
+
   const [gastos, setGastos] = useState([])
-  const [editGastos, setEditGastos] = useState()
-  const [editNome, setEditNome] = useState('')
-  const [editValor, setEditValor] = useState(0)
-  const [editData, setEditData] = useState('')
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
 
@@ -86,12 +84,12 @@ export default function Home() {
   });
 
   function handleTagsChange(newTag) { 
-    setTags(newTag);
+    setTagsList(newTag);
   }
 
   const handleSubmit = () => {
 
-    const tag_submit = tags.pop();
+    const tag_submit = tagsList;
     
     const dados = {
       user: username,
@@ -125,17 +123,7 @@ export default function Home() {
 
   const handleEdit = () => {
 
-    const tag_edit = tags.pop();
-    console.log(tag_edit)
-
-    const dados = {
-      username,
-      id,
-      nome,
-      valor,
-      data,
-      pago,
-    }
+    const tag_edit = tagsList;
     
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
@@ -144,7 +132,6 @@ export default function Home() {
       valor: valor,
       data: data,
       pago: pago,
-      //tag: tags.categoria
       tag: tag_edit.categoria
     }, {
       headers: {
@@ -164,7 +151,7 @@ export default function Home() {
         }
       })
       .catch(error => {
-        console.error('Erro ao enviar dados:', dados);
+        console.error('Erro ao enviar dados:', error);
       });
   }
 
@@ -230,6 +217,7 @@ export default function Home() {
 
   const handleCreateClick = (data) => {
     getTags();
+    tagsList.categoria = ''
     onModalCreateOpen();
   }
 
@@ -240,10 +228,12 @@ export default function Home() {
 
   const handleEditClick = (data) => {
     getTags()
+    tagsList.categoria = data.tag
     setId(data.id);
     setNome(data.nome)
     setValor(data.valor)
     setSelectedDate(data.data)
+    setEditTags(data.tag)
     if(data.pago == true){
       setEditStatus('pago')
       setPago(true)
@@ -277,7 +267,6 @@ export default function Home() {
         },
       })
         .then((response) => {
-          //console.log(response.data)
           if (response.status == 200) {
             const data = response.data;
             setGastos(data);
@@ -308,14 +297,11 @@ export default function Home() {
 
   };
 
-
   function handleSearchType(type) {
-    //console.log(type)
     setSearchOption(type)
   }
 
   function handleSearch(data) {
-    //console.log(data)
     setSearchValue(data)
   }
 
@@ -411,6 +397,7 @@ export default function Home() {
           </ModalContent>
         </Modal>
       </div>
+      
       <div>
         <Modal
           initialFocusRef={initialRef}
@@ -526,7 +513,6 @@ export default function Home() {
                 <Input 
                   defaultValue={valor}
                   onChange={(e) => {
-                  //setEditValor(e.target.value)
                   setValor(e.target.value)
                 }} />
               </FormControl>
@@ -565,7 +551,7 @@ export default function Home() {
                 <br></br>
                 <TagsInput 
                   tags={tags} 
-                  defaultValue={editTags}
+                  editado={editTags}
                   onTagsChange={handleTagsChange} 
                   user={username} 
                 />
