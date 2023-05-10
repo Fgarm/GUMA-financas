@@ -10,5 +10,7 @@ urlpatterns = [
     path('obter-gasto/', GastoApiView.get_gasto_username, name='obter-gasto'),
     
     path('gastos-per-tag/', GastoApiView.pegar_gasto_tag, name='gastos-da-tag'),
-    path('filtrar-por-pago/', GastoApiView.get_gasto_filter_pago, name='filtrar-por-pago')
+    path('filtrar-por-pago/', GastoApiView.get_gasto_filter_pago, name='filtrar-por-pago'),
+
+    path('total-gastos-meses-anteriores/', GastoApiView.get_total_gastos_meses_anteriores, name='total-gastos-meses-anteriores'),
 ]
