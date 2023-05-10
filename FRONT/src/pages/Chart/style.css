@@ -1,38 +1,34 @@
-.ChartComponent {
-    text-align: center;
+:root {
+  --dark: #080f0d;
+  --light: #dcdcdc;
 }
-  
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100vh;
+  padding: auto;
+  background-color: var(--light);
 }
-  
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-      animation: App-logo-spin infinite 20s linear;
-    }
+
+.LineChartComponent {
+  padding: 5%;
+  width: 90%;
+  height: 80%;
+  background-color: var(--light);
 }
-  
-.App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
+
+@media screen and (max-width: 768px) {
+  .container {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+    background-color: var(--light);
+  }
 }
-  
-.App-link {
-    color: #61dafb;
-}
-  
-@keyframes App-logo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+
+.DonutChartComponent {
+  width: 60%;
+  height: 60%;
+  background-color: var(--light);
 }
