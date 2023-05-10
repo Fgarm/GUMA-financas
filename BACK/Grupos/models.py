@@ -24,6 +24,10 @@ class Gastos_Grupo(models.Model):
     grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     valor_total = models.DecimalField(max_digits=19, decimal_places=2)
 
+    id_grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True)
+
+    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="GrupoGasto_User", through="GrupoGasto_User")
+
     class Meta:
         verbose_name = "Gasto_grupo"
         verbose_name_plural = "Gastos_grupos"
@@ -32,11 +36,22 @@ class Itens(models.Model):
     item_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     preco = models.DecimalField(max_digits=19, decimal_places=2)
 
+    id_GastosGrupo = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE, null=True)
+
     usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_itens", through="Iten_User")
 
     class Meta:
         verbose_name = "Item"
         verbose_name_plural = "Itens"
+
+class GrupoGasto_User(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE)
+    pago = models.BooleanField(blank=False, null=False)
+
+    class Meta:
+        verbose_name = "GrupoGasto_User"
+        verbose_name_plural = "GrupoGastos_Users"
 
 class Iten_User(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
