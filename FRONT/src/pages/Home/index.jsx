@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
+import formatarData from '../../functions/formatData';
 
 import {
   AlertDialog,
@@ -88,14 +89,6 @@ export default function Home() {
     setTags(newTag);
   }
 
-  function formatarData(data) {
-    const partesData = data.split('-');
-    const dia = partesData[2];
-    const mes = partesData[1];
-    const ano = partesData[0];
-    return `${dia}/${mes}/${ano}`;
-  }
-
   const handleSubmit = () => {
 
     const tag_submit = tags.pop();
@@ -135,6 +128,15 @@ export default function Home() {
     const tag_edit = tags.pop();
     console.log(tag_edit)
 
+    const dados = {
+      username,
+      id,
+      nome,
+      valor,
+      data,
+      pago,
+    }
+    
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -142,27 +144,27 @@ export default function Home() {
       valor: valor,
       data: data,
       pago: pago,
-      tag: tags.categoria
-      // tag: tag_edit.categoria
+      //tag: tags.categoria
+      tag: tag_edit.categoria
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-      .then(response => {
+    .then(response => {
         if (response.status == 204) {
           onModalEditClose();
-          setEditNome('');
-          setEditValor(0);
-          setEditData('');
-          setEditStatus(false);
+          setNome('');
+          setValor(0);
+          setSelectedDate('');
+          setPago();
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
         }
       })
       .catch(error => {
-        console.error('Erro ao enviar dados:', error);
+        console.error('Erro ao enviar dados:', dados);
       });
   }
 
@@ -192,10 +194,8 @@ export default function Home() {
         user: username
       },
     })
-
       .then((response) => {
         const data = response.data;
-        // console.log(data);
         setGastos(data);
         setShouldRunEffect(true)
       })
@@ -241,17 +241,16 @@ export default function Home() {
   const handleEditClick = (data) => {
     getTags()
     setId(data.id);
-    setEditNome(data.nome)
-    setEditValor(data.valor)
-    setEditData(data.data)
+    setNome(data.nome)
+    setValor(data.valor)
+    setSelectedDate(data.data)
     if(data.pago == true){
       setEditStatus('pago')
+      setPago(true)
     } else if(data.pago == false){
       setEditStatus('nao-pago')
+      setPago(false)
     }
-    // console.log(data.tag)
-    // let editedTags=data.tag.categoria
-    // setEditTags(editTags.toLowerCase())
     onModalEditOpen();
   }
 
@@ -515,7 +514,7 @@ export default function Home() {
                 <label >Nome</label>
                 <br></br>
                 <Input 
-                  defaultValue={editNome}
+                  defaultValue={nome}
                   onChange={(e) => {
                     setNome(e.target.value)
                   }} />
@@ -525,9 +524,9 @@ export default function Home() {
                 <label >Valor</label>
                 <br></br>
                 <Input 
-                  defaultValue={editValor}
+                  defaultValue={valor}
                   onChange={(e) => {
-                  setEditValor(e.target.value)
+                  //setEditValor(e.target.value)
                   setValor(e.target.value)
                 }} />
               </FormControl>
@@ -536,10 +535,10 @@ export default function Home() {
                 <label >Data</label>
                 <br></br>
                 <Input 
-                  defaultValue={editData}
+                  defaultValue={data}
                   type="date" 
                   onChange={(e) =>
-                  setSelectedDate(e.target.value)
+                    setSelectedDate(e.target.value)
                 } />
               </FormControl>
 
@@ -548,7 +547,8 @@ export default function Home() {
                 <br></br>
                 <Select
                   defaultValue={editStatus}
-                 placeholder='Selecione uma opção' onChange={(e) => {
+                 placeholder='Selecione uma opção' 
+                 onChange={(e) => {
                   if (e.target.value == 'pago') {
                     setPago(true)
                   } else if (e.target.value == 'nao-pago') {

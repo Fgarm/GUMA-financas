@@ -17,6 +17,8 @@ export default function TagsInput(props) {
             return;
         }
 
+        console.log(value)
+        console.log("vazio?")
         const categoria = value
 
         const newTag = { categoria, cor, user }
@@ -51,10 +53,10 @@ export default function TagsInput(props) {
                     </div>
                 ))}
 
-                <select name="tags" id="tags" className="tags-input" onChange={handleChange}>
-                    {/* <option value="">Selecione suas tags</option> */}
+                <select name="tags" id="tags" className="tags-input" onChange={handleChange}> 
                     
-                    {props.tags.length === 0 ? <p></p> : (
+                    {props.tags.length === 0 ? <p></p> :
+                     (
                         props.tags.map((tags, key) => (
                             <option value={tags.categoria}>{tags.categoria}</option>
                         ))
