@@ -1,13 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --dark: #080f0d;
-  --light: #dcdcdc;
+  --light: #E6E6E6;
 }
 
 .container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
   height: 100vh;
   padding: auto;
   background-color: var(--light);
@@ -20,14 +26,18 @@
   background-color: var(--light);
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1350px) {
   .container {
+    display: flex;
+    padding: auto;
     flex-direction: column;
+    justify-content: space-around;
     background-color: var(--light);
   }
 }
 
 .DonutChartComponent {
+  padding: 1%;
   width: 60%;
   height: 60%;
   background-color: var(--light);

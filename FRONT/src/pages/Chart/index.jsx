@@ -36,7 +36,10 @@ export const options1 = {
     },
     title: {
       display: true,
-      text: 'Extrato dos últimos 6 meses',
+      text: 'Total de Gastos dos Meses Anteriores',
+      font: {
+        size: 20
+      }
     },
   },
 };
@@ -49,7 +52,10 @@ export const options2 = {
     },
     title: {
       display: true,
-      text: 'Gastos mais Relevantes de Janeiro',
+      text: 'Gastos mais Relevantes do Mês',
+      font: {
+        size: 20
+      },
     },
   },
 };
@@ -92,7 +98,7 @@ export const data2 = {
         'rgba(255, 99, 132, 1)',
         'rgba(153, 102, 255, 1)',
       ],
-      borderWidth: 1,
+      borderWidth: 1.1,
     },
   ],
 };
