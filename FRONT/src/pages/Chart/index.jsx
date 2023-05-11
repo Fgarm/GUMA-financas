@@ -1,4 +1,6 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,7 +16,6 @@ import {
 import { Line, Doughnut } from 'react-chartjs-2';
 
 import './style.css';
-import faker from 'faker';
 import axios from 'axios';
 
 ChartJS.register(
@@ -104,47 +105,58 @@ export const data2 = {
   ],
 };
 
-
 // export const data2 = data.datasets.find((dataset) => dataset.id == 2);
+
+
+export function useChartData() {
+  const [chartData, setChartData] = useState(null);
+  
+  useEffect(() => {
+    const user = localStorage.getItem("cadastro_user");
+    const request = { user };
+    
+    axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
+    .then(response => {
+        console.log("response: ", response.data)
+        setChartData(response.data);
+      })
+      .catch(error => {
+        console.log("Erro ao enviar/receber dados.", error);
+        setChartData(null);
+      });
+  }, []);
+
+  return chartData;
+}
 
 
 export default function ChartComponent() {
 
-  const username = localStorage.getItem("cadastro_user")
-  
-  const request = {
-    user: username,
+  const chartData = useChartData();
+
+  if(!chartData) {
+    return <h1>Carregando Gráficos...</h1>;
   }
 
-  // criar função async para fazer requisição
-  axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
-  .then(response => {
-    console.log(response.data["data"])
-    // adicionar verificação de response
-    data.datasets[0].data = response.data["data"]
-    data.labels = response.data["labels"]
+  data.datasets[0].data = chartData["data"];
+  data.labels = chartData["labels"];
+  
+  // console.log("dados q importam: ", data.datasets[0].data)
+  // console.log("dados q importam: ", data.labels)
+  
 
-    if(data.datasets[0].data == []) {
-  
-      return <h1>Carregando Gráficos...</h1>
-  
-    } else {
-  
-      return (
-        <div className="container">
-          
-          <div className="LineChartComponent">
-            <Line datasetIdKey='id' options={options1} data={data} />
-          </div>
-          
-          <div className="DonutChartComponent">
-            <Doughnut options={options2} data={data2} />
-          </div>
-        
-        </div>
-      );
-    }
-  })
-  .catch(error => console.log("Erro ao enviar/receber dados.", error))
+  return (
+    <div className="container">
+      
+      <div className="LineChartComponent">
+        <Line datasetIdKey='id' options={options1} data={data} />
+      </div>
+      
+      <div className="DonutChartComponent">
+        <Doughnut options={options2} data={data2} />
+      </div>
+    
+    </div>
+  );
 
 }

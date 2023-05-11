@@ -121,7 +121,7 @@ export default function Home() {
 
   }
 
-  const handleEdit = () => {  // não envia o user?
+  const handleEdit = () => {
     const dados = {
       id,
       nome,
@@ -134,7 +134,7 @@ export default function Home() {
     console.log(dados)
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
-      user: username,   // trocar ordem
+      user: username,
       id: id,
       nome: nome,
       valor: valor,
