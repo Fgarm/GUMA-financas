@@ -212,14 +212,17 @@ class GastoApiView(APIView):
     @api_view(['GET', 'POST'])
     def get_total_gastos_meses_anteriores(request):
 
+        # print("request: ", request.data)
+        # print("user: ", request.data["user"])
+
         # obtendo os gastos do user selecionado
         try:
             gastos = Gasto.objects.filter(user=request.data["user"])
-            print(gastos)
+            print("gastos", gastos)
             
         # verificando se o user selecionado existe
         except Gasto.DoesNotExist:
-            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
         
         meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
         data = []
@@ -238,7 +241,7 @@ class GastoApiView(APIView):
                 anoAtual -= 1
 
             # soma todos os gastos do mês/ano daquela iteração
-            somaTodosGastosMes = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual])
+            somaTodosGastosMes = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True]) # incluir apenas gastos pagos? discutir
             
             # adicionando os meses na lista de labels que será usada no gráfico
             labels.append(meses[mesAtual-1])
