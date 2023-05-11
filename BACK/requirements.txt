@@ -5,6 +5,7 @@ Django==4.2
 django-cors-headers==3.14.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
+numpy==1.24.3
 idna==3.4
 mysqlclient==2.1.1
 PyJWT==1.7.1
