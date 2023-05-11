@@ -15,6 +15,7 @@ import { Line, Doughnut } from 'react-chartjs-2';
 
 import './style.css';
 import faker from 'faker';
+import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
@@ -60,16 +61,16 @@ export const options2 = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
-export const data = {
-  labels,
+const data = {
+  labels: [],
   datasets: [
     {
       id: 1,
       fill: true,
-      label: 'Dataset 1',
-      data: labels.map(() => faker.datatype.number({ min: -500, max: 1000 })),
+      label: 'Total de Gastos',
+      data: [],
       borderColor: 'rgb(53, 162, 235)',
       backgroundColor: 'rgb(53, 162, 235, 0.3)',
     },
@@ -108,17 +109,42 @@ export const data2 = {
 
 
 export default function ChartComponent() {
-  return (
-    <div className="container">
-      
-      <div className="LineChartComponent">
-        <Line datasetIdKey='id' options={options1} data={data} />
-      </div>
-      
-      <div className="DonutChartComponent">
-        <Doughnut options={options2} data={data2} />
-      </div>
-    
-    </div>
-  );
+
+  const username = localStorage.getItem("cadastro_user")
+  
+  const request = {
+    user: username,
+  }
+
+  // criar função async para fazer requisição
+  axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
+  .then(response => {
+    console.log(response.data["data"])
+    // adicionar verificação de response
+    data.datasets[0].data = response.data["data"]
+    data.labels = response.data["labels"]
+
+    if(data.datasets[0].data == []) {
+  
+      return <h1>Carregando Gráficos...</h1>
+  
+    } else {
+  
+      return (
+        <div className="container">
+          
+          <div className="LineChartComponent">
+            <Line datasetIdKey='id' options={options1} data={data} />
+          </div>
+          
+          <div className="DonutChartComponent">
+            <Doughnut options={options2} data={data2} />
+          </div>
+        
+        </div>
+      );
+    }
+  })
+  .catch(error => console.log("Erro ao enviar/receber dados.", error))
+
 }
