@@ -252,3 +252,22 @@ class GastoApiView(APIView):
         # inverte ambas listas para ficar da forma correta no gráfico
         data_json = {'data': data[::-1], 'labels': labels[::-1]}
         return JsonResponse(data_json)
+
+
+    @api_view(['GET', 'POST'])
+    def get_gastos_mais_relevantes(request): # req: user, mes (numero: 1 == jan, etc.) e ano
+
+        # obtendo as tags do user selecionado
+        try:
+            tags = Tag.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe
+        except Tag.DoesNotExist:
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
+        
+        # para cada tag: obter a soma total do valor de todos os gastos dessa tag daquele mês daquele ano
+        for tag in tags:
+            somaTodosGastosTagMesAno = np.sum([gasto.valor for gasto in Gasto.objects.filter(tag=tag, data__month=request.data["mes"], data__year=request.data["ano"])])
+            
+            # adicionando a soma dos gastos de cada mês na lista de dados que será exibida no gráfico
+            #data.append(somaTodosGastosTagMesAno)
