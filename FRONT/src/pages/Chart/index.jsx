@@ -133,27 +133,31 @@ export const doughnutOptions = {
 
 // Dados do gráfico de Linha
 export const doughnutChartData = {
-  labels: ['Mercado', 'Aluguel', 'Energia', 'Água', 'Internet', 'Transporte'],
+  labels: [], // 'Mercado', 'Aluguel', 'Energia', 'Água', 'Internet', 'Transporte'
   datasets: [
     {
       label: 'R$',
-      data: [350, 220, 40, 35, 50, 100],
-      backgroundColor: [
+      data: [], // 350, 220, 40, 35, 50, 100
+      backgroundColor: [],
+      /*
         'rgba(54, 162, 235, 0.2)',  // Blue
         'rgba(75, 192, 192, 0.2)',  // Green
         'rgba(255, 206, 86, 0.2)',  // Yellow
         'rgba(255, 159, 64, 0.2)', // Orange
         'rgba(255, 99, 132, 0.2)',  // Red
         'rgba(153, 102, 255, 0.2)', // Purple
-      ],
-      borderColor: [
+      */
+
+      borderColor: [],
+      /*
         'rgba(54, 162, 235, 1)',
         'rgba(75, 192, 192, 1)',
         'rgba(255, 206, 86, 1)',
         'rgba(255, 159, 64, 1)',
         'rgba(255, 99, 132, 1)',
         'rgba(153, 102, 255, 1)',
-      ],
+      */
+
       borderWidth: 1.1,
     },
   ],
@@ -164,10 +168,19 @@ export function useDoughnutChartData() {
   const [chartData, setChartData] = useState(null);
   
   useEffect(() => {
-    const user = localStorage.getItem("cadastro_user");
-    const request = { user };
+    const user = "Guxtavin"// localStorage.getItem("cadastro_user"); // "token"
+    const mes = 1;
+    const ano = 2023;
+
+    const request = {
+      user,
+      mes,
+      ano,
+    };
+
+    console.log("request: ", request)
     
-    axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
+    axios.post('http://localhost:8000/api/gastos/gastos-mais-relevantes/', request)
     .then(response => {
         console.log("response: ", response.data)
         setChartData(response.data);
@@ -186,19 +199,26 @@ export function useDoughnutChartData() {
 // criar componente gráfico doughnut para os gastos mais relevantes
 export default function DoughnutChartComponent() {
 
-  // const chartData = useDoughnutChartData();
+  // chartData: { data, labels(tags), colors }
+  const chartData = useDoughnutChartData();
 
-  // if(!chartData) {
-  //   return <h1>Carregando Gráficos...</h1>;
-  // }
+  if(!chartData) {
+    return <h1>Carregando Gráficos...</h1>;
+  }
+  
+  // data
+  doughnutChartData.datasets[0].data = chartData["data"]
 
-  // não eh bem assim
-  // lineChartData.datasets[0].data = chartData["data"];
-  // lineChartData.labels = chartData["labels"];
+  // labels/tags
+  doughnutChartData.labels = chartData["labels"]
+
+  // colors
+  doughnutChartData.datasets[0].backgroundColor = chartData["colors"]
   
   // para debug
-  // console.log("dados q importam: ", data.datasets[0].data)
-  // console.log("dados q importam: ", data.labels)
+  // console.log("data: ", doughnutChartData.datasets[0].data)
+  // console.log("labels/tags: ", doughnutChartData.labels)
+  // console.log("colors: ", doughnutChartData.datasets[0].backgroundColor)
 
   return (
       <div className="DonutChartComponent">
