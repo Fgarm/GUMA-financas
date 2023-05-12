@@ -93,12 +93,13 @@ export default function Home() {
     const tag_submit = tagsList;
     
     const dados = {
-      user: username,
       nome,
       valor,
       data,
       pago,
-      tag: tag_submit.categoria
+      tag: tags.categoria,
+      user: username
+
     };
 
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
