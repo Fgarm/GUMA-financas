@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
+import Sidebar from '../../components/sidebar';
 import formatarData from '../../functions/formatData';
 
 import {
@@ -332,11 +333,12 @@ export default function Home() {
         console.error('Erro ao enviar dados:', error);
       });
   }
-
-
+  
+  
   return (
-
+    
     <div >
+      <Sidebar user={username}/>
       <header className='home'>
         <div className='presentation'>
           <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />

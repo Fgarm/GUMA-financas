@@ -2,7 +2,7 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-
+import MyPage from "../pages/Groups";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 function PrivateRoute({ children }) {
@@ -33,6 +33,11 @@ const Routering = createBrowserRouter([
                 <Home />
             </PrivateRoute>
     },
+
+    {
+        path: "/page",
+        element: <MyPage/>,
+    }
 
 
 ]);
