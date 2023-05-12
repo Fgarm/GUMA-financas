@@ -30,7 +30,24 @@ ChartJS.register(
   ArcElement // p grafico de rosquinha
 );
 
-export const options1 = {
+
+
+// Dados do gráfico de Linha
+const lineChartData = {
+  labels: [],
+  datasets: [
+    {
+      id: 1,
+      fill: true,
+      label: 'Total de Gastos',
+      data: [],
+      borderColor: 'rgb(53, 162, 235)',
+      backgroundColor: 'rgb(53, 162, 235, 0.3)',
+    },
+  ],
+};
+// Configurações do gráfico de Linha
+export const lineChartOptions = {
   responsive: true,
   plugins: {
     legend: {
@@ -46,7 +63,59 @@ export const options1 = {
   },
 };
 
-export const options2 = {
+
+// Hook que carrega os dados do gráfico de Linha por meio da API do Back
+export function useLineChartData() {
+  const [chartData, setChartData] = useState(null);
+  
+  useEffect(() => {
+    const user = localStorage.getItem("cadastro_user");
+    const request = { user };
+    
+    axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
+    .then(response => {
+        console.log("response: ", response.data)
+        setChartData(response.data);
+      })
+      .catch(error => {
+        console.log("Erro ao enviar/receber dados.", error);
+        setChartData(null);
+      });
+  }, []);
+
+  return chartData;
+}
+
+/*
+export default function LineChartComponent() {
+
+  const chartData = useLineChartData();
+
+  if(!chartData) {
+    return <h1>Carregando Gráficos...</h1>;
+  }
+  
+  lineChartData.datasets[0].data = chartData["data"];
+  lineChartData.labels = chartData["labels"];
+  
+  // para debug
+  // console.log("dados q importam: ", data.datasets[0].data)
+  // console.log("dados q importam: ", data.labels)
+  
+  return (
+    <div className="LineChartComponent">
+      <Line datasetIdKey='id' options={lineChartOptions} data={lineChartData} />
+    </div>
+  );
+
+}
+*/
+
+
+
+
+// Configurações do gráfico de Linha
+export const doughnutOptions = {
   responsive: true,
   plugins: {
     legend: {
@@ -62,22 +131,8 @@ export const options2 = {
   },
 };
 
-
-const data = {
-  labels: [],
-  datasets: [
-    {
-      id: 1,
-      fill: true,
-      label: 'Total de Gastos',
-      data: [],
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgb(53, 162, 235, 0.3)',
-    },
-  ],
-};
-
-export const data2 = {
+// Dados do gráfico de Linha
+export const doughnutChartData = {
   labels: ['Mercado', 'Aluguel', 'Energia', 'Água', 'Internet', 'Transporte'],
   datasets: [
     {
@@ -104,9 +159,8 @@ export const data2 = {
   ],
 };
 
-
-
-export function useLineChartData() {
+// Hook que carrega os dados do gráfico de Linha por meio da API do Back
+export function useDoughnutChartData() {
   const [chartData, setChartData] = useState(null);
   
   useEffect(() => {
@@ -128,25 +182,31 @@ export function useLineChartData() {
 }
 
 
-export default function LineChartComponent() {
 
-  const chartData = useLineChartData();
+// criar componente gráfico doughnut para os gastos mais relevantes
+export default function DoughnutChartComponent() {
 
-  if(!chartData) {
-    return <h1>Carregando Gráficos...</h1>;
-  }
+  // const chartData = useDoughnutChartData();
 
-  data.datasets[0].data = chartData["data"];
-  data.labels = chartData["labels"];
+  // if(!chartData) {
+  //   return <h1>Carregando Gráficos...</h1>;
+  // }
+
+  // não eh bem assim
+  // lineChartData.datasets[0].data = chartData["data"];
+  // lineChartData.labels = chartData["labels"];
   
   // para debug
   // console.log("dados q importam: ", data.datasets[0].data)
   // console.log("dados q importam: ", data.labels)
 
   return (
-    <div className="LineChartComponent">
-      <Line datasetIdKey='id' options={options1} data={data} />
-    </div>
+      <div className="DonutChartComponent">
+        <Doughnut options={doughnutOptions} data={doughnutChartData} />
+      </div>
   );
 
 }
+
+
+// criar componente para renderizar a página toda (todos os gráficos/componentes)

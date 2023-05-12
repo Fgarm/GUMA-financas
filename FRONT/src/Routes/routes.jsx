@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import LineChartComponent from "../pages/Chart";
 
 import { Navigate, createBrowserRouter } from "react-router-dom";
+import DoughnutChartComponent from "../pages/Chart";
 
 function PrivateRoute({ children }) {
     const token = localStorage.getItem("token");
@@ -40,6 +41,7 @@ const Routering = createBrowserRouter([
         element: 
         <React.StrictMode>
             <LineChartComponent/>,
+            <DoughnutChartComponent/>, 
         </React.StrictMode>
     },
 
