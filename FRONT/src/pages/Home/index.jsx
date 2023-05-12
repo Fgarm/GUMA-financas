@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
+import formatarData from '../../functions/formatData';
 
 import {
   AlertDialog,
@@ -43,9 +44,13 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState('');
-  // const [category, setCategory] = useState([])
+  const [tags, setTags] = useState([]);
+
+  const [tagsList, setTagsList] = useState({})
+
   const [gastos, setGastos] = useState([])
+  const [editStatus, setEditStatus] = useState(false)
+  const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
 
@@ -78,19 +83,14 @@ export default function Home() {
     }
   });
 
-  function handleTagsChange(newTags) {
-    setTags(newTags[0]);
-  }
-
-  function formatarData(data) {
-    const partesData = data.split('-');
-    const dia = partesData[2];
-    const mes = partesData[1];
-    const ano = partesData[0];
-    return `${dia}/${mes}/${ano}`;
+  function handleTagsChange(newTag) { 
+    setTagsList(newTag);
   }
 
   const handleSubmit = () => {
+
+    const tag_submit = tagsList;
+    
     const dados = {
       nome,
       valor,
@@ -98,8 +98,9 @@ export default function Home() {
       pago,
       tag: tags.categoria,
       user: username
+
     };
-    console.log(JSON.stringify(dados))
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -107,7 +108,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
         } else {
           alert('Erro de dados submetidos')
           return
@@ -122,17 +123,9 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-    const dados = {
-      id,
-      nome,
-      valor,
-      data,
-      pago,
-      tag: tags.categoria
-    };
 
-    console.log(dados)
-
+    const tag_edit = tagsList;
+    
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -140,16 +133,19 @@ export default function Home() {
       valor: valor,
       data: data,
       pago: pago,
-      tag: tags.categoria
+      tag: tag_edit.categoria
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-      .then(response => {
+    .then(response => {
         if (response.status == 204) {
-          console.log('Dados editados com sucesso:', response.dados);
           onModalEditClose();
+          setNome('');
+          setValor(0);
+          setSelectedDate('');
+          setPago();
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
@@ -186,10 +182,8 @@ export default function Home() {
         user: username
       },
     })
-
       .then((response) => {
         const data = response.data;
-        console.log(data)
         setGastos(data);
         setShouldRunEffect(true)
       })
@@ -198,23 +192,23 @@ export default function Home() {
       })
   }
 
-  // const getTags = () => {
-  //   axios({
-  //     method: "post",
-  //     url: "http://localhost:8000/tags/tag-per-user/",
-  //     data: {
-  //       user: username
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log(JSON.stringify(response.data))
-  //       setCategory(data);
-  //       setShouldRunEffect(true)
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
+  const getTags = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/tags/tag-per-user/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => { 
+        setTags(response.data);
+        console.log(tags)
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
 
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
@@ -223,7 +217,8 @@ export default function Home() {
   }
 
   const handleCreateClick = (data) => {
-    // getTags();
+    getTags();
+    tagsList.categoria = ''
     onModalCreateOpen();
   }
 
@@ -233,7 +228,20 @@ export default function Home() {
   }
 
   const handleEditClick = (data) => {
-    setId(data);
+    getTags()
+    tagsList.categoria = data.tag
+    setId(data.id);
+    setNome(data.nome)
+    setValor(data.valor)
+    setSelectedDate(data.data)
+    setEditTags(data.tag)
+    if(data.pago == true){
+      setEditStatus('pago')
+      setPago(true)
+    } else if(data.pago == false){
+      setEditStatus('nao-pago')
+      setPago(false)
+    }
     onModalEditOpen();
   }
 
@@ -260,7 +268,6 @@ export default function Home() {
         },
       })
         .then((response) => {
-          console.log(response.data)
           if (response.status == 200) {
             const data = response.data;
             setGastos(data);
@@ -291,14 +298,11 @@ export default function Home() {
 
   };
 
-
   function handleSearchType(type) {
-    console.log(type)
     setSearchOption(type)
   }
 
   function handleSearch(data) {
-    console.log(data)
     setSearchValue(data)
   }
 
@@ -315,9 +319,9 @@ export default function Home() {
       }
     })
       .then(response => {
-        console.log()
+        
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
           setCreatedTag('')
           onModalTagClose()
           setFlag(flag => flag + 1);
@@ -340,9 +344,20 @@ export default function Home() {
           <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
-          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
-          <Button pr='10px' onClick={onModalTagOpen}>Adicionar Tag</Button>
-          <Button pr='10px' onClick={handleCreateClick}>Adicionar Gasto</Button>
+          <SearchBar 
+            setValueSearch={handleSearch} 
+            setSearchType={handleSearchType} 
+          />
+          <Button 
+            pr='10px' 
+            onClick={onModalTagOpen}>
+            Adicionar Tag
+          </Button>
+          <Button 
+            pr='10px' 
+            onClick={handleCreateClick}>
+            Adicionar Gasto
+            </Button>
         </div>
       </header>
 
@@ -353,7 +368,13 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Tag</ModalHeader>
+
+            <ModalHeader
+              mb={0} 
+              className='modal_header'>
+              Criando Tag
+            </ModalHeader>
+
             <ModalBody>
               <FormControl mt={4}>
                 <label>Categoria</label>
@@ -366,7 +387,10 @@ export default function Home() {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}>
+              <Button 
+                colorScheme='blue' 
+                mr={3} 
+                onClick={handleCreateTag}>
                 Criar
               </Button>
               <Button onClick={onModalTagClose}>Cancelar</Button>
@@ -374,6 +398,7 @@ export default function Home() {
           </ModalContent>
         </Modal>
       </div>
+      
       <div>
         <Modal
           initialFocusRef={initialRef}
@@ -383,7 +408,11 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Gasto</ModalHeader>
+            <ModalHeader 
+              mb={0} 
+              className='modal_header'>
+              Criando Gasto
+            </ModalHeader>
             <ModalBody>
 
               <FormControl mt={4}>
@@ -405,7 +434,9 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Data</label>
                 <br></br>
-                <Input type="date" onChange={(e) =>
+                <Input 
+                  type="date"
+                  onChange={(e) =>
                   setSelectedDate(e.target.value)
                 } />
               </FormControl>
@@ -413,7 +444,9 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Status</label>
                 <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
+                <Select
+                 placeholder='Selecione uma opção' 
+                 onChange={(e) => {
                   if (e.target.value == 'pago') {
                     setPago(true)
                   } else if (e.target.value == 'nao-pago') {
@@ -428,12 +461,19 @@ export default function Home() {
               <FormControl mt={4}>
                 <label >Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
+                <TagsInput
+                  tags={tags} 
+                  defaultValue={editTags}
+                  onTagsChange={handleTagsChange} 
+                  user={username} />
               </FormControl>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+              <Button 
+                colorScheme='blue' 
+                mr={3} 
+                onClick={handleSubmit}>
                 Criar
               </Button>
               <Button onClick={onModalCreateClose}>Cancelar</Button>
@@ -451,38 +491,51 @@ export default function Home() {
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Editando Gasto</ModalHeader>
+            <ModalHeader 
+              mb={0} 
+              className='modal_header'>
+              Editando Gasto
+            </ModalHeader>
             <ModalBody>
 
               <FormControl mt={4}>
                 <label >Nome</label>
                 <br></br>
-                <Input onChange={(e) => {
-                  setNome(e.target.value)
-                }} />
+                <Input 
+                  defaultValue={nome}
+                  onChange={(e) => {
+                    setNome(e.target.value)
+                  }} />
               </FormControl>
 
               <FormControl mt={4}>
                 <label >Valor</label>
                 <br></br>
-                <Input onChange={(e) => {
+                <Input 
+                  defaultValue={valor}
+                  onChange={(e) => {
                   setValor(e.target.value)
-
                 }} />
               </FormControl>
 
               <FormControl mt={4}>
                 <label >Data</label>
                 <br></br>
-                <Input type="date" onChange={(e) =>
-                  setSelectedDate(e.target.value)
+                <Input 
+                  defaultValue={data}
+                  type="date" 
+                  onChange={(e) =>
+                    setSelectedDate(e.target.value)
                 } />
               </FormControl>
 
               <FormControl mt={4}>
                 <label>Status</label>
                 <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
+                <Select
+                  defaultValue={editStatus}
+                 placeholder='Selecione uma opção' 
+                 onChange={(e) => {
                   if (e.target.value == 'pago') {
                     setPago(true)
                   } else if (e.target.value == 'nao-pago') {
@@ -497,12 +550,20 @@ export default function Home() {
               <FormControl mt={4}>
                 <label>Tags</label>
                 <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
+                <TagsInput 
+                  tags={tags} 
+                  editado={editTags}
+                  onTagsChange={handleTagsChange} 
+                  user={username} 
+                />
               </FormControl>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleEdit}>
+              <Button 
+                colorScheme='blue'
+                mr={3} 
+                onClick={handleEdit}>
                 Salvar
               </Button>
               <Button onClick={onModalEditClose}>Cancelar</Button>
@@ -519,7 +580,9 @@ export default function Home() {
         >
           <AlertDialogOverlay>
             <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+              <AlertDialogHeader 
+                fontSize='lg' 
+                fontWeight='bold'>
                 Deletar Gastos
               </AlertDialogHeader>
 
@@ -550,8 +613,20 @@ export default function Home() {
                   {gasto.nome}
                 </h1>
                 <div>
-                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto.id)} />
-                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                  <Icon 
+                    as={MdOutlineModeEditOutline} 
+                    w={5} 
+                    h={5} 
+                    mr={2} 
+                    onClick={() => handleEditClick(gasto)} 
+                  />
+                  <Icon 
+                    as={MdDelete} 
+                    color='red.500' 
+                    w={5} 
+                    h={5} 
+                    onClick={() => handleDeleteClick(gasto.id)} 
+                  />
                 </div>
               </div>
               <h2>
@@ -563,6 +638,9 @@ export default function Home() {
               <h2>
               </h2>
               {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
+              <h2>
+              {gasto.tag}
+              </h2>
 
             </div>
           ))
