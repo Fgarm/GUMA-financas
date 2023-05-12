@@ -13,12 +13,15 @@ class Grupo(models.Model):
     descricao= models.TextField(blank=True)
     image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
 
-    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user")
+    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="GrupoUser", through="GrupoUser")
 
     class Meta:
         verbose_name = "Grupo"
         verbose_name_plural = "Grupos"
     
+class GrupoUser(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE)
 
 class Gastos_Grupo(models.Model):
     grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)

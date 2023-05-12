@@ -22,6 +22,7 @@ urlpatterns = [
     # Caminho Tags
     path('tags/', include('Tags.urls')),
 
-    #Rotas de Gastos
+    # Caminho Grupos
+    path('grupos/', include('Grupos.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
