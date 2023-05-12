@@ -8,7 +8,7 @@ class Tag(models.Model):
     cor = models.CharField(max_length=6)
     #RRGGBB tag em hexa (sujeito a mudanças para conveniencia)
     #user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,to_field="username", on_delete=models.CASCADE, null=True)
     #preencher a tabela de tag padrão na criação da conta de usuário
     #ou usar as tags padrão como NULL, e puxar elas sempre além das de cada usuário
     class Meta:
