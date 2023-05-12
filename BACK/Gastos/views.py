@@ -263,11 +263,33 @@ class GastoApiView(APIView):
             
         # verificando se o user selecionado existe
         except Tag.DoesNotExist:
-            return Response("Username incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
+            return Response("Nome de usuário incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
         
-        # para cada tag: obter a soma total do valor de todos os gastos dessa tag daquele mês daquele ano
+        # obtendo os gastos do usuário naquele mês e naquele ano
+        try:
+            gastos = Gasto.objects.filter(user=request.data["user"], data__month=request.data["mes"], data__year=request.data["ano"])
+
+        except Gasto.DoesNotExist:
+            return Response("O usuário não tem nenhum gasto no período especificado", status=status.HTTP_404_NOT_FOUND)
+
+        data = []   # cada posição: valor total de gastos daquela tag 
+        labels = [] # tags
+        colors = [] # cor de cada tag
+
         for tag in tags:
-            somaTodosGastosTagMesAno = np.sum([gasto.valor for gasto in Gasto.objects.filter(tag=tag, data__month=request.data["mes"], data__year=request.data["ano"])])
+
+            # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag 
+            totalGastosPorTag = np.sum([gasto.valor for gasto in gastos if gasto.tag == tag.categoria])
             
-            # adicionando a soma dos gastos de cada mês na lista de dados que será exibida no gráfico
-            #data.append(somaTodosGastosTagMesAno)
+            # adicionando a soma do valor dos gastos de uma categoria/tag na lista de dados que será exibida no gráfico
+            data.append(totalGastosPorTag)
+
+            # inserindo o nome da tag
+            labels.append(tag.categoria)
+
+            # adicionando a cor da tag
+            colors.append(tag.cor)
+
+        data_json = {'data': data, 'labels': labels, 'colors': colors}
+        print("json enviado: ", data_json)
+        return JsonResponse(data_json)
