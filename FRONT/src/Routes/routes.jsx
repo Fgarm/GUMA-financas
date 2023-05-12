@@ -36,7 +36,7 @@ const Routering = createBrowserRouter([
     },
     
     {
-        path: "/statistics",
+        path: "/dashboard",
         element: 
         <React.StrictMode>
             <LineChartComponent/>,
