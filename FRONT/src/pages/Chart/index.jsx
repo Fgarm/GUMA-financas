@@ -62,7 +62,6 @@ export const options2 = {
   },
 };
 
-// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
 const data = {
   labels: [],
@@ -105,10 +104,9 @@ export const data2 = {
   ],
 };
 
-// export const data2 = data.datasets.find((dataset) => dataset.id == 2);
 
 
-export function useChartData() {
+export function useLineChartData() {
   const [chartData, setChartData] = useState(null);
   
   useEffect(() => {
@@ -130,9 +128,9 @@ export function useChartData() {
 }
 
 
-export default function ChartComponent() {
+export default function LineChartComponent() {
 
-  const chartData = useChartData();
+  const chartData = useLineChartData();
 
   if(!chartData) {
     return <h1>Carregando Gráficos...</h1>;
@@ -141,21 +139,13 @@ export default function ChartComponent() {
   data.datasets[0].data = chartData["data"];
   data.labels = chartData["labels"];
   
+  // para debug
   // console.log("dados q importam: ", data.datasets[0].data)
   // console.log("dados q importam: ", data.labels)
-  
 
   return (
-    <div className="container">
-      
-      <div className="LineChartComponent">
-        <Line datasetIdKey='id' options={options1} data={data} />
-      </div>
-      
-      <div className="DonutChartComponent">
-        <Doughnut options={options2} data={data2} />
-      </div>
-    
+    <div className="LineChartComponent">
+      <Line datasetIdKey='id' options={options1} data={data} />
     </div>
   );
 

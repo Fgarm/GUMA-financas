@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: var(--light);
 }
 
 :root {
@@ -16,14 +17,12 @@
   justify-content: space-around;
   height: 100vh;
   padding: auto;
-  background-color: var(--light);
 }
 
 .LineChartComponent {
   padding: 5%;
   width: 90%;
   height: 80%;
-  background-color: var(--light);
 }
 
 @media screen and (max-width: 1350px) {
@@ -32,7 +31,6 @@
     padding: auto;
     flex-direction: column;
     justify-content: space-around;
-    background-color: var(--light);
   }
 }
 
@@ -40,5 +38,4 @@
   padding: 1%;
   width: 60%;
   height: 60%;
-  background-color: var(--light);
 }

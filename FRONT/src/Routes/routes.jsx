@@ -2,7 +2,7 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-import ChartComponent from "../pages/Chart";
+import LineChartComponent from "../pages/Chart";
 
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
@@ -39,7 +39,7 @@ const Routering = createBrowserRouter([
         path: "/statistics",
         element: 
         <React.StrictMode>
-            <ChartComponent/>,
+            <LineChartComponent/>,
         </React.StrictMode>
     },
 
