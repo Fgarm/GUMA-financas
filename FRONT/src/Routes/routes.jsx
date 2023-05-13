@@ -2,7 +2,7 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-import ChartComponent from "../pages/Chart";
+import ChartComponent from "../components/chart";
 
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
