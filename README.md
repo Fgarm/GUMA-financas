@@ -72,6 +72,21 @@ make migrate
 make runserver
 ```
 
+## Como executar o front-end <br>
+
+Certifique-se de que o Node.js está instalado em sua máquina. Se ainda não tiver, faça o download em https://nodejs.org/en/download/ e instale-o.
+
+### Instale as dependências do projeto a partir do comando
+```bash
+npm install
+```
+
+### Inicie o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
 <br>
 
 ### :mortar_board: Autores

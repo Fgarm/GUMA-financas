@@ -41,6 +41,10 @@ export default function Sidebar(props){
         navigate('/');
     }
 
+    function handleStatistics(){
+        navigate('/statistics');
+    }
+
     return(
         <div className="sidenav">
             <p>Olá, {props.user}</p>
@@ -50,7 +54,7 @@ export default function Sidebar(props){
             onClick={handleCreateClick}>
                 <Icon as={AiOutlineUsergroupAdd} w={7} h={7} color="green.500" /> Criar Grupo
             </div>
-            <div className="flex">
+            <div className="flex" onClick={handleStatistics}>
                 <Icon as={BsBarChartFill} w={7} h={7} color="blue.500" /> Análise de Gastos
             </div>
             <div className="flex" onClick={handleLogOut}>
