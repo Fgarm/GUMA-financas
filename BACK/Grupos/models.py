@@ -11,7 +11,7 @@ class Grupo(models.Model):
     grupo_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     nome = models.CharField(max_length=255)
     descricao= models.TextField(blank=True)
-    image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
+    #image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
 
     usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user")
 
@@ -23,6 +23,7 @@ class Grupo(models.Model):
 class Gastos_Grupo(models.Model):
     grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     valor_total = models.DecimalField(max_digits=19, decimal_places=2)
+    nome_gasto = models.CharField(max_length=255, null=True)
 
     id_grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True)
 
@@ -35,6 +36,7 @@ class Gastos_Grupo(models.Model):
 class Itens(models.Model):
     item_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     preco = models.DecimalField(max_digits=19, decimal_places=2)
+    descricao = models.CharField(max_length=255, null=True)
 
     id_GastosGrupo = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE, null=True)
 
@@ -46,7 +48,7 @@ class Itens(models.Model):
 
 class GrupoGasto_User(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE)
+    conta = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE)
     pago = models.BooleanField(blank=False, null=False)
 
     class Meta:

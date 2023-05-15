@@ -1,5 +1,4 @@
 from http import HTTPStatus
-import json
 from .models import Gasto
 from .serializers import GastoSerializer
 from rest_framework.response import Response
@@ -8,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from Tags.models import Tag
-from django.http import HttpResponse
+
 
 
 class GastoApiView(APIView):
