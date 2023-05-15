@@ -116,7 +116,7 @@ export default function LogIn() {
 
       <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
 
-      <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
+      <p className='center'>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
 
     </form>
   )
