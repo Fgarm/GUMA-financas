@@ -2,8 +2,7 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-import ChartComponent from "../components/chart";
-
+import MyPage from "../pages/Groups";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 function PrivateRoute({ children }) {
@@ -42,6 +41,11 @@ const Routering = createBrowserRouter([
             <ChartComponent/>,
         </React.StrictMode>
     },
+
+    {
+        path: "/page",
+        element: <MyPage/>,
+    }
 
 
 ]);
