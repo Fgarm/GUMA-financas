@@ -48,6 +48,7 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
+  const [grupos, setGrupos] = useState([]);
 
   const [tagsList, setTagsList] = useState({})
 
@@ -85,6 +86,23 @@ export default function Home() {
   //     localStorage.removeItem("cadastro_user");
   //   }
   // });
+
+  function getGrupos(){
+    axios({
+      method: "post",
+      url: "http://localhost:8000/api/grupos/associar-user-grupoGastos/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => {
+        const data = response.data;
+        setGrupos(data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
 
   function handleTagsChange(newTag) { 
     setTagsList(newTag);
@@ -350,11 +368,11 @@ export default function Home() {
           <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
-          <TagsInputSearch
+          {/* <TagsInputSearch
             user={username}
             onGastosChange={setGastos} 
             tags={tags}
-          />
+          /> */}
           {/* <SearchBar 
             setValueSearch={handleSearch} 
             setSearchType={handleSearchType} 
