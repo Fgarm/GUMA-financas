@@ -13,7 +13,7 @@ class Grupo(models.Model):
     descricao= models.TextField(blank=True)
     #image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
 
-    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user")
+    usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="group_user", through="Grupo_User")
 
     class Meta:
         verbose_name = "Grupo"
@@ -64,9 +64,16 @@ class Iten_User(models.Model):
         verbose_name = "Item_Usuario"
         verbose_name_plural = "Itens_Usuarios"
 
+class Grupo_User(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item = models.ForeignKey(Grupo, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Grupo_User"
+        verbose_name_plural = "Grupos_Users"
+
 
 
 
     
-
 

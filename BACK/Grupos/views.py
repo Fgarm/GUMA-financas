@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .models import Grupo, Gastos_Grupo, Itens, Iten_User, GrupoGasto_User
+from .models import Grupo, Gastos_Grupo, Itens, Iten_User, GrupoGasto_User, Grupo_User
 from .serializer import GastoGrupoSerializer, GrupoSerializer, ItensSerializer
 
 class GrupoView(APIView):
@@ -63,13 +63,13 @@ class GrupoView(APIView):
             return Response("ASSOCIACAO CADASTRADA", status=status.HTTP_201_CREATED)
         except:
             return Response("ASSOCIACAO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
-
-        
-        
-        
         
 
-
-
-    
-
+    @api_view(['POST'])
+    def cadastrar_usuario_grupo (request):
+        try:
+            Grupo_User.objects.create(item_id=request.data['item_id'], usuario_id=request.data['user_id'])
+            return Response("USUARIO CADASTRADA", status=status.HTTP_201_CREATED)
+        except:
+            return Response("USUARIO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
+        

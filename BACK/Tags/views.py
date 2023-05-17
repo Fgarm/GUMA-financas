@@ -86,3 +86,5 @@ class TagApiView(APIView):
         if request.method == 'DELETE':
             tag.delete()
             return Response(status=status.HTTP_202_ACCEPTED)
+        
+
