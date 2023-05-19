@@ -10,19 +10,19 @@ urlpatterns = [
 
 
 
-    #Usuario rotas
+    # Rotas Usuario
     path('auth/', include('Usuario.urls')),
     path('token/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
 
 
-    # API de Gastos
+    # Rotas Gastos
     path('api/gastos/', include('Gastos.urls')),
     
-    # Caminho Tags
+    # Rotas Tags
     path('tags/', include('Tags.urls')),
 
-    # Caminho Grupos
+    # Rotas Grupo
     path('grupos/', include('Grupos.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
