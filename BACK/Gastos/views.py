@@ -290,6 +290,17 @@ class GastoApiView(APIView):
             # adicionando a cor da tag
             colors.append(tag.cor)
 
+        print("data orig: ", data)
+
+        # pegar os 5 maiores gastos na lista 'data'
+        # ok, só ordenar
+        indices = np.argsort(data)[-5:-1] # argsort nao ordena 
+        print("data ordenado: ", data)
+        print("indices", indices)   # indices retornados pelo argsort são os dos menores valores no vetor desordenado
+
+        # identificar quais tags e cores correspondentes à esses maiores valores
+         
+
         data_json = {'data': data, 'labels': labels, 'colors': colors}
         print("json enviado: ", data_json)
         return JsonResponse(data_json)

@@ -169,7 +169,7 @@ export function useDoughnutChartData() {
   
   useEffect(() => {
     const user = "Guxtavin"// localStorage.getItem("cadastro_user"); // "token"
-    const mes = 1;
+    const mes = 5;
     const ano = 2023;
 
     const request = {
