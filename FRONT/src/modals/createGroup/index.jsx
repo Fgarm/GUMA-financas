@@ -31,7 +31,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef }) {
 
 
     console.log(data)
-    axios.post('http://localhost:8000/criar-grupo/', data)
+    axios.post('http://localhost:8000/cadastrar-grupo/', data)
       .then(response => {
         if (response.status === 200) { 
           navigate('/', { replace: true });

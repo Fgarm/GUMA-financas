@@ -4,10 +4,17 @@ import axios from "axios";
 export default function TagsInputSearch(props) {
 
     const [gastos, setGastos] = useState([]);
+    const[tags, setTags] = useState([])
 
     useEffect(() => {
         props.onGastosChange(gastos);
     }, [gastos]);
+
+
+    useEffect(() => {  
+        getTags();
+    }, []);
+        
 
     const user = props.user
 
@@ -22,6 +29,23 @@ export default function TagsInputSearch(props) {
           .then((response) => {
             const data = response.data;
             setGastos(data);
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      }
+
+      const getTags = () => {
+        axios({
+          method: "post",
+          url: "http://localhost:8000/tags/tag-per-user/",
+          data: {
+            user: user
+          },
+        })
+          .then((response) => { 
+            setTags(response.data);
+            console.log(tags)
           })
           .catch(error => {
             console.log(error);
@@ -63,9 +87,9 @@ export default function TagsInputSearch(props) {
                     
                     <option value="todas">Todas as tags</option>
 
-                    {props.tags.length === 0 ? <p></p> :
+                    {tags.length === 0 ? <p></p> :
                      (
-                        props.tags.map((tags, key) => (
+                        tags.map((tags, key) => (
                             <option value={tags.categoria}>{tags.categoria}</option>
                         ))
                     )}

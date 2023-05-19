@@ -3,22 +3,74 @@ import axios from 'axios';
 
 export default function ToggleSearchStatus(props) {
 
-    const username = props.user;
+  const username = props.user;
 
-    const [selectedOption, setSelectedOption] = useState("todos");
+  const [selectedOption, setSelectedOption] = useState("todos");
+  const [tags, setTags] = useState([]);
+  const [gastos, setGastos] = useState([]);
+  const [tagsSearch, setTagsSearch] = useState('todas');
+  //const [search, setSearch] = useState();
+  const search = selectedOption === "pagos" ? true : false;
+  useEffect(() => {
+    props.onGastosChange(gastos);
+  }, [gastos]);
+  
+  useEffect(() => {  
+    getTags();
+  }, []);
 
-    const [gastos, setGastos] = useState([]);
+  useEffect(() => {
+    handleSearch()
+  }, [tagsSearch, selectedOption])
 
-    useEffect(() => {
-        props.onGastosChange(gastos);
-      }, [gastos]);
-
-      const getGastos = () => {
-        axios({
-          method: "post",
-          url: "http://localhost:8000/api/gastos/obter-gasto/",
-          data: {
-            user: username
+  const getGastos = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/api/gastos/obter-gasto/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => {
+        if (response.status == 200) {
+          const data = response.data;
+          setGastos(data);
+        } else {
+          setGastos([]);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
+    
+    function getGastosPerStatus(status){
+      axios({
+        method: "post",
+        url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
+        data: {
+        user: username,
+          pago: status
+        },
+      })
+      .then((response) => {
+        if (response.status == 200) {
+          const data = response.data;
+            setGastos(data);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
+    
+    function getGastosPerTag(value) {
+      axios({
+        method: "post",
+        url: "http://localhost:8000/api/gastos/gastos-per-tag/",
+        data: {
+          user: username,
+          tag: value
           },
         })
           .then((response) => {
@@ -28,43 +80,90 @@ export default function ToggleSearchStatus(props) {
           .catch(error => {
             console.log(error);
           })
-      }
-    
+    }
 
-    const searchFilter = (status) => {
-          axios({
-            method: "post",
-            url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
-            data: {
-              user: username,
-              pago: status
-            },
-          })
-            .then((response) => {
-              if (response.status == 200) {
-                const data = response.data;
-                setGastos(data);
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            })
-        }
+  function handleSearch() {
 
-    const handleOptionClick = (value) => {
-        setSelectedOption(value);
+    console.log(tagsSearch, selectedOption)
+    if (tagsSearch === "todas" && selectedOption === "todos") {
+      getGastos();
+    } else if (tagsSearch === "todas" && selectedOption === "pagos") {
+        getGastosPerStatus(true);
+    } else if (tagsSearch === "todas" && selectedOption === "naoPagos") {
+      getGastosPerStatus(false);
+    } else if (tagsSearch !== "todas" && selectedOption === "todos") {
+      getGastosPerTag(tagsSearch);
+    } else if (tagsSearch !== "todas" && selectedOption !== "todas") {
+      // if (selectedOption == "pagos") {
+      //   setSearch(false);
+      // } else if (selectedOption == "naoPagos"){
+      //   setSearch(true);
+      // }
+      axios({
+        method: "post",
+        url: "http://localhost:8000/api/gastos/gastos-per-tag-por-pago/",
+        data: {
+          user: username,
+          pago: search,
+          tag: tagsSearch
+        },
+      })
+        .then((response) => {
+          // if (response.status == 200) {
+            const data = response.data;
+            setGastos(data);
+          // }
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    }
+  }
 
-        if (value === "pagos") {
-            searchFilter(true);
-        } else if (value === "naoPagos") {
-            searchFilter(false);
-            // props.onGastosChange(gastos);
-        } else {
-            getGastos();
-        }
-    };
+  const getTags = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/tags/tag-per-user/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => { 
+        setTags(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  const handleOptionClick = (value) => {
+    setSelectedOption(value);
+  };
+
+  function handleChangeTags(e) {
+    setTagsSearch(e.target.value); 
+  }
 
     return (
+
+      <div  className='flex-search'>
+        <div className="tags-input-search-container">
+
+          <select name="tags" id="tags" className="tags-input-search" onChange={handleChangeTags} value={props.editado}> 
+              
+              <option value="todas">Todas as tags</option>
+
+              {tags.length === 0 ? <p></p> :
+               (
+                  tags.map((tags, key) => (
+                      <option value={tags.categoria}>{tags.categoria}</option>
+                  ))
+              )}
+
+          </select>
+
+        </div>
+
         <div class="customCheckBoxHolder">
             <input 
             class="customCheckBoxInput" 
@@ -109,5 +208,6 @@ export default function ToggleSearchStatus(props) {
                 </div>
             </label>
         </div>
+    </div>
     )
 }
