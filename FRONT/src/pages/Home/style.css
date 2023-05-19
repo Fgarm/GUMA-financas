@@ -137,23 +137,24 @@ h2.red {
 
 .sidenav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
-    width: 175px; /* Set the width of the sidebar */
+    width: 200px; /* Set the width of the sidebar */
     position: fixed; /* Fixed Sidebar (stay in place on scroll) */
     z-index: 1; /* Stay on top */
     top: 80; /* Stay at the top */
     left: 0;
-    background-color: #9cbddd; /* Black */
+    /* background-color: #9cbddd; Black */
+    background-color: teal; /* Black */
     overflow-x: hidden; /* Disable horizontal scroll */
     padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
 }
 
 .sidenav div.flex {
     width: 100%;
-    padding: 5px;
+    padding: 2px;
 }
 
 .sidenav div.flex:hover {
@@ -226,7 +227,7 @@ h2.red {
   }
   
   .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox {
-    background-color: #2d6737;
+    background-color: teal;
     color: white;
     box-shadow: rgba(0, 0, 0, 0.23) 0px -4px 1px 0px inset, rgba(255, 255, 255, 0.17) 0px -1px 1px 0px, rgba(0, 0, 0, 0.17) 0px 2px 4px 1px;
   }
@@ -236,7 +237,7 @@ h2.red {
   }
   
   .customCheckBoxInput:checked + .customCheckBoxWrapper .customCheckBox:hover {
-    background-color: #34723f;
+    background-color: teal;
     box-shadow: rgba(0, 0, 0, 0.26) 0px -4px 1px 0px inset, rgba(255, 255, 255, 0.17) 0px -1px 1px 0px, rgba(0, 0, 0, 0.15) 0px 3px 6px 2px;
   }
   

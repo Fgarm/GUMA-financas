@@ -20,7 +20,6 @@ import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
-  LinearScale,
   PointElement,
   LineElement,
   Title,

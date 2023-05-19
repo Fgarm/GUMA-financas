@@ -3,6 +3,7 @@ import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
 import MyPage from "../pages/Groups";
+import ChartComponent from "../components/chart";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 function PrivateRoute({ children }) {

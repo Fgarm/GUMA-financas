@@ -3,8 +3,12 @@ p {
 }
 
 .flex{
+    gap: 2px;
+    width: 3px;
+    height: 45px;
     display: flex;
+    margin-left: 20px;
+    border-radius: 8px;
     flex-direction: row;
     align-items: center;
-    gap: 10px;
 }

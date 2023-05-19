@@ -95,6 +95,7 @@ export default function LogIn() {
         <br></br>
 
         <InputGroup size='md'>
+          
           <Input
             pr='4.5rem'
             type={visible ? 'text' : 'password'}
