@@ -31,10 +31,10 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef }) {
 
 
     console.log(data)
-    axios.post('http://localhost:8000/cadastrar-grupo/', data)
+    axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
       .then(response => {
-        if (response.status === 200) { 
-          navigate('/', { replace: true });
+        if (response.status === 201) { 
+          onClose()
         } else if (response.status === 409) {
           alert('Grupo de nome já cadastrado no sistema')
         } else if (response.status === 400) {

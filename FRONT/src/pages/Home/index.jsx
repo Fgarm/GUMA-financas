@@ -48,7 +48,6 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
-  const [grupos, setGrupos] = useState([]);
 
   const [tagsList, setTagsList] = useState({})
 
@@ -86,23 +85,6 @@ export default function Home() {
   //     localStorage.removeItem("cadastro_user");
   //   }
   // });
-
-  function getGrupos(){
-    axios({
-      method: "post",
-      url: "http://localhost:8000/api/grupos/associar-user-grupoGastos/",
-      data: {
-        user: username
-      },
-    })
-      .then((response) => {
-        const data = response.data;
-        setGrupos(data);
-      })
-      .catch(error => {
-        console.log(error);
-      })
-  }
 
   function handleTagsChange(newTag) { 
     setTagsList(newTag);
@@ -270,54 +252,6 @@ export default function Home() {
     getGastos();
   }, [flag]);
 
-  // useEffect(() => {
-  //   if (shouldRunEffect) {
-  //     searchFilter();
-  //   } else {
-  //     setShouldRunEffect(true);
-  //   }
-  // }, [searchValue, searchOption]);
-
-  // const searchFilter = () => {
-  //   if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
-  //     axios({
-  //       method: "post",
-  //       url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
-  //       data: {
-  //         user: username,
-  //         pago: searchValue
-  //       },
-  //     })
-  //       .then((response) => {
-  //         if (response.status == 200) {
-  //           const data = response.data;
-  //           setGastos(data);
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //       })
-  //   } else if (searchOption == 'tags') {
-  //     axios({
-  //       method: "post",
-  //       url: "http://localhost:8000/api/gastos/gastos-per-tag/",
-  //       data: {
-  //         user: username,
-  //         tag: searchValue
-  //       },
-  //     })
-  //       .then((response) => {
-  //         if (response.statusCode == 200) {
-  //           const data = response.data;
-  //           setGastos(data);
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //       })
-  //   }
-
-  // };
 
   function handleSearchType(type) {
     console.log(type)
@@ -368,15 +302,10 @@ export default function Home() {
           <h2>Olá, {username}</h2>
         </div>
         <div className="bt-sb">
-          {/* <TagsInputSearch
-            user={username}
-            onGastosChange={setGastos} 
-            tags={tags}
-          /> */}
-          {/* <SearchBar 
-            setValueSearch={handleSearch} 
-            setSearchType={handleSearchType} 
-            /> */}
+        <ToggleSearchStatus
+                user={username}
+                onGastosChange={setGastos}
+              />
           <Button 
             pr='10px' 
             onClick={onModalTagOpen}>
@@ -390,10 +319,7 @@ export default function Home() {
         </div>
       </header>
 
-              <ToggleSearchStatus
-                user={username}
-                onGastosChange={setGastos}
-              />
+              
       <div>
         <Modal
           isOpen={isModalTagOpen}
