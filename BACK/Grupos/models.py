@@ -22,7 +22,7 @@ class Grupo(models.Model):
 
 class Gastos_Grupo(models.Model):
     grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    valor_total = models.DecimalField(max_digits=19, decimal_places=2)
+    valor_total = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     nome_gasto = models.CharField(max_length=255, null=True)
 
     id_grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True)
@@ -35,8 +35,10 @@ class Gastos_Grupo(models.Model):
 
 class Itens(models.Model):
     item_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    preco = models.DecimalField(max_digits=19, decimal_places=2)
+    preco_unitario = models.DecimalField(max_digits=19, decimal_places=2)
+    preco_total_item = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descricao = models.CharField(max_length=255, null=True)
+    quantidade = models.IntegerField(default=1, blank=True)
 
     id_GastosGrupo = models.ForeignKey(Gastos_Grupo, on_delete=models.CASCADE, null=True)
 
@@ -66,7 +68,7 @@ class Iten_User(models.Model):
 
 class Grupo_User(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey(Grupo, on_delete=models.CASCADE)
+    grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Grupo_User"
