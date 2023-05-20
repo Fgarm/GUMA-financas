@@ -255,7 +255,7 @@ class GastoApiView(APIView):
 
 
     @api_view(['GET', 'POST'])
-    def get_gastos_mais_relevantes(request): # req: user, mes (numero: 1 == jan, etc.) e ano
+    def get_gastos_mais_relevantes(request):
 
         # obtendo as tags do user selecionado
         try:
@@ -278,7 +278,7 @@ class GastoApiView(APIView):
 
         for tag in tags:
 
-            # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag 
+            # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag
             totalGastosPorTag = np.sum([gasto.valor for gasto in gastos if gasto.tag == tag.categoria])
             
             # adicionando a soma do valor dos gastos de uma categoria/tag na lista de dados que será exibida no gráfico
@@ -290,17 +290,41 @@ class GastoApiView(APIView):
             # adicionando a cor da tag
             colors.append(tag.cor)
 
-        print("data orig: ", data)
+        if len(data) > 5:
 
-        # pegar os 5 maiores gastos na lista 'data'
-        # ok, só ordenar
-        indices = np.argsort(data)[-5:-1] # argsort nao ordena 
-        print("data ordenado: ", data)
-        print("indices", indices)   # indices retornados pelo argsort são os dos menores valores no vetor desordenado
+            print("data orig: ", data)
 
-        # identificar quais tags e cores correspondentes à esses maiores valores
-         
+            # argsort "ordena" a lista data de forma crescente e obtém os indices desses valores
+            indices = np.argsort(data)
+            #print("data ordenado: ", data)
+            print("indices", indices)
 
-        data_json = {'data': data, 'labels': labels, 'colors': colors}
-        print("json enviado: ", data_json)
-        return JsonResponse(data_json)
+            # do mais relevante (maior) para o menos relevante (menor) - ordem decrescente
+            data_maiores_valores = []
+            labels_maiores_valores = []
+            colors_maiores_valores = []
+            
+            i = 4
+            while i > -1:
+                
+                # obtendo os 5 maiores valores da lista 'data' - os 5 mais relevantes
+                data_maiores_valores.append(data[indices[i]])
+                
+                # obtendo quais categorias correspondem à esses maiores valores
+                labels_maiores_valores.append(labels[indices[i]])
+
+                # obtendo quais cores correspondentes à esses maiores valores
+                colors_maiores_valores.append(colors[indices[i]])
+
+                i -= 1
+
+            data_json = {'data': data_maiores_valores, 'labels': labels_maiores_valores, 'colors': colors_maiores_valores}
+            print("json enviado: ", data_json)
+            return JsonResponse(data_json)
+        
+        # só devolve os arrays do tamanho que eles tiverem
+        else:
+
+            data_json = {'data': data, 'labels': labels, 'colors': colors}
+            print("json enviado: ", data_json)
+            return JsonResponse(data_json)
