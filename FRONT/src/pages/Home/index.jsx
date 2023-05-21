@@ -294,13 +294,9 @@ export default function Home() {
     
     return (
       
-      <div >
+      <div className="body">
       <Sidebar user={username}/>
       <header className='home'>
-        <div className='presentation'>
-          <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
-          <h2>Olá, {username}</h2>
-        </div>
         <div className="bt-sb">
         <ToggleSearchStatus
                 user={username}

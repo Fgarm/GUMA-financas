@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./style.css";
 
 import { Icon } from "@chakra-ui/react";
@@ -18,6 +18,12 @@ import axios from 'axios';
 export default function Sidebar(props) {
     const [grupos, setGrupos] = useState([]);
     const user = localStorage.getItem('cadastro_user');
+    const [message, setMessage] = useState(false)
+
+    function teste(){
+        console.log("dasdasdsa")
+        setMessage(!message)
+    }
 
     function getUserGroups() {
         axios({
@@ -46,7 +52,6 @@ export default function Sidebar(props) {
         closeCreateGroup();
     };
 
-
     const navigate = useNavigate();
 
     const handleLogOut = () => {
@@ -62,7 +67,7 @@ export default function Sidebar(props) {
 
     return (
         <div className="sidenav">
-            <p>Olá, {props.user}</p>
+            <p className="presentation">Olá, {props.user}</p>
 
             <div
                 className="flex"
@@ -72,23 +77,27 @@ export default function Sidebar(props) {
             <div className="flex" onClick={handleStatistics}>
                 <Icon as={BsBarChartFill} w={7} h={7} color="blue.500" /> Análise de Gastos
             </div>
-            <div className="flex" onClick={handleLogOut}>
-                <Icon as={BiLogOut} w={7} h={7} color="red.500" /> Sair
-            </div>
-            <div className="flex">
-                <Icon as={MdGroups} w={7} h={7} color="black.500" /> Grupos
+            <div className="flex" onClick={teste}>
+                <Icon as={MdGroups} w={7} h={7} color="black.500"/> Grupos
                 {/* {grupos.length === 0 ? <p></p> :
                     (
                         grupos.map((grupo, key) => (
-                            <div className="flex" onClick={handleStatistics}>
+                            <div className="flex">
                                 <Icon as={MdGroups} w={7} h={7} /> {grupo.nome}
                             </div>
 
                         ))
                     )} */}
+            </div>
                 <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </Groups>
+
+ 
+            {message == true ? <p>ola mundo</p> : ""}
+
+            <div className="flex" onClick={handleLogOut}>
+                <Icon as={BiLogOut} w={7} h={7} color="red.500" /> Sair
             </div>
         </div>
     )

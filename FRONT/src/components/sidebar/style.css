@@ -1,9 +1,11 @@
-p {
-    color: white;
+.presentation {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
 }
-
-.flex{
-    gap: 2px;
+.flex {
+    gap: 5px;
     width: 3px;
     height: 45px;
     display: flex;
@@ -11,4 +13,10 @@ p {
     border-radius: 8px;
     flex-direction: row;
     align-items: center;
+    justify-content:flex-start;
+    transition: background-color 0.3s ease;
+}
+
+.flex:hover {
+    background-color: #ddd;
 }
