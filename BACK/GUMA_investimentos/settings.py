@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     
     'Gastos',
     'Usuario',
-    'Tags'
+    'Tags',
+    'Grupos'
 ]
 
 MIDDLEWARE = [
@@ -95,8 +96,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'guma_financas',
-        'USER': 'USER_DB',
-        'PASSWORD': 'SENHA_DB',
+        'USER': 'root',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
