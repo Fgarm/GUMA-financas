@@ -561,7 +561,7 @@ export default function Home() {
 
 
       <div className="gasto">
-        {gastos.length === 0 ? <p>Sem Gastos</p> : (
+        {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
           gastos.map((gasto, key) => (
             <div key={gasto.id} className="gasto_information">
               <div className='header'>
