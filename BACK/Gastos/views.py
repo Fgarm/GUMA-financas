@@ -250,8 +250,8 @@ class GastoApiView(APIView):
             data.append(somaTodosGastosMes)
 
         # inverte ambas listas para ficar da forma correta no gráfico
-        data_json = {'data': data[::-1], 'labels': labels[::-1]}
-        return JsonResponse(data_json)
+        json_response = {'data': data[::-1], 'labels': labels[::-1]}
+        return JsonResponse(json_response)
 
 
     @api_view(['GET', 'POST'])
@@ -292,39 +292,28 @@ class GastoApiView(APIView):
 
         if len(data) > 5:
 
-            print("data orig: ", data)
-
             # argsort "ordena" a lista data de forma crescente e obtém os indices desses valores
             indices = np.argsort(data)
-            #print("data ordenado: ", data)
-            print("indices", indices)
 
             # do mais relevante (maior) para o menos relevante (menor) - ordem decrescente
             data_maiores_valores = []
             labels_maiores_valores = []
             colors_maiores_valores = []
-            
-            i = 4
-            while i > -1:
                 
-                # obtendo os 5 maiores valores da lista 'data' - os 5 mais relevantes
-                data_maiores_valores.append(data[indices[i]])
+            # obtendo os 5 maiores valores da lista 'data' - os 5 mais relevantes
+            data_maiores_valores = [data[i] for i in indices[-1:-6:-1]]
                 
-                # obtendo quais categorias correspondem à esses maiores valores
-                labels_maiores_valores.append(labels[indices[i]])
+            # obtendo quais categorias correspondem à esses maiores valores
+            labels_maiores_valores = [labels[i] for i in indices[-1:-6:-1]]
 
-                # obtendo quais cores correspondentes à esses maiores valores
-                colors_maiores_valores.append(colors[indices[i]])
+            # obtendo quais cores correspondentes à esses maiores valores
+            colors_maiores_valores = [colors[i] for i in indices[-1:-6:-1]]
 
-                i -= 1
-
-            data_json = {'data': data_maiores_valores, 'labels': labels_maiores_valores, 'colors': colors_maiores_valores}
-            print("json enviado: ", data_json)
-            return JsonResponse(data_json)
+            json_response = {'data': data_maiores_valores, 'labels': labels_maiores_valores, 'colors': colors_maiores_valores}
+            return JsonResponse(json_response)
         
-        # só devolve os arrays do tamanho que eles tiverem
+        # só devolve os arrays independente do tamanho que eles tiverem (menor ou igual a 5)
         else:
 
-            data_json = {'data': data, 'labels': labels, 'colors': colors}
-            print("json enviado: ", data_json)
-            return JsonResponse(data_json)
+            json_response = {'data': data, 'labels': labels, 'colors': colors}
+            return JsonResponse(json_response)
