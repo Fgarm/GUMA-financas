@@ -30,7 +30,27 @@ ChartJS.register(
   ArcElement // p grafico de rosquinha
 );
 
+// converte formato de cor de hexadecimal para RGB
+function hexToRgb(listHex) {
+  
+  const backgroundColorList = []
+  const borderColorList = []
 
+  listHex.forEach(hex => {
+
+    // convertendo cada parte de uma string hexadecimal em inteiros
+    var r = parseInt(hex.substring(0, 2), 16);
+    var g = parseInt(hex.substring(2, 4), 16);
+    var b = parseInt(hex.substring(4, 6), 16);
+
+    // criando string RGB - 'rgba({R}, {G}, {B}, {opacity})'
+    backgroundColorList.push(`rgba(${r}, ${g}, ${b}, 0.3)`);
+    borderColorList.push(`rgba(${r}, ${g}, ${b}, 1)`);
+  })
+  
+  // retornar objeto js com as duas listas
+  return { backgroundColorList, borderColorList };
+}
 
 // Dados do gráfico de Linha
 const lineChartData = {
@@ -213,7 +233,10 @@ export default function DoughnutChartComponent() {
   doughnutChartData.labels = chartData["labels"]
 
   // colors
-  doughnutChartData.datasets[0].backgroundColor = chartData["colors"]
+  const colorObject = hexToRgb(chartData["colors"])
+
+  doughnutChartData.datasets[0].backgroundColor = colorObject.backgroundColorList
+  doughnutChartData.datasets[0].borderColor = colorObject.borderColorList
   
   // para debug
   // console.log("data: ", doughnutChartData.datasets[0].data)
@@ -228,5 +251,4 @@ export default function DoughnutChartComponent() {
 
 }
 
-
-// criar componente para renderizar a página toda (todos os gráficos/componentes)
+// criar componente para renderizar a página toda (todos os gráficos/componentes) - que é de fato o que deveria estar aqui, o resto deveria estar em componentes
