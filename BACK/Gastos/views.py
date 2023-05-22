@@ -24,6 +24,51 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(gastos, context={'request': request}, many=True)
             return Response(serializer.data)
 
+    @api_view(['GET', 'POST'])
+    def pegar_gasto_tag_filter_pago(request):
+
+        # obtendo o user selecionado
+        try:
+            user = User.objects.get(username=request.data["user"])
+        # verificando se o user selecionado existe
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+        except User.MultipleObjectsReturned:
+            return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
+
+
+        try:
+            tag = Tag.objects.get(user=user.username, categoria=request.data["tag"])
+        except Tag.DoesNotExist:
+            return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
+        except Tag.MultipleObjectsReturned:
+            return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)    
+        gasto = Gasto.objects.filter(user=user.username, tag=tag.categoria)
+
+        # verificando se o user tem algum gasto
+        if not gasto:
+            return Response("Nenhum gasto com essa tag encontrado", status=status.HTTP_404_NOT_FOUND)
+        
+        # verificando qual é o filtro desejado (pago ou não pago)
+        if request.data["pago"]:
+            gastos_pagos = gasto.filter(pago=True)
+
+            # verificando se existe algum gasto pago no resultado da consulta
+            if not gastos_pagos:
+                return Response("Nenhum gasto 'pago' encontrado", status=status.HTTP_404_NOT_FOUND)
+
+            serializer = GastoSerializer(gastos_pagos, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        elif request.data["pago"] == False:
+            gastos_nao_pagos = gasto.filter(pago=False)
+
+            # verificando se existe algum gasto não pago no resultado da consulta
+            if not gastos_nao_pagos:
+                return Response("Nenhum gasto 'não pago' dessa tag encontrado", status=status.HTTP_404_NOT_FOUND)
+
+            serializer = GastoSerializer(gastos_nao_pagos, context={'request': request}, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     @api_view(['POST'])
     def pegar_gasto_tag(request):
