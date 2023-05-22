@@ -5,6 +5,7 @@ import { Icon } from "@chakra-ui/react";
 import { BiLogOut } from "react-icons/bi";
 import { MdGroups } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 
 import Groups from "../../modals/createGroup";
@@ -18,14 +19,18 @@ import axios from 'axios';
 export default function Sidebar(props) {
     const [grupos, setGrupos] = useState([]);
     const user = localStorage.getItem('cadastro_user');
-    const [message, setMessage] = useState(false)
+    const [showGroup, setShowGroup] = useState(false)
 
-    function teste(){
-        console.log("dasdasdsa")
-        setMessage(!message)
+    const navigate = useNavigate();
+
+    function navigateGroup(id) {
+        console.log("navigate")
+        console.log(id)
+        localStorage.setItem('grupo_id', id)
+        navigate('/group');
     }
 
-    function getUserGroups() {
+    function getGroupsUser() {
         axios({
             method: "post",
             url: "http://localhost:8000/grupos/grupos-usuario/",
@@ -34,8 +39,8 @@ export default function Sidebar(props) {
             },
         }).then(response => {
             setGrupos(response.data)
-            console.log(user)
             console.log(response.data)
+            setShowGroup(!showGroup)
         })
             .catch(error => {
                 console.log(error)
@@ -52,8 +57,6 @@ export default function Sidebar(props) {
         closeCreateGroup();
     };
 
-    const navigate = useNavigate();
-
     const handleLogOut = () => {
         console.log('logout')
         localStorage.removeItem('cadastro_user')
@@ -62,7 +65,7 @@ export default function Sidebar(props) {
     }
 
     function handleStatistics() {
-        navigate('/extratos');
+        navigate('/statistics');
     }
 
     return (
@@ -77,24 +80,22 @@ export default function Sidebar(props) {
             <div className="flex" onClick={handleStatistics}>
                 <Icon as={BsBarChartFill} w={7} h={7} color="blue.500" /> Análise de Gastos
             </div>
-            <div className="flex" onClick={teste}>
+            <div className="flex" onClick={getGroupsUser}>
                 <Icon as={MdGroups} w={7} h={7} color="black.500"/> Grupos
-                {/* {grupos.length === 0 ? <p></p> :
-                    (
-                        grupos.map((grupo, key) => (
-                            <div className="flex">
-                                <Icon as={MdGroups} w={7} h={7} /> {grupo.nome}
-                            </div>
-
-                        ))
-                    )} */}
+                    
+                {showGroup == true ? <Icon as={RiArrowDropUpLine} w={7} h={7} /> : <Icon as={RiArrowDropDownLine} w={7} h={7}/>}
             </div>
-                <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup}>
+                <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup} user={user}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </Groups>
 
- 
-            {message == true ? <p>ola mundo</p> : ""}
+                {showGroup && grupos.length !== 0 ? (
+                        grupos.map((grupo, key) => (
+                    <div className="flex" onClick={() => navigateGroup(grupo.grupo_id)}>
+                        <Icon as={MdGroups} w={5} h={5} /> {grupo.nome}
+                    </div>
+                        ))
+                    ) : null}
 
             <div className="flex" onClick={handleLogOut}>
                 <Icon as={BiLogOut} w={7} h={7} color="red.500" /> Sair

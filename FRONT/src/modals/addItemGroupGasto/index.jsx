@@ -17,20 +17,34 @@ import {
   import axios from 'axios'
 
 
-export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) {
+export default function AddItemGroupGastp({ isOpen, onClose, initialRef, finalRef, grupoGasto, handleCreateSuccess}) {
 
   const [nome, setNome] = useState('');
+  const [valor, setValor] = useState(0);
+  const [quantidade, setQuantidade] = useState(0);
   const [descricao, setDescricao] = useState('');
+  const token = localStorage.getItem('token');
 
   const handleSubmit = () => {
 
     const data = {
-      username: user,
-      nome: nome,
-      descricao: descricao,
+        preco_unitario: valor,
+        quantidade: quantidade,
+        descricao: descricao,
+        id_GastosGrupo_id: groups_id,
+        nome_gasto: nome,
+        id_grupo_id: groups_id,
     }
 
-    axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
+    handleCreateSuccess()
+    console.log(groups_id)
+    console.log(data)
+
+    axios.post('http://localhost:8000/grupos/cadastrar-item/', data)//{
+    //     headers: {
+    //         'Authorization': `Bearer ${token}`
+    //       }
+    // })
       .then(response => {
         if (response.status === 201) { 
           onClose()
@@ -43,8 +57,6 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
         }
       })
       .catch(error => {
-        console.log(data);
-        console.log("Erro de solicitação-ERROR");
         console.log(error);
       });
   }
@@ -62,7 +74,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
             <ModalHeader 
               mb={0} 
               className='modal_header'>
-              Criando Grupo
+              Criando Gasto do Grupo
             </ModalHeader>
 
             <ModalBody>
@@ -72,17 +84,6 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
                 <Input onChange={(e) => {
                   setNome(e.target.value)
                 }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Descrição</label>
-                <br></br>
-                <Textarea 
-                placeholder='Sobre oque é o grupo?' 
-                onChange={(e) => {
-                    setDescricao(e.target.value)
-                }}
-                />
               </FormControl>
             </ModalBody>
 
