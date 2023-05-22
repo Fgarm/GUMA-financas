@@ -2,10 +2,10 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-import LineChartComponent from "../pages/Chart";
+
+import Graficos from "../pages/Graficos";
 
 import { Navigate, createBrowserRouter } from "react-router-dom";
-import DoughnutChartComponent from "../pages/Chart";
 
 function PrivateRoute({ children }) {
     const token = localStorage.getItem("token");
@@ -40,8 +40,7 @@ const Routering = createBrowserRouter([
         path: "/dashboard",
         element: 
         <React.StrictMode>
-            <LineChartComponent/>,
-            <DoughnutChartComponent/>, 
+            <Graficos />
         </React.StrictMode>
     },
 
