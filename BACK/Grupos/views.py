@@ -83,7 +83,13 @@ class GrupoView(APIView):
     @api_view(['POST'])
     def associar_usuario_grupo (request):
         try:
-            Grupo_User.objects.create(grupo_id=request.data['grupo_id'], usuario_id=request.data['user_id'])
+            user = User.objects.get(username=request.data["user"])
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+        except User.MultipleObjectsReturned:
+            return Response("Há muitos usuários com msm username", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Grupo_User.objects.create(grupo_id=request.data['grupo_id'], usuario_id=user.id)
             return Response("USUARIO CADASTRADA", status=status.HTTP_201_CREATED)
         except:
             return Response("USUARIO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
