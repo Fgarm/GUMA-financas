@@ -3,6 +3,7 @@ import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
 import MyPage from "../pages/Groups";
+import EntrarComLink from "../pages/Teste";
 import GroupPage from "../pages/Grupo";
 import ChartComponent from "../components/chart";
 import Extratos from "../pages/Extratos/Extratos"
@@ -58,6 +59,11 @@ const Routering = createBrowserRouter([
     {
         path: "group",
         element: <GroupPage/>,
+    },
+
+    {
+        path: "join",
+        element: <EntrarComLink />
     },
 
 ]);
