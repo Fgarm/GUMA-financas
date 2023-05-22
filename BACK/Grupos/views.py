@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .models import Grupo, Gastos_Grupo, Itens, Iten_User, GrupoGasto_User, Grupo_User
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 class GrupoView(APIView):
 
@@ -82,6 +83,8 @@ class GrupoView(APIView):
 
     @api_view(['POST'])
     def associar_usuario_grupo (request):
+        print(request)
+        print(request.data)
         try:
             user = User.objects.get(username=request.data["user"])
         except User.DoesNotExist:
@@ -89,24 +92,24 @@ class GrupoView(APIView):
         except User.MultipleObjectsReturned:
             return Response("Há muitos usuários com msm username", status=status.HTTP_400_BAD_REQUEST)
         try:
+            Grupo_User.objects.get(grupo_id=request.data['grupo_id'], usuario_id=user.id)
+            return Response("Usuário já está no grupo", status=status.HTTP_304_NOT_MODIFIED)
+        except Grupo_User.DoesNotExist:
+            pass
+        except ValidationError:
+            return Response("Esse id de grupo não é válido", status=status.HTTP_400_BAD_REQUEST)
+        try:
             Grupo_User.objects.create(grupo_id=request.data['grupo_id'], usuario_id=user.id)
-            return Response("USUARIO CADASTRADA", status=status.HTTP_201_CREATED)
+            return Response("Usuário cadastrado no grupo", status=status.HTTP_201_CREATED)
         except:
-            return Response("USUARIO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Usuário não cadastrado no grupo", status=status.HTTP_400_BAD_REQUEST)
         
 
     @api_view(['POST'])
     def gerar_link_grupo (request):
-        return Response(f"http://127.0.0.1:8000/grupos/entrar-com-link-grupo/?grupo={request.data['uuid_grupo']}")
+        return Response(f"http://127.0.0.1:8000/join/?grupo={request.data['uuid_grupo']}")
     
-    @api_view(['POST'])
-    def entrar_com_link (request):
-        try:
-            Grupo_User.objects.create(grupo_id=request.query_params.get('grupo'), usuario_id=request.data['user_id'])
-            return Response("USUARIO CADASTRADA", status=status.HTTP_201_CREATED)
-        except:
-            return Response("USUARIO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
-        
+
     # Select das informações de grupo
 
     @api_view(['POST'])

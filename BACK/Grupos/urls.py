@@ -11,7 +11,6 @@ urlpatterns = [
     path('associar-user-grupoGastos/', GrupoView.associar_user_grupoGastos, name='associar-user-grupoGastos'),
 
     path('gerar-link/', GrupoView.gerar_link_grupo, name='gerar-link'),
-    path('entrar-com-link-grupo/', GrupoView.entrar_com_link, name='Entrar com link'),
     path('associar-usuario-grupo/', GrupoView.associar_usuario_grupo, name='associar-usuario-grupo'),
 
     #obeter dados
