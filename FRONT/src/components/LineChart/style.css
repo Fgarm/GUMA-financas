@@ -1,0 +1,22 @@
+.LineChartComponent {
+    height: 65%;
+    width: 55%;
+    display: flex;
+    justify-content: center;
+    padding: 4% 2% 3%;
+    
+    /* border: 1px solid var(--dark); */
+    border-radius: 5%;
+    box-shadow:  28px 28px 39px #aeaeae,
+             -28px -28px 39px #f0f0f0;
+}
+
+@media screen and (max-width: 1000px) {
+    .LineChartComponent {
+        height: 45%;
+        width: 60%;
+        padding: 4% 2% 4%;
+        justify-content: center;
+        margin: 4%;
+    }
+}

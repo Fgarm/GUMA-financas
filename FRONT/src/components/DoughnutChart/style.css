@@ -1,0 +1,25 @@
+.DonutChartComponent {
+    height: 65%;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    padding: 2%;
+
+    /* border: 1px solid var(--dark); */
+    border-radius: 5%;
+    box-shadow:  28px 28px 39px #aeaeae,
+             -28px -28px 39px #f0f0f0;
+
+}
+
+@media screen and (max-width: 1000px) {
+    .DonutChartComponent {
+        height: 65%;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        padding: 3% 2% 4%;
+        margin: 4%;
+    }
+  }
+  

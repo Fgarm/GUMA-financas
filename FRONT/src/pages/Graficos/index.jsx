@@ -7,16 +7,14 @@ import DoughnutChartComponent from '../../components/DoughnutChart';
 
 
 
-// criar componente gráfico doughnut para os gastos mais relevantes
+// componente que renderizar a página toda (todos os gráficos/componentes)
 export default function Graficos() {
 
   return (
       <div className="GraficosPage">
-        <DoughnutChartComponent/>
         <LineChartComponent/>
+        <DoughnutChartComponent/>
       </div>
   );
 
 }
-
-// criar componente para renderizar a página toda (todos os gráficos/componentes) - que é de fato o que deveria estar aqui, o resto deveria estar em componentes

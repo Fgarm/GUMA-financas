@@ -7,35 +7,29 @@
 
 :root {
   --dark: #080f0d;
-  --light: #E6E6E6;
+  --light: #dedede;
 }
 
-.container {
+.GraficosPage {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: top;
   justify-content: space-around;
   height: 100vh;
-  padding: auto;
+  width: 100vw;
+  padding: 5% 10%;
+
+  border: 1px solid red;
 }
 
-.LineChartComponent {
-  padding: 5%;
-  width: 90%;
-  height: 80%;
-}
 
-@media screen and (max-width: 1350px) {
-  .container {
+@media screen and (max-width: 1000px) {
+  .GraficosPage {
     display: flex;
-    padding: auto;
+    padding: 3%;
     flex-direction: column;
     justify-content: space-around;
+    align-items: center;
   }
 }
 
-.DonutChartComponent {
-  padding: 1%;
-  width: 60%;
-  height: 60%;
-}

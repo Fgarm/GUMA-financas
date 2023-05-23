@@ -11,10 +11,10 @@ import {
   Tooltip,
   Filler,
   Legend,
-  // ArcElement, p grafico de rosquinha
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
+import './style.css';
 import axios from 'axios';
 
 ChartJS.register(
@@ -26,7 +26,6 @@ ChartJS.register(
   Tooltip,
   Filler,
   Legend,
-  // ArcElement p grafico de rosquinha
 );
 
 
