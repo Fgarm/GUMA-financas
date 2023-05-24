@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'Gastos',
     'Usuario',
     'Tags',
-    'Grupos'
+    'Grupos',
+    'Bancario'
 ]
 
 MIDDLEWARE = [

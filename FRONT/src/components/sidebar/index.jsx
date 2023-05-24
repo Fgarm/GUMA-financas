@@ -65,7 +65,7 @@ export default function Sidebar(props) {
     }
 
     function handleStatistics() {
-        navigate('/statistics');
+        navigate('/extratos');
     }
 
     return (

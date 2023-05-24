@@ -17,7 +17,7 @@ import {
   import axios from 'axios'
 
 
-export default function AddItemGroupGastp({ isOpen, onClose, initialRef, finalRef, grupoGasto, handleCreateSuccess}) {
+export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, handleCreateSuccess}) {
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
@@ -31,14 +31,10 @@ export default function AddItemGroupGastp({ isOpen, onClose, initialRef, finalRe
         preco_unitario: valor,
         quantidade: quantidade,
         descricao: descricao,
-        id_GastosGrupo_id: groups_id,
-        nome_gasto: nome,
-        id_grupo_id: groups_id,
+        id_GastosGrupo_id: gastoId,
     }
 
-    handleCreateSuccess()
-    console.log(groups_id)
-    console.log(data)
+    console.log(JSON.stringify(data))
 
     axios.post('http://localhost:8000/grupos/cadastrar-item/', data)//{
     //     headers: {
@@ -48,6 +44,8 @@ export default function AddItemGroupGastp({ isOpen, onClose, initialRef, finalRe
       .then(response => {
         if (response.status === 201) { 
           onClose()
+          alert('Item Cadastrado')
+          handleCreateSuccess()
         } else if (response.status === 409) {
           alert('Grupo de nome já cadastrado no sistema')
         } else if (response.status === 400) {
@@ -74,17 +72,35 @@ export default function AddItemGroupGastp({ isOpen, onClose, initialRef, finalRe
             <ModalHeader 
               mb={0} 
               className='modal_header'>
-              Criando Gasto do Grupo
+              {nomeGasto}
             </ModalHeader>
 
             <ModalBody>
               <FormControl mt={4}>
-                <label>Nome</label>
+                <label>Item</label>
                 <br></br>
                 <Input onChange={(e) => {
-                  setNome(e.target.value)
+                  setDescricao(e.target.value)
                 }} />
               </FormControl>
+
+              <FormControl mt={4}>
+                <label>Preço Unitário</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setValor(e.target.value)
+                }} />
+              </FormControl>
+                
+              <FormControl mt={4}>
+                <label>Quantidade</label>
+                <br></br>
+                <Input 
+                onChange={(e) => {
+                  setQuantidade(e.target.value)
+                }} />
+              </FormControl>
+
             </ModalBody>
 
             <ModalFooter>
