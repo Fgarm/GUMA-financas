@@ -113,7 +113,6 @@ class GrupoView(APIView):
     # Select das informações de grupo
 
     @api_view(['POST'])
-    
     def grupos_user(request):
         user_id = User.objects.filter(username=request.data["username"]).first()
         grupoUsers = Grupo_User.objects.filter(usuario_id=user_id)
@@ -127,7 +126,7 @@ class GrupoView(APIView):
     
         return Response(grupo_list,status=status.HTTP_200_OK)
 
-    
+    @api_view(['POST'])
     def usuarios_grupo(request):
         try:
             grupo_list = Grupo_User.objects.filter(grupo_id=request.data["grupo_id"])
