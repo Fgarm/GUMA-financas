@@ -280,6 +280,10 @@ class GastoApiView(APIView):
 
             # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag
             totalGastosPorTag = np.sum([gasto.valor for gasto in gastos if gasto.tag == tag.categoria])
+
+            # pula a iteração daquela tag caso o valor total de gastos daquela tag seja 0
+            if totalGastosPorTag == 0 or totalGastosPorTag is None or totalGastosPorTag == 0.0:
+                continue
             
             # adicionando a soma do valor dos gastos de uma categoria/tag na lista de dados que será exibida no gráfico
             data.append(totalGastosPorTag)
@@ -312,8 +316,15 @@ class GastoApiView(APIView):
             json_response = {'data': data_maiores_valores, 'labels': labels_maiores_valores, 'colors': colors_maiores_valores}
             return JsonResponse(json_response)
         
-        # só devolve os arrays independente do tamanho que eles tiverem (menor ou igual a 5)
         else:
+            
+            # retorna as (quantidades de) labels e cores corretamente caso o usuário tenha mais que 5 tags e o total de gastos de uma delas seja zero
+            quantidade_valida = data.__len__()
+            if quantidade_valida < 5:
+                labels = [labels[i] for i in range(quantidade_valida)]
+                colors = [colors[i] for i in range(quantidade_valida)]
+                data = [data[i] for i in range(quantidade_valida)]
 
+            # apenas devolve os arrays caso o tamanho seja exatamente 5
             json_response = {'data': data, 'labels': labels, 'colors': colors}
             return JsonResponse(json_response)
