@@ -5,6 +5,8 @@ import { useDisclosure } from '@chakra-ui/react';
 import { Button } from "@chakra-ui/react";
 import './style.css'
 import CreateGastoGroup from '../../modals/createGastoGrupo';
+import AddItemGroupGasto from '../../modals/addItemGroupGasto';
+
 import { MdAddShoppingCart } from "react-icons/md";
 
 import { Icon } from '@chakra-ui/react';
@@ -12,16 +14,37 @@ import { Icon } from '@chakra-ui/react';
 export default function GroupPage() {
 
     const grupoId = localStorage.getItem('grupo_id');
+    const [gastoId, setGastoId] = useState('')
+    const [grupoID, setGrupoID] = useState('')
+    const [nomeGasto, setNomeGasto] = useState('')
 
     const username = localStorage.getItem('cadastro_user');
 
     const [gastos, setGastos] = useState([]);
     const [flag, setFlag] = useState(0);
+    const [userClicked, setUserClicked] = useState(0);
 
-    
+
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
+    const { isOpen: isAddItemGastoGrupoOpen, onOpen: openAddItemGastoGrupo, onClose: closeAddItemGastoGrupo } = useDisclosure();
+
+    useEffect(() => {
+        getGroupInfo();
+    }, [flag]);
+
+    function handleEditGastoGrupo(gastoGrupo){
+        setGastoId(gastoGrupo.gasto_id)
+        setGrupoID(gastoGrupo.grupo_id)
+        setNomeGasto(gastoGrupo.nome)
+        openAddItemGastoGrupo()
+    }
+
+    function handleCloseItem() {
+        closeAddItemGastoGrupo()
+    }
 
     const handleCreateClick = () => {
+        setUserClicked(userClicked + 1)
         openCreateGroup();
     };
 
@@ -50,13 +73,9 @@ export default function GroupPage() {
         })
     }
 
-    useEffect(() => {
-        getGroupInfo();
-    }, [flag]);
-
     return (
         <div>   
-            <Button onClick={handleCreateClick}>Get Group Info</Button>
+            <Button onClick={handleCreateClick}>Criar Gasto do Grupo</Button>
             <h1>GroupPage</h1>
 
             <div className="gasto">
@@ -70,7 +89,7 @@ export default function GroupPage() {
                                 w={5} 
                                 h={5} 
                                 mr={2} 
-                                onClick={() => handleEditClick(gasto)} 
+                                onClick={() => handleEditGastoGrupo(gasto)} 
                             />
                             <Icon 
                                 color='red.500' 
@@ -84,9 +103,13 @@ export default function GroupPage() {
             )}
       </div>
 
-            <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId}>
+            <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
                     <Button onClick={handleClose}>Fechar</Button>
             </CreateGastoGroup>
+
+            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
+                <Button onClick={handleCloseItem}>Fechar</Button>
+            </AddItemGroupGasto>
         </div>
     )
 };
