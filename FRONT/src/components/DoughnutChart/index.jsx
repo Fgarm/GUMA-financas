@@ -13,7 +13,7 @@ import {
     Legend,
     ArcElement, // p grafico de rosquinha
 } from 'chart.js';
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 
 import './style.css';
 import axios from 'axios';
@@ -29,10 +29,13 @@ ChartJS.register(
     Legend,
     ArcElement // p grafico de rosquinha
 );
+    
+// Global
+const dataAtual = new Date();
 
 // converte formato de cor de hexadecimal para RGB
 function hexToRgb(listHex) {
-
+    
     const backgroundColorList = []
     const borderColorList = []
 
@@ -48,7 +51,7 @@ function hexToRgb(listHex) {
         borderColorList.push(`rgba(${r}, ${g}, ${b}, 1)`);
     })
 
-    // retornar objeto js com as duas listas
+    // retornando objeto js com as duas listas
     return { backgroundColorList, borderColorList };
 }
 
@@ -57,7 +60,7 @@ export const doughnutOptions = {
     responsive: true,
     plugins: {
         legend: {
-            position: 'top',
+            position: 'bottom',
         },
         title: {
             display: true,
@@ -101,49 +104,58 @@ export const doughnutChartData = {
     ],
 };
 
-// Hook que carrega os dados do gráfico de Linha por meio da API do Back
-export function useDoughnutChartData() {
-    const [chartData, setChartData] = useState(null);
-
-    useEffect(() => {
-        const user = localStorage.getItem("cadastro_user"); // "token"
-        const mes = 5;
-        const ano = 2023;
-
-        const request = {
-            user,
-            mes,
-            ano,
-        };
-
-        console.log("request: ", request)
-
-        axios.post('http://localhost:8000/api/gastos/gastos-mais-relevantes/', request)
-            .then(response => {
-                console.log("response: ", response.data)
-                setChartData(response.data);
-            })
-            .catch(error => {
-                console.log("Erro ao enviar/receber dados.", error);
-                setChartData(null);
-            });
-    }, []);
-
-    return chartData;
-}
 
 
-
-// criar componente gráfico doughnut para os gastos mais relevantes
+// componente do gráfico doughnut para os gastos mais relevantes
 export default function DoughnutChartComponent() {
-
+    
     // chartData: { data, labels(tags), colors }
-    const chartData = useDoughnutChartData();
+    const [chartData, setChartData] = useState(null);
+    const [month, setMonth] = useState(dataAtual.getMonth()+1);
+    const [year, setYear] = useState(dataAtual.getFullYear());
+    
+    const handleSelectChange = (event) => {
+        setMonth(event.target.value);
+        // setYear(event.target.value);
+    };
+    
+    // carrega os dados do gráfico de Rosquinha por meio da API do Back
+    useEffect(() => {
+
+        const fetchDoughnutChartData = async () => {
+
+            const user = localStorage.getItem("cadastro_user"); // "token"
+            const mes = month;
+            const ano = year;
+
+            const request = {
+                user,
+                mes,
+                ano,
+            };
+            
+            console.log("request: ", request)
+            
+            axios.post('http://localhost:8000/api/gastos/gastos-mais-relevantes/', request)
+                .then(response => {
+                    console.log("response: ", response.data)
+                    setChartData(response.data);
+                })
+                .catch(error => {
+                    console.log("Erro ao enviar/receber dados.", error);
+                    setChartData(null);
+                });
+        };
+        
+        setChartData(null);
+        fetchDoughnutChartData();
+
+    }, [month, year]);
 
     if (!chartData) {
         return <h1>Carregando Gráficos...</h1>;
     }
-
+    
     // data
     doughnutChartData.datasets[0].data = chartData["data"]
 
@@ -152,18 +164,53 @@ export default function DoughnutChartComponent() {
 
     // colors
     const colorObject = hexToRgb(chartData["colors"])
-
+    
     doughnutChartData.datasets[0].backgroundColor = colorObject.backgroundColorList
     doughnutChartData.datasets[0].borderColor = colorObject.borderColorList
-
+    
     // para debug
     // console.log("data: ", doughnutChartData.datasets[0].data)
     // console.log("labels/tags: ", doughnutChartData.labels)
     // console.log("colors: ", doughnutChartData.datasets[0].backgroundColor)
 
+    const meses = [
+        'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+    ];
+    
+    
     return (
         <div className="DonutChartComponent">
             <Doughnut options={doughnutOptions} data={doughnutChartData} />
+            
+            <div className="month-year-input-container">
+
+                <select value={month} onChange={handleSelectChange}>
+
+                    {meses.map((mes, index) => (
+                        <option key={index} value={index + 1}>{mes}</option>
+                    ))}
+
+                </select>
+
+
+
+
+                {/* <select name="year-ano?" id="year" className="year-input" onChange={handleChange} value={props.editado}> 
+                    
+                    <option value=""></option>
+
+                    {props.tags.length === 0 ? <p></p> :
+                     (
+                        props.tags.map((tags, key) => (
+                            <option value={tags.categoria}>{tags.categoria}</option>
+                        ))
+                    )}
+
+                </select> */}
+
+            </div>
+
         </div>
     );
 
