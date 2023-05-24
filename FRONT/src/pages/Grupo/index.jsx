@@ -17,7 +17,6 @@ export default function GroupPage() {
 
     const [gastos, setGastos] = useState([]);
     const [flag, setFlag] = useState(0);
-
     
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
 

@@ -19,6 +19,10 @@ import {
 
 export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef, groups_id, handleCreateSuccess}) {
 
+  const grupoId = localStorage.getItem('grupo_id');
+  
+  const [users, setUsers] = useState([]);
+
   const [nome, setNome] = useState('');
   const token = localStorage.getItem('token');
 
@@ -52,8 +56,50 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       });
   }
 
+  const getUsers = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/grupos/usuarios-grupo/",
+      data: {
+        grupo_id: grupoId
+      },
+    })
+      .then((response) => { 
+        setUsers(response.data);
+        console.log(grupoId)
+        console.log(users)
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+
+  const addGastoGroupUser = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/grupos/associar-user-grupoGastos/",
+      data: {
+        grupo_id: grupoId
+      },
+    })
+      .then((response) => { 
+        setUsers(response.data);
+        console.log(grupoId)
+        console.log(users)
+        setShouldRunEffect(true)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+
     return (
+
         <div>
+        
         <Modal
           initialFocusRef={initialRef}
           finalFocusRef={finalRef}
