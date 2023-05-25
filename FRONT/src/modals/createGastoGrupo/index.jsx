@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import PeopleInput from '../../components/peopleInput';
 import {
     Modal,
     ModalOverlay,
@@ -8,9 +8,7 @@ import {
     ModalBody,
     FormControl,
     Input,
-    Textarea,
     Button,
-    useDisclosure,
     ModalHeader,
   } from '@chakra-ui/react'
   
@@ -38,8 +36,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
         console.log(error)
       })
   }
-
-
 
   const handleSubmit = () => {
 
@@ -94,6 +90,13 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   setNome(e.target.value)
                 }} />
               </FormControl>
+
+              <FormControl mt={4}>
+                <label>Usuários</label>
+                <br></br>
+                <PeopleInput />
+              </FormControl>
+
             </ModalBody>
 
             <ModalFooter>
