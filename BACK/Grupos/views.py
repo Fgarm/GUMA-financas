@@ -23,13 +23,53 @@ class GrupoView(APIView):
         
     @api_view(['POST'])
     def cadastrar_gasto_grupo(request):
+
+        gasto = Gastos_Grupo.objects.create(nome_gasto=request.data["nome_gasto"],
+                                    id_grupo_id=request.data["id_grupo_id"])
+        
+        users = request.data["usuarios"].split(",")
         try:
-            Gastos_Grupo.objects.create(nome_gasto=request.data["nome_gasto"],
-                                        id_grupo_id=request.data["id_grupo_id"])
+            users_id = list()
+            for user in users:
+                user_id = User.objects.filter(username=user).first().id
+                users_id.append(user_id)
+
+            for id in users_id:
+                GrupoGasto_User.objects.create(usuario_id=id, conta_id=gasto.grupoGasto_id, pago=False)
             
-            return Response("GASTO CADASTRADO", status=status.HTTP_201_CREATED)
+            return Response(f"Gastos {gasto.nome_gasto} e Usuaruios {users_id} CADASTRADOS",status=status.HTTP_200_OK)
         except:
-            return Response("GASTO NÃO CADASTRADO", status=status.HTTP_400_BAD_REQUEST)
+            gasto.delete()
+            return Response(f"erro ao cadastrar os usuarios {users}",status=status.HTTP_400_BAD_REQUEST)
+            
+    @api_view(['POST'])
+    def cadastrar_item_associar_users(request): 
+        preco_uni = request.data["preco_unitario"]
+        quantidade = request.data["quantidade"]
+        preco_total = float(preco_uni * quantidade)
+
+        item = Itens.objects.create(descricao=request.data["descricao"],
+                                id_GastosGrupo_id=request.data["id_GastosGrupo_id"],
+                                preco_unitario=request.data["preco_unitario"],
+                                preco_total_item=preco_total,
+                                quantidade=request.data["quantidade"]
+                            )
+        
+        users = request.data["usuarios"].split(",")
+        pesos = request.data["pesos"].split(",")
+        users_id = list()
+        for user in users:
+            user_id = User.objects.filter(username=user).first().id
+            users_id.append(user_id)
+        for i, id in enumerate(users_id):
+            Iten_User.objects.create(peso=pesos[i], item_id=item.item_id, usuario_id=id)
+        
+        gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
+        gasto_atual = float(gasto_g.valor_total)
+        gasto_g.valor_total = gasto_atual + preco_total
+        gasto_g.save()
+
+        return Response(item.item_id,status=status.HTTP_200_OK)
 
     @api_view(['POST'])
     def cadastrar_item(request):  
@@ -44,6 +84,7 @@ class GrupoView(APIView):
                                     preco_total_item=preco_total,
                                     quantidade=request.data["quantidade"]
                                 )
+            
             
             gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
             gasto_atual = float(gasto_g.valor_total)
@@ -70,6 +111,7 @@ class GrupoView(APIView):
     @api_view(['POST'])
     def associar_user_grupoGastos(request): 
         users_conta = request.data["user_contas"].split(",")
+
         try:
             for item in users_conta:
                 item = item[1:-1]
