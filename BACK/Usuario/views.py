@@ -57,23 +57,6 @@ def login(request):
         user_data = {"username":request.data["username"],"password": request.data["password"]}
         token = requests.post("http://127.0.0.1:8000/token/", data=user_data)
 
-        #analise de saldo***********************************************************************************
-        user_id = User.objects.filter(username=serializer.data["username"]).first().id
-        bancario = Bancario.objects.filter(id_usuario_id=user_id).first()
-
-        mes_saldo = ((str(bancario.date)).split("-"))[1]
-        ano_saldo = ((str(bancario.date)).split("-"))[2]
-        mes_atual = ((str(datetime.date.today())).split("-"))[1]
-        ano_atual = ((str(datetime.date.today())).split("-"))[2]
-
-        if (mes_saldo != mes_atual):
-            saldo = Saldos.objects.create(id_bancario_id=bancario.id, date=bancario.date, saldo=bancario.saldo_atual)
-        elif (ano_saldo != ano_atual):
-            saldo = Saldos.objects.create(id_bancario_id=bancario.id, date=bancario.date, saldo=bancario.saldo_atual)
-        else:
-            print("MES IGUAL SALDO ATUAL MANTIDO")
-        #****************************************************************************************************
-
         return HttpResponse(token)
     else:
         return HttpResponse(HTTPStatus.UNAUTHORIZED)
