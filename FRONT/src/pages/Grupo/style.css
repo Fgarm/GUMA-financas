@@ -91,3 +91,14 @@
     background-color: white;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
+
+.alert {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+    transform: translateX(100%);
+}
+  
+.buttonAlert {
+    
+}
