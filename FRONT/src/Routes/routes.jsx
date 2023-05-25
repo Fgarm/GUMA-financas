@@ -5,6 +5,9 @@ import Home from "../pages/Home";
 
 import Graficos from "../pages/Graficos";
 
+import MyPage from "../pages/Groups";
+import GroupPage from "../pages/Grupo";
+import Extratos from "../pages/Extratos/Extratos"
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 function PrivateRoute({ children }) {
@@ -44,6 +47,20 @@ const Routering = createBrowserRouter([
         </React.StrictMode>
     },
 
+    {
+        path: "/page",
+        element: <MyPage/>,
+    },
+
+    {
+        path: "/extratos",
+        element: <Extratos />,
+    },
+
+    {
+        path: "group",
+        element: <GroupPage/>,
+    },
 
 ]);
 

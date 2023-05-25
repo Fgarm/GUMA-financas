@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 
-import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { Input, InputGroup, InputRightElement, Button, Link, Image } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 import { useNavigate } from 'react-router-dom';
@@ -70,9 +70,14 @@ export default function LogIn() {
 
   return (
 
+    
     <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
+      <div>
+      <Image boxSize='200px' src="../../src/images/guma.png" alt="Descrição da imagem" />
+      </div>
 
       <div>
+      
 
         <label htmlFor="username">Username</label>
         <br></br>
@@ -95,6 +100,7 @@ export default function LogIn() {
         <br></br>
 
         <InputGroup size='md'>
+          
           <Input
             pr='4.5rem'
             type={visible ? 'text' : 'password'}
@@ -116,7 +122,7 @@ export default function LogIn() {
 
       <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
 
-      <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
+      <p className='center'>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
 
     </form>
   )

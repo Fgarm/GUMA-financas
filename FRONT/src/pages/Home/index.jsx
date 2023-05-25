@@ -8,7 +8,10 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
+import Sidebar from '../../components/sidebar';
 import formatarData from '../../functions/formatData';
+import ToggleSearchStatus from '../../components/toggleSearchStatus';
+import TagsInputSearch from '../../components/tagInputSearch';
 
 import {
   AlertDialog,
@@ -71,17 +74,17 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  window.addEventListener("beforeunload", function (event) {
-    const perfTiming = performance.getEntriesByType("navigation")[0];
-    if (perfTiming.type === "reload") {
-      localStorage.setItem("token", token);
-      localStorage.setItem("cadastro_user", username);
-      sessionStorage.setItem("reloading", "true");
-    } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("cadastro_user");
-    }
-  });
+  // window.addEventListener("beforeunload", function (event) {
+  //   const perfTiming = performance.getEntriesByType("navigation")[0];
+  //   if (perfTiming.type === "reload") {
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("cadastro_user", username);
+  //     sessionStorage.setItem("reloading", "true");
+  //   } else {
+  //     localStorage.removeItem("token");
+  //     localStorage.removeItem("cadastro_user");
+  //   }
+  // });
 
   function handleTagsChange(newTag) { 
     setTagsList(newTag);
@@ -96,7 +99,7 @@ export default function Home() {
       valor,
       data,
       pago,
-      tag: tags.categoria,
+      tag: tag_submit.categoria,
       user: username
 
     };
@@ -213,7 +216,7 @@ export default function Home() {
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
     localStorage.removeItem('token')
-    navigate('/');
+    // navigate('/');
   }
 
   const handleCreateClick = (data) => {
@@ -249,61 +252,15 @@ export default function Home() {
     getGastos();
   }, [flag]);
 
-  useEffect(() => {
-    if (shouldRunEffect) {
-      searchFilter();
-    } else {
-      setShouldRunEffect(true);
-    }
-  }, [searchValue, searchOption]);
-
-  const searchFilter = () => {
-    if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
-      axios({
-        method: "post",
-        url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
-        data: {
-          user: username,
-          pago: searchValue
-        },
-      })
-        .then((response) => {
-          if (response.status == 200) {
-            const data = response.data;
-            setGastos(data);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        })
-    } else if (searchOption == 'tags') {
-      axios({
-        method: "post",
-        url: "http://localhost:8000/api/gastos/gastos-per-tag/",
-        data: {
-          user: username,
-          tag: searchValue
-        },
-      })
-        .then((response) => {
-          if (response.statusCode == 200) {
-            const data = response.data;
-            setGastos(data);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        })
-    }
-
-  };
 
   function handleSearchType(type) {
-    setSearchOption(type)
+    console.log(type)
+    // setSearchOption(type)
   }
 
   function handleSearch(data) {
-    setSearchValue(data)
+    console.log(data)
+    // setSearchValue(data)
   }
 
   function handleCreateTag() {
@@ -332,22 +289,19 @@ export default function Home() {
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
-  }
-
-
-  return (
-
-    <div >
+    }
+  
+    
+    return (
+      
+      <div className="body">
+      <Sidebar user={username}/>
       <header className='home'>
-        <div className='presentation'>
-          <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
-          <h2>Olá, {username}</h2>
-        </div>
         <div className="bt-sb">
-          <SearchBar 
-            setValueSearch={handleSearch} 
-            setSearchType={handleSearchType} 
-          />
+        <ToggleSearchStatus
+                user={username}
+                onGastosChange={setGastos}
+              />
           <Button 
             pr='10px' 
             onClick={onModalTagOpen}>
@@ -361,6 +315,7 @@ export default function Home() {
         </div>
       </header>
 
+              
       <div>
         <Modal
           isOpen={isModalTagOpen}
@@ -604,8 +559,9 @@ export default function Home() {
         </AlertDialog>
       </div>
 
+
       <div className="gasto">
-        {gastos.length === 0 ? <p></p> : (
+        {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
           gastos.map((gasto, key) => (
             <div key={gasto.id} className="gasto_information">
               <div className='header'>
