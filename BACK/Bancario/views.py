@@ -14,4 +14,4 @@ class BancarioView(APIView):
         bancario.saldo_atual = bancario.saldo_atual + request.data["saldo"]
         bancario.save()
 
-        Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
+        return Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
