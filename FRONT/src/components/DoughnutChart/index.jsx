@@ -187,8 +187,8 @@ export default function DoughnutChartComponent() {
     ]
     
     return (
-        <div className="DonutChartComponent">
-            <Doughnut options={doughnutOptions} data={doughnutChartData} />
+        <div className="DonutChartContainer">
+            <Doughnut className="DonutChartComponent" options={doughnutOptions} data={doughnutChartData} />
             
             <div className="month-year-input-container">
 

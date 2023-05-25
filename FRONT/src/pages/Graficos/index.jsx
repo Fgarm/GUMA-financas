@@ -1,5 +1,4 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
 
 import './style.css';
 import LineChartComponent from '../../components/LineChart';
@@ -7,7 +6,7 @@ import DoughnutChartComponent from '../../components/DoughnutChart';
 
 
 
-// componente que renderizar a página toda (todos os gráficos/componentes)
+// componente que renderiza a página toda (todos os gráficos/componentes)
 export default function Graficos() {
 
   return (
