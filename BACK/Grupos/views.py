@@ -93,6 +93,7 @@ class GrupoView(APIView):
             return Response("Há muitos usuários com msm username", status=status.HTTP_400_BAD_REQUEST)
         try:
             Grupo_User.objects.get(grupo_id=request.data['grupo_id'], usuario_id=user.id)
+            raise Exception(Grupo_User.MultipleObjectsReturned)
         except Grupo_User.DoesNotExist:
             pass
         except Grupo_User.MultipleObjectsReturned:
