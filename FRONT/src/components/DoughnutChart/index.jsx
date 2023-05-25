@@ -32,6 +32,7 @@ ChartJS.register(
     
 // Global
 const dataAtual = new Date();
+const anoAtual = dataAtual.getFullYear();
 
 // converte formato de cor de hexadecimal para RGB
 function hexToRgb(listHex) {
@@ -114,9 +115,12 @@ export default function DoughnutChartComponent() {
     const [month, setMonth] = useState(dataAtual.getMonth()+1);
     const [year, setYear] = useState(dataAtual.getFullYear());
     
-    const handleSelectChange = (event) => {
+    const handleSelectMonthChange = (event) => {
         setMonth(event.target.value);
-        // setYear(event.target.value);
+    };
+
+    const handleSelectYearChange = (event) => {
+        setYear(event.target.value);
     };
     
     // carrega os dados do gráfico de Rosquinha por meio da API do Back
@@ -178,6 +182,9 @@ export default function DoughnutChartComponent() {
         'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
     ];
     
+    const anos = [
+        anoAtual, anoAtual-1, anoAtual-2, anoAtual-3
+    ]
     
     return (
         <div className="DonutChartComponent">
@@ -185,7 +192,7 @@ export default function DoughnutChartComponent() {
             
             <div className="month-year-input-container">
 
-                <select value={month} onChange={handleSelectChange}>
+                <select className="month-input" value={month} onChange={handleSelectMonthChange}>
 
                     {meses.map((mes, index) => (
                         <option key={index} value={index + 1}>{mes}</option>
@@ -193,21 +200,14 @@ export default function DoughnutChartComponent() {
 
                 </select>
 
+                <select className="year-input" value={year} onChange={handleSelectYearChange}> 
 
+                    {anos.map((ano) => (
+                        <option key={ano} value={ano}>{ano}</option>
+                    ))}
 
+                </select>
 
-                {/* <select name="year-ano?" id="year" className="year-input" onChange={handleChange} value={props.editado}> 
-                    
-                    <option value=""></option>
-
-                    {props.tags.length === 0 ? <p></p> :
-                     (
-                        props.tags.map((tags, key) => (
-                            <option value={tags.categoria}>{tags.categoria}</option>
-                        ))
-                    )}
-
-                </select> */}
 
             </div>
 
