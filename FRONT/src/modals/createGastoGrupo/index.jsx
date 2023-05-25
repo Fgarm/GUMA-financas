@@ -12,7 +12,9 @@ import {
     ModalHeader,
   } from '@chakra-ui/react'
   
-  import axios from 'axios'
+import axios from 'axios'
+
+import './style.css'
 
 export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef, groups_id, handleCreateSuccess, userClicked}) {
 
