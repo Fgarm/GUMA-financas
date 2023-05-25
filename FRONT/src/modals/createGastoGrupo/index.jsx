@@ -37,6 +37,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     axios.post('http://localhost:8000/usuarios/usuarios-grupo/', grupo_id)
       .then(response => {
         setUsuarios(response.data)
+        console.log(response.data)
       })
       .catch(error => {
         console.log(error)
@@ -73,26 +74,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
         console.log(error);
       });
   }
-
-  const getUsers = () => {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/grupos/usuarios-grupo/",
-      data: {
-        grupo_id: grupoId
-      },
-    })
-      .then((response) => { 
-        setUsers(response.data);
-        console.log(grupoId)
-        console.log(users)
-        setShouldRunEffect(true)
-      })
-      .catch(error => {
-        console.log(error);
-      })
-  }
-
 
   const addGastoGroupUser = () => {
     axios({
