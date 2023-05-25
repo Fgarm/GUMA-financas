@@ -63,7 +63,10 @@ const Routering = createBrowserRouter([
 
     {
         path: "join",
-        element: <EntrarComLink />
+        element:
+        <React.StrictMode>
+            <EntrarComLink />
+        </React.StrictMode>
     },
 
 ]);

@@ -93,9 +93,11 @@ class GrupoView(APIView):
             return Response("Há muitos usuários com msm username", status=status.HTTP_400_BAD_REQUEST)
         try:
             Grupo_User.objects.get(grupo_id=request.data['grupo_id'], usuario_id=user.id)
-            return Response("Usuário já está no grupo", status=status.HTTP_304_NOT_MODIFIED)
         except Grupo_User.DoesNotExist:
             pass
+        except Grupo_User.MultipleObjectsReturned:
+            return Response("Usuário já está no grupo", status=status.HTTP_304_NOT_MODIFIED)
+
         except ValidationError:
             return Response("Esse id de grupo não é válido", status=status.HTTP_400_BAD_REQUEST)
         try:
