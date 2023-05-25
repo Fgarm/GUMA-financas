@@ -29,6 +29,8 @@ export default function EntrarComLink() {
         }
         catch(error) {
             console.log(error)   // Criar página pra os diferentes erros, ou levar para uma página de grupo menos específica
+            navigate('/home')
+            alert("Link inválido.")
         }
     }
 

@@ -3,7 +3,6 @@ import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
 import MyPage from "../pages/Groups";
-import EntrarComLink from "../pages/Join";
 import GroupPage from "../pages/Grupo";
 import ChartComponent from "../components/chart";
 import EntrarComLink from "../components/joinGroup";
