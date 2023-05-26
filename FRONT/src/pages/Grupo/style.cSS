@@ -94,11 +94,19 @@
 
 .alert {
     position: fixed;
-    top: 50px;
     right: 50px;
     transform: translateX(100%);
 }
   
-.buttonAlert {
-    
+.buttonCopy {
+    margin-left: 600px;
+    transform: translateX(100%);
+}
+
+h1 {
+    margin: 5px;
+}
+
+Button {
+    margin: 5px;
 }

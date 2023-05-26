@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/sidebar';
 import axios from 'axios';
-import { useDisclosure } from '@chakra-ui/react';
-import { Button } from "@chakra-ui/react";
 import './style.css'
 import CreateGastoGroup from '../../modals/createGastoGrupo';
 import AddItemGroupGasto from '../../modals/addItemGroupGasto';
+import clipboardCopy from 'clipboard-copy';
 
-import { MdAddShoppingCart } from "react-icons/md";
+import { MdClose, MdAddShoppingCart } from "react-icons/md";
 
-import { Alert, AlertDescription, Box, CloseButton, Flex, Icon } from '@chakra-ui/react';
+import { Alert, Icon, Button, useDisclosure, useToast } from '@chakra-ui/react';
 
 export default function GroupPage() {
 
-
+    const toast = useToast()
     const grupoId = localStorage.getItem('grupo_id');
     const [gastoId, setGastoId] = useState('')
     const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
-
+    const [isClicked, setIsClicked] = useState(false);
     const username = localStorage.getItem('cadastro_user');
 
     const [gastos, setGastos] = useState([]);
@@ -80,26 +79,42 @@ export default function GroupPage() {
         onOpen,
     } = useDisclosure({ defaultIsOpen: false })
 
-    function alert(){
+    function alert() {
         onClose()
+    }
+
+    function handleCopy() {
+        setIsClicked(!isClicked);
+        clipboardCopy(`http://localhost:5173/join/?grupo=${grupoId}`)
+            .then(() => {
+                console.log('Texto copiado com sucesso!');
+            })
+            .catch((error) => {
+                console.error('Erro ao copiar o texto:', error);
+            });
     }
 
     return (
 
         <div>
             {isVisible ? (
-            // <Alert status="success" variant="subtle" flexDirection="column" alignItems="flex-start" maxW="sm">
-            //   <AlertDescription>
-            //     Link: http://localhost:5173/join/?grupo={grupoId}
-            //   </AlertDescription>
-            //   <Flex justifyContent="space-between" alignItems="center" mt={2}>
-            //     <Button> Copiar</Button>
-            //     <CloseButton onClick={onClose} />
-            //   </Flex>
-            // </Alert>
-            <Alert className='alert'>Link: http://localhost:5173/join/?grupo={grupoId} <button onClick={alert}>X</button></Alert> 
-          ) : <Button onClick={onOpen}>Gerar Link</Button>}
-          
+                <Alert>Link: http://localhost:5173/join/?grupo={grupoId}
+                    <Button className='buttonCopy'
+                        onClick={() =>
+                            toast({
+                                title: 'Link Copiado.',
+                                status: 'success',
+                                isClosable: true,
+                            })
+                        }
+                    >
+                        Copiar Link
+                    </Button>
+                    <Icon as={MdClose} w={5} h={5} mr={2} className="alert" onClick={alert}/>
+                </Alert>
+            ) :
+
+            <Button onClick={onOpen}>Gerar Link</Button>}
             <Button onClick={handleCreateClick}>Criar Gasto do Grupo</Button>
             <h1>GroupPage</h1>
 
