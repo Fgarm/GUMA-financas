@@ -324,23 +324,25 @@ class GastoApiView(APIView):
         labels = [] # tags
         colors = [] # cor de cada tag
 
+        gastos_por_categoria = {}
+        gastos_por_categoria['outros'] = 0
+        cor_por_categoria = {}
+        cor_por_categoria['outros'] = 'dad8d8'
         for tag in tags:
-
-            # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag
-            totalGastosPorTag = np.sum([gasto.valor for gasto in gastos if gasto.tag == tag.categoria])
-
-            # pula a iteração daquela tag caso o valor total de gastos daquela tag seja 0
-            if totalGastosPorTag == 0 or totalGastosPorTag is None or totalGastosPorTag == 0.0:
-                continue
-            
-            # adicionando a soma do valor dos gastos de uma categoria/tag na lista de dados que será exibida no gráfico
-            data.append(totalGastosPorTag)
-
-            # inserindo o nome da tag
-            labels.append(tag.categoria)
-
-            # adicionando a cor da tag
-            colors.append(tag.cor)
+            gastos_por_categoria[tag.categoria] = 0
+            cor_por_categoria[tag.categoria] = tag.cor
+        
+        for gasto in gastos:
+            if gasto.tag in gastos_por_categoria:
+                gastos_por_categoria[gasto.tag] = gastos_por_categoria[gasto.tag] + gasto.valor
+            else:
+                gastos_por_categoria["outros"] = gastos_por_categoria["outros"] + gasto.valor
+        
+        for categoria in gastos_por_categoria:
+            if gastos_por_categoria[categoria] != 0:
+                data.append(gastos_por_categoria[categoria])
+                labels.append(categoria)
+                colors.append(cor_por_categoria[categoria])
 
         if len(data) > 5:
 
