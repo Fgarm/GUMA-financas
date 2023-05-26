@@ -9,9 +9,13 @@ import datetime
 class BancarioView(APIView):
     @api_view(['POST'])
     def add_saldo(request):
-        if(type(request.data["saldo"]) == type("")):
-            return Response(f"TIPO DE SALDO INVALIDO, SALDO NECESSITA SER NUMBER", status=status.HTTP_400_BAD_REQUEST)
+        request.data["saldo"] = str(request.data["saldo"]).replace(",", ".")
         
+        try:
+            request.data["saldo"] = float(request.data["saldo"])
+        except ValueError:
+            return Response(f"Nao aceitamos Banana", status=status.HTTP_400_BAD_REQUEST)
+   
         try:
             usuario_id = User.objects.filter(username=request.data["username"]).first().id
         except:
@@ -22,8 +26,8 @@ class BancarioView(APIView):
         except:
             return Response(f"Conta nao Cadastrada", status=status.HTTP_417_EXPECTATION_FAILED)
         
-        Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.date.today(), saldo=bancario.saldo_atual)
-        bancario.saldo_atual = bancario.saldo_atual + request.data["saldo"]
+        Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.datetime.today(), saldo=bancario.saldo_atual, valor=request.data["saldo"])
+        bancario.saldo_atual = float(bancario.saldo_atual) + request.data["saldo"]
         bancario.save()
 
         return Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
@@ -56,7 +60,8 @@ class BancarioView(APIView):
         response_saldo = list()
         response_saldo.append({"saldo": bancario.saldo_atual, "data":bancario.date})
         for saldo in saldos_list:
-            r_dict = {"saldo": saldo.saldo, "data":saldo.date}
+            print(saldo.date)
+            r_dict = {"saldo": saldo.saldo, "data":saldo.date, "saldo":saldo.valor}
             response_saldo.append(r_dict)
 
 
