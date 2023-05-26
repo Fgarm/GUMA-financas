@@ -302,9 +302,6 @@ class GastoApiView(APIView):
     @api_view(['GET', 'POST'])
     def get_gastos_mais_relevantes(request):
 
-        # TODO: somar os gastos mais relevantes de um mês que não têm tag e o resto
-        #  pra fora/baixo do top 4 a fim de que a soma corresponda ao extrato do mês
-
         # obtendo as tags do user selecionado
         try:
             tags = Tag.objects.filter(user=request.data["user"])
@@ -370,6 +367,12 @@ class GastoApiView(APIView):
             
             # retorna as (quantidades de) labels e cores corretamente caso o usuário tenha mais que 5 tags e o total de gastos de uma delas seja zero
             quantidade_valida = data.__len__()
+            
+            for i in range(quantidade_valida):
+                if labels[i] == "outros":
+                    labels[i] = "Não classificados"
+
+
             if quantidade_valida < 5:
                 labels = [labels[i] for i in range(quantidade_valida)]
                 colors = [colors[i] for i in range(quantidade_valida)]
