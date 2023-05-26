@@ -7,6 +7,7 @@ import GroupPage from "../pages/Grupo";
 import ChartComponent from "../components/chart";
 import EntrarComLink from "../components/joinGroup";
 import Extratos from "../pages/Extratos"
+import Saldo from "../pages/Saldos/Saldos";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { elements } from "chart.js";
 
@@ -63,6 +64,11 @@ const Routering = createBrowserRouter([
     {
         path: "/extratos",
         element: <Extratos />,
+    },
+
+    {
+        path: "/extratos/saldos",
+        element: <Saldo />,
     },
 
     {
