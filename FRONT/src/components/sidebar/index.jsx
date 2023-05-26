@@ -6,13 +6,14 @@ import { BiLogOut } from "react-icons/bi";
 import { MdGroups } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import { BsBarChartFill } from "react-icons/bs";
+
 import { useNavigate } from 'react-router-dom';
 
-import Groups from "../../modals/createGroup";
 import { useDisclosure } from '@chakra-ui/react';
 import { Button } from "@chakra-ui/react";
 
-import { BsBarChartFill } from "react-icons/bs";
+import Groups from "../../modals/createGroup";
 
 import axios from 'axios';
 
@@ -61,6 +62,7 @@ export default function Sidebar(props) {
         console.log('logout')
         localStorage.removeItem('cadastro_user')
         localStorage.removeItem('token')
+        //localStorage.clear();
         navigate('/');
     }
 

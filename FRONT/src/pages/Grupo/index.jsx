@@ -18,12 +18,11 @@ export default function GroupPage() {
     const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
 
-    const username = localStorage.getItem('cadastro_user');
-
     const [gastos, setGastos] = useState([]);
     const [flag, setFlag] = useState(0);
     const [userClicked, setUserClicked] = useState(0);
 
+    const [usuariosGastos, setUsuariosGastos] = useState([])
 
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
     const { isOpen: isAddItemGastoGrupoOpen, onOpen: openAddItemGastoGrupo, onClose: closeAddItemGastoGrupo } = useDisclosure();
@@ -32,8 +31,45 @@ export default function GroupPage() {
         getGroupInfo();
     }, [flag]);
 
+    function getUsuariosGasto(){
+        if (gastoId !== '') {
+            axios({
+              method: "post",
+              url: "http://localhost:8000/grupos/usuario-em-gasto/",
+              data: {
+                gasto_id: gastoId
+              },
+            })
+              .then(response => {
+                setUsuariosGastos(response.data)
+                console.log(response.data)
+              })
+              .catch(error => {
+                console.log(error)
+              });
+          }
+    }
+
+    function getGroupInfo() {
+        axios({
+            method: "post",
+            url: "http://localhost:8000/grupos/gastos-grupo/",
+            data: {
+                grupo_id: grupoId
+            },
+        })
+        .then(response => {
+            setGastos(response.data)
+            console.log(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+
     function handleEditGastoGrupo(gastoGrupo){
         setGastoId(gastoGrupo.gasto_id)
+        getUsuariosGasto()
         setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
         openAddItemGastoGrupo()
@@ -54,23 +90,6 @@ export default function GroupPage() {
 
     const handleCreateSuccess = () => {
         setFlag(flag + 1);
-    }
-
-    function getGroupInfo() {
-        axios({
-            method: "post",
-            url: "http://localhost:8000/grupos/gastos-grupo/",
-            data: {
-                grupo_id: grupoId
-            },
-        })
-        .then(response => {
-            setGastos(response.data)
-            console.log(response.data)
-        })
-        .catch(error => {
-            console.log(error)
-        })
     }
 
     return (
@@ -96,18 +115,17 @@ export default function GroupPage() {
                                 w={5} 
                                 h={5} 
                                 onClick={() => handleDeleteClick(gasto.id)} 
-                            />
-                    </div>
+                            /> 
+                        </div>
                     </div>
                 ))
             )}
-      </div>
-
-            <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
+        </div>
+            <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked} usuarioGastos={usuariosGastos}>
                     <Button onClick={handleClose}>Fechar</Button>
             </CreateGastoGroup>
 
-            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
+            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} >
                 <Button onClick={handleCloseItem}>Fechar</Button>
             </AddItemGroupGasto>
         </div>

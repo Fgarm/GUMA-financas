@@ -12,12 +12,14 @@ import {
     Button,
     useDisclosure,
     ModalHeader,
-  } from '@chakra-ui/react'
+  } from '@chakra-ui/react';
   
-  import axios from 'axios'
+  import axios from 'axios';
+
+  import './style.css';
 
 
-export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, handleCreateSuccess}) {
+export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, handleCreateSuccess, usuariosGastos}) {
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
@@ -25,24 +27,35 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
   const [descricao, setDescricao] = useState('');
   const token = localStorage.getItem('token');
 
+  const [usuarios, setUsuarios] = useState('');
+
+  const [pesos, setPesos] = useState('');
+
+  usuariosGastos.map((usuario) => {
+    setUsuarios(usuarios + usuario.username + ',')
+  })
+  
+
   const handleSubmit = () => {
 
     const data = {
         preco_unitario: valor,
-        quantidade: quantidade,
+        quantidade: parseInt(quantidade, 10),
         descricao: descricao,
         id_GastosGrupo_id: gastoId,
+        usuarios: usuarios,
+        pesos: pesos
     }
 
     console.log(JSON.stringify(data))
 
-    axios.post('http://localhost:8000/grupos/cadastrar-item/', data)//{
+    axios.post('http://localhost:8000/grupos/cadastrar-item-associar-user/', data)//{
     //     headers: {
     //         'Authorization': `Bearer ${token}`
     //       }
     // })
       .then(response => {
-        if (response.status === 201) { 
+        if (response.status === 200) { 
           onClose()
           alert('Item Cadastrado')
           handleCreateSuccess()
@@ -85,14 +98,6 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
               </FormControl>
 
               <FormControl mt={4}>
-                <label>Preço Unitário</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setValor(e.target.value)
-                }} />
-              </FormControl>
-                
-              <FormControl mt={4}>
                 <label>Quantidade</label>
                 <br></br>
                 <Input 
@@ -101,7 +106,36 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
                 }} />
               </FormControl>
 
+              <FormControl mt={4}>
+                <label>Preço Unitário</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setValor(e.target.value)
+                }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Usuários do Gasto</label>
+                <br></br>
+                <Input
+                  defaultValue={usuarios}
+                  onChange={(e) => {
+                    setUsuarios(e.target.value)
+                  }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Pesos</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setPesos(e.target.value)
+                }} />
+              </FormControl>
             </ModalBody>
+
+            <span className='modal_footer'>
+              <p>Os pesos devem ser colocados referentes à ordem de usuários do gasto</p>
+            </span>
 
             <ModalFooter>
               <Button 
