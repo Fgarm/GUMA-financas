@@ -302,9 +302,6 @@ class GastoApiView(APIView):
     @api_view(['GET', 'POST'])
     def get_gastos_mais_relevantes(request):
 
-        # TODO: somar os gastos mais relevantes de um mês que não têm tag e o resto
-        #  pra fora/baixo do top 4 a fim de que a soma corresponda ao extrato do mês
-
         # obtendo as tags do user selecionado
         try:
             tags = Tag.objects.filter(user=request.data["user"])
@@ -324,23 +321,25 @@ class GastoApiView(APIView):
         labels = [] # tags
         colors = [] # cor de cada tag
 
+        gastos_por_categoria = {}
+        gastos_por_categoria['outros'] = 0
+        cor_por_categoria = {}
+        cor_por_categoria['outros'] = 'dad8d8'
         for tag in tags:
-
-            # obtendo a soma do valor de todos os gastos que têm aquela categoria/tag
-            totalGastosPorTag = np.sum([gasto.valor for gasto in gastos if gasto.tag == tag.categoria])
-
-            # pula a iteração daquela tag caso o valor total de gastos daquela tag seja 0
-            if totalGastosPorTag == 0 or totalGastosPorTag is None or totalGastosPorTag == 0.0:
-                continue
-            
-            # adicionando a soma do valor dos gastos de uma categoria/tag na lista de dados que será exibida no gráfico
-            data.append(totalGastosPorTag)
-
-            # inserindo o nome da tag
-            labels.append(tag.categoria)
-
-            # adicionando a cor da tag
-            colors.append(tag.cor)
+            gastos_por_categoria[tag.categoria] = 0
+            cor_por_categoria[tag.categoria] = tag.cor
+        
+        for gasto in gastos:
+            if gasto.tag in gastos_por_categoria:
+                gastos_por_categoria[gasto.tag] = gastos_por_categoria[gasto.tag] + gasto.valor
+            else:
+                gastos_por_categoria["outros"] = gastos_por_categoria["outros"] + gasto.valor
+        
+        for categoria in gastos_por_categoria:
+            if gastos_por_categoria[categoria] != 0:
+                data.append(gastos_por_categoria[categoria])
+                labels.append(categoria)
+                colors.append(cor_por_categoria[categoria])
 
         if len(data) > 5:
 
@@ -368,6 +367,12 @@ class GastoApiView(APIView):
             
             # retorna as (quantidades de) labels e cores corretamente caso o usuário tenha mais que 5 tags e o total de gastos de uma delas seja zero
             quantidade_valida = data.__len__()
+            
+            for i in range(quantidade_valida):
+                if labels[i] == "outros":
+                    labels[i] = "Não classificados"
+
+
             if quantidade_valida < 5:
                 labels = [labels[i] for i in range(quantidade_valida)]
                 colors = [colors[i] for i in range(quantidade_valida)]
