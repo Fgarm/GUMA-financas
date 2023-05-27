@@ -4,9 +4,12 @@ import { ImgBackground } from "./Style.jsx"
 
 
 export default function Extratos(){
+
+    const username = localStorage.getItem('cadastro_user');
+
     return(
         <div>
-            <Sidebar/>
+            <Sidebar user={username}/>
             <ExtratoNavbar/>
             <ImgBackground/>
         </div>

@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
+import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 import { BiLogOut } from "react-icons/bi";
+import { BsTag } from "react-icons/bs";
+import { BsTagFill } from "react-icons/bs";
+import { BsTags } from "react-icons/bs";
+import { BsFillTagsFill } from "react-icons/bs";
+import { BsCurrencyDollar } from "react-icons/bs"; // $ p gasto
+import { BsCashStack } from "react-icons/bs"; // ou esse
 
 import { useNavigate } from 'react-router-dom';
 
@@ -294,7 +301,7 @@ export default function Home() {
     
     return (
       
-      <div className="body">
+      <div className="body" style={{backgroundColor: '#1B2727'}}>
       <Sidebar user={username}/>
       <header className='home'>
         <div className="bt-sb">

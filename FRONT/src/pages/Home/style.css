@@ -4,17 +4,17 @@ header.home {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    background-color: #005555;
+    /* background-color: #005555; var(--30-dark-green) */
     width: 100%;
 }
 
-.presentation {
+/* .presentation {
     border-top: 10px;
     display: flex;
     flex-direction: row;
     gap: 10px;
     align-items: center;
-}
+} */
 
 .bt-sb {
     display: flex;
@@ -85,7 +85,7 @@ span.error-message {
     display: flex;
     flex-wrap: wrap;
     margin-top: 60px;
-    margin-left: 200px;
+    margin-left: 200px; /* AQUIIII */
     border-radius: 5px;
     justify-content: space-evenly;
 }
@@ -138,66 +138,6 @@ h2.red {
 .gasto_information .header div {
     display: flex;
     align-items: center;
-}
-
-.sidenav {
-    height: 100vh;
-    /* Full-height: remove this if you want "auto" height */
-    width: 200px;
-    /* Set the width of the sidebar */
-    position: fixed;
-    /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1;
-    /* Stay on top */
-    left: 0;
-    background-color: #005555;
-    /* Black */
-    overflow-x: hidden;
-    /* Disable horizontal scroll */
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    /* Adicionar uma sombra suave */
-    font-family: Arial, sans-serif;
-    /* Adicionar uma fonte */
-    color: #fff;
-    /* Adicionar cor de texto */
-    background: linear-gradient(to bottom, #005550, #006666);
-    /* Adicionar um gradiente de fundo */
-    transition: width 0.3s ease;
-    /* Adicionar uma transição suave ao passar o mouse */
-    border-right: 1px solid black;
-}
-
-.sidenav-item {
-    padding: 10px;
-}
-
-.sidenav-item .icon {
-    font-size: 20px;
-    margin-right: 10px;
-}
-
-.sidenav-item .label {
-    font-size: 16px;
-}
-
-.sidenav-item.active {
-    background-color: #005555;
-}
-
-
-.sidenav div.flex {
-    width: 100%;
-    padding: 2px;
-}
-
-.sidenav div.flex:hover {
-    background-color: #7a9ebd;
-    cursor: pointer;
 }
 
 .flex-search {
@@ -292,7 +232,3 @@ h2.red {
 .customCheckBoxWrapper .customCheckBox:hover .inner {
     transform: translateY(-2px);
 }
-/* 
-.body {
-    background-color: teal;
-} */
