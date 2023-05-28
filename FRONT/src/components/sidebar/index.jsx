@@ -103,7 +103,7 @@ export default function Sidebar(props) {
         <div className="sidebar">
 
             <div className="container-logo-username">
-                <img src="../../../guma1.png" className="guma-logo" alt="GUMA Logo"/>
+                <img src="../../../guma.png" className="guma-logo" alt="GUMA Logo"/>
                 <p className="presentation">Olá,<br></br>{props.user}</p>
             </div>
 
