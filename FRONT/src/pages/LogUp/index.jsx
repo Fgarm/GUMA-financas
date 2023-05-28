@@ -90,7 +90,7 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor='first_name'>Nome</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor='first_name'>Nome</label>
           <br></br>
 
           <Input
@@ -108,7 +108,7 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="last_name">Sobrenome</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="last_name">Sobrenome</label>
           <br></br>
 
           <Input
@@ -126,7 +126,7 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="username">Username</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="username">Username</label>
           <br></br>
 
           <Input
@@ -144,7 +144,7 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="email">E-mail</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="email">E-mail</label>
           <br></br>
 
           <Input
@@ -162,7 +162,7 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="password">Senha</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="password">Senha</label>
 
           <br></br>
 
@@ -175,8 +175,8 @@ export default function LogUp() {
               {...register('password')}
             />
 
-            <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
-              {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon />}
+            <InputRightElement style={{ marginRight: '0.5rem' }} width='2.5rem' onClick={handleVisibleChange}>
+              {visible ? <ViewIcon color='#6F9951' /> : <ViewOffIcon color='#6F9951' />}
             </InputRightElement>
           </InputGroup>
 
@@ -184,7 +184,7 @@ export default function LogUp() {
 
         </div>
 
-        <Button type="submit" colorScheme='teal' variant='solid' size="md">Registrar</Button>
+        <Button type="submit" className='submit-button' variant='solid' size="md">Registrar</Button>
 
         <Link href="/" color='blue.500'>Já tem uma conta&#63;</Link>
 
