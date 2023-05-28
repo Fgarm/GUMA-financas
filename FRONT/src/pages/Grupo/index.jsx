@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/sidebar';
 import axios from 'axios';
+import { useDisclosure } from '@chakra-ui/react';
+import { Button } from "@chakra-ui/react";
 import './style.css'
 import CreateGastoGroup from '../../modals/createGastoGrupo';
 import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 import clipboardCopy from 'clipboard-copy';
 
-import { MdClose, MdAddShoppingCart } from "react-icons/md";
+import { RiFileCopyLine } from "react-icons/ri";
+import { MdAddShoppingCart } from "react-icons/md";
 
-import { Alert, Icon, Button, useDisclosure, useToast } from '@chakra-ui/react';
+import { Alert, AlertDescription, Box, CloseButton, Flex, Icon } from '@chakra-ui/react';
 
 export default function GroupPage() {
+    const [textToCopy, setTextToCopy] = useState('');
 
-    const toast = useToast()
     const grupoId = localStorage.getItem('grupo_id');
     const [gastoId, setGastoId] = useState('')
     const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
-    const [isClicked, setIsClicked] = useState(false);
+
     const username = localStorage.getItem('cadastro_user');
 
     const [gastos, setGastos] = useState([]);
@@ -84,7 +87,6 @@ export default function GroupPage() {
     }
 
     function handleCopy() {
-        setIsClicked(!isClicked);
         clipboardCopy(`http://localhost:5173/join/?grupo=${grupoId}`)
             .then(() => {
                 console.log('Texto copiado com sucesso!');
@@ -98,23 +100,13 @@ export default function GroupPage() {
 
         <div>
             {isVisible ? (
-                <Alert>Link: http://localhost:5173/join/?grupo={grupoId}
-                    <Button className='buttonCopy'
-                        onClick={() =>
-                            toast({
-                                title: 'Link Copiado.',
-                                status: 'success',
-                                isClosable: true,
-                            })
-                        }
-                    >
-                        Copiar Link
-                    </Button>
-                    <Icon as={MdClose} w={5} h={5} mr={2} className="alert" onClick={alert}/>
+                <Alert>Link: http://localhost:5173/join/?grupo={grupoId} 
+                    <Icon as={RiFileCopyLine} w={5} h={5} mr={2} onClick={handleCopy} />
+                    <button className="alert" onClick={alert}>X</button>
                 </Alert>
-            ) :
-
+            ) : 
             <Button onClick={onOpen}>Gerar Link</Button>}
+
             <Button onClick={handleCreateClick}>Criar Gasto do Grupo</Button>
             <h1>GroupPage</h1>
 
