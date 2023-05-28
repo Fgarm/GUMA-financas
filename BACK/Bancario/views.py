@@ -58,10 +58,10 @@ class BancarioView(APIView):
         saldos_list.sort(key=lambda data : data.date, reverse=True) #Complexidade Nlol(n) ta safe 
         
         response_saldo = list()
-        response_saldo.append({"saldo": bancario.saldo_atual, "data":bancario.date})
         for saldo in saldos_list:
-            print(saldo.date)
-            r_dict = {"saldo": saldo.saldo, "data":saldo.date, "saldo":saldo.valor}
+
+            r_dict = {"saldo": saldo.saldo, "data":saldo.date, "valor":saldo.valor}
+
             response_saldo.append(r_dict)
 
 

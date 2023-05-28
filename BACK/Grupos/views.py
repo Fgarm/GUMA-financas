@@ -229,8 +229,8 @@ class GrupoView(APIView):
 
         userg_list = list()
         for ug in user_gastos:
-            username = User.objects.filter(id=ug.usuario_id).first().username
-            ug_dict = {"username": username}   
+            user = User.objects.filter(id=ug.usuario_id).first()
+            ug_dict = {"id": user.id, "username": user.username, "nome": f"{user.first_name} {user.last_name}", "email": user.email}   
             userg_list.append(ug_dict)         
         return Response(userg_list, status=status.HTTP_200_OK)
 
