@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import "./style.css";
 
 import { Icon } from "@chakra-ui/react";
+import { TbHomeDollar} from "react-icons/tb";
 import { BiLogOut } from "react-icons/bi";
 import { MdGroups } from "react-icons/md";
+import { BsBarChartFill } from "react-icons/bs";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
-import { BsBarChartFill } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +51,8 @@ export default function Sidebar(props) {
 
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
 
+
+
     const handleCreateClick = () => {
         openCreateGroup();
     };
@@ -70,13 +73,19 @@ export default function Sidebar(props) {
         navigate('/extratos');
     }
 
+    function handleHome() {
+        navigate('/home');
+    }
+
     return (
         <div className="sidenav">
             <p className="presentation">Olá, {props.user}</p>
 
+            <div className="flex" onClick={handleHome}>
+                <Icon as={TbHomeDollar} w={7} h={7} color="red.500" /> Meus Gastos
+            </div>
             <div
-                className="flex"
-                onClick={handleCreateClick}>
+                className="flex" onClick={handleCreateClick}>
                 <Icon as={AiOutlineUsergroupAdd} w={7} h={7} color="green.500" /> Criar Grupo
             </div>
             <div className="flex" onClick={handleStatistics}>

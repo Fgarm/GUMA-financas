@@ -17,7 +17,7 @@ export default function ToggleSearchStatus(props) {
   
   useEffect(() => {  
     getTags();
-  }, []);
+  }, [props.novaTag]);
 
   useEffect(() => {
     handleSearch()

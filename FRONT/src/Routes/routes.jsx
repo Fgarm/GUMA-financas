@@ -5,8 +5,10 @@ import Home from "../pages/Home";
 import MyPage from "../pages/Groups";
 import GroupPage from "../pages/Grupo";
 import ChartComponent from "../components/chart";
-import Extratos from "../pages/Extratos/Extratos"
+import EntrarComLink from "../components/joinGroup";
+import Extratos from "../pages/Extratos"
 import { Navigate, createBrowserRouter } from "react-router-dom";
+import { elements } from "chart.js";
 
 function PrivateRoute({ children }) {
     const token = localStorage.getItem("token");
@@ -42,6 +44,14 @@ const Routering = createBrowserRouter([
         element: 
         <React.StrictMode>
             <ChartComponent/>,
+        </React.StrictMode>
+    },
+
+    {
+        path: "/join",
+        element:
+        <React.StrictMode>
+            <EntrarComLink/>
         </React.StrictMode>
     },
 

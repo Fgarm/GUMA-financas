@@ -91,3 +91,22 @@
     background-color: white;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
+
+.alert {
+    position: fixed;
+    right: 50px;
+    transform: translateX(100%);
+}
+  
+.buttonCopy {
+    margin-left: 600px;
+    transform: translateX(100%);
+}
+
+h1 {
+    margin: 5px;
+}
+
+Button {
+    margin: 5px;
+}

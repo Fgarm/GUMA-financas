@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
     Modal,
@@ -19,7 +19,7 @@ import {
   import './style.css';
 
 
-export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, handleCreateSuccess, usuariosGastos}) {
+export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gasto_Id, usuariosGastos, clicks}) {
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
@@ -27,23 +27,45 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
   const [descricao, setDescricao] = useState('');
   const token = localStorage.getItem('token');
 
-  const [usuarios, setUsuarios] = useState('');
+  const [usuarios, setUsuarios] = useState([]);
 
   const [pesos, setPesos] = useState('');
 
-  usuariosGastos.map((usuario) => {
-    setUsuarios(usuarios + usuario.username + ',')
-  })
+  // useEffect(() => {
+  //     const usuariosString = usuariosGastos.map(usuario => usuario.nome).join(',');
+  //     setUsuarios(usuariosString);
+  // }, [usuariosGastos]);
+
+  useEffect(() => {
+    const usuariosArray = usuariosGastos.map(usuario => ({
+      nome: usuario.nome,
+      username: usuario.username
+    }));
+    setUsuarios(usuariosArray);
+  }, [usuariosGastos, clicks]);
   
 
   const handleSubmit = () => {
+
+    const usernames = usuarios.map(user => user.username);
+
+    let users;
+
+    for (let i = 0; i < usernames.length; i++) {
+      if (i === usernames.length - 1) {
+        users = users + usernames[i];
+        break;
+      } else{
+        users = usernames[i] + ',';
+      }
+    }
 
     const data = {
         preco_unitario: valor,
         quantidade: parseInt(quantidade, 10),
         descricao: descricao,
-        id_GastosGrupo_id: gastoId,
-        usuarios: usuarios,
+        id_GastosGrupo_id: gasto_Id,
+        usuarios: users,
         pesos: pesos
     }
 
@@ -58,7 +80,7 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
         if (response.status === 200) { 
           onClose()
           alert('Item Cadastrado')
-          handleCreateSuccess()
+          //handleCreateSuccess()
         } else if (response.status === 409) {
           alert('Grupo de nome já cadastrado no sistema')
         } else if (response.status === 400) {
@@ -118,10 +140,12 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
                 <label>Usuários do Gasto</label>
                 <br></br>
                 <Input
-                  defaultValue={usuarios}
+                  defaultValue={usuarios.map(user => user.nome).join(',')}
                   onChange={(e) => {
-                    setUsuarios(e.target.value)
-                  }} />
+                    const inputUsernames = e.target.value.split(',');
+                    const selectedUsers = usuarios.filter(user => inputUsernames.includes(user.nome));
+                    setUsuarios(selectedUsers);
+                  }}/>
               </FormControl>
 
               <FormControl mt={4}>

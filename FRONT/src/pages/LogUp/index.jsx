@@ -69,6 +69,7 @@ export default function LogUp() {
       .then(response => {
         if (response.status === 200) { 
           navigate('/', { replace: true });
+          console.log(response.data);
         } else if (response.status === 409) {
           alert('Usuário ou email já cadastrados no sistema')
         } else if (response.status === 400) {
