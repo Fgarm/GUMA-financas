@@ -8,10 +8,11 @@ import CreateGastoGroup from '../../modals/createGastoGrupo';
 import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 import clipboardCopy from 'clipboard-copy';
 
-import { RiFileCopyLine } from "react-icons/ri";
-import { MdAddShoppingCart } from "react-icons/md";
+import { AiOutlinePlus } from "react-icons/ai";
+import { MdClose, MdAddShoppingCart } from "react-icons/md";
 
-import { Alert, AlertDescription, Box, CloseButton, Flex, Icon } from '@chakra-ui/react';
+import { Alert, Icon, Button, useDisclosure, useToast } from '@chakra-ui/react';
+import { set } from 'zod';
 
 export default function GroupPage() {
     const [textToCopy, setTextToCopy] = useState('');
@@ -23,24 +24,99 @@ export default function GroupPage() {
 
     const username = localStorage.getItem('cadastro_user');
 
+    const [clicks, setClicks] = useState(0);
+    
     const [gastos, setGastos] = useState([]);
-    const [flag, setFlag] = useState(0);
     const [userClicked, setUserClicked] = useState(0);
-
-
+    const [usuariosGastos, setUsuariosGastos] = useState([])
+    
+    const [flag, setFlag] = useState(0);
+    const handleCreateSuccess = () => {
+        setFlag(flag + 1);
+    }
+    
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
     const { isOpen: isAddItemGastoGrupoOpen, onOpen: openAddItemGastoGrupo, onClose: closeAddItemGastoGrupo } = useDisclosure();
+    const { isOpen: isGetInfoGastoOpen, onOpen: openGetInfoGasto, onClose: closeGetInfoGasto } = useDisclosure();
+    const {
+        isOpen: isVisible,
+        onClose,
+        onOpen,
+    } = useDisclosure({ defaultIsOpen: false })
+    
+    const toast = useToast()
 
     useEffect(() => {
         getGroupInfo();
     }, [flag]);
 
+    function getUsuariosGasto(){
+        if (gastoId !== '') {
+            axios({
+              method: "post",
+              url: "http://localhost:8000/grupos/usuario-em-gasto/",
+              data: {
+                gasto_id: gastoId
+              },
+            })
+              .then(response => {
+                    console.log("Usuários do gasto:")
+                    setUsuariosGastos(response.data)
+                    console.log(usuariosGastos)
+              })
+              .catch(error => {
+                console.log(error)
+              });
+          }
+    }
+
+    function getGroupInfo() {
+        axios({
+            method: "post",
+            url: "http://localhost:8000/grupos/gastos-grupo/",
+            data: {
+                grupo_id: grupoId
+            },
+        })
+        .then(response => {
+            setGastos(response.data)
+            console.log(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }
+
+    function handleGetInfoGasto(gasto) {
+        setGastoId(gasto.gasto_id)
+        setGrupoID(gasto.grupo_id)
+        setNomeGasto(gasto.nome)
+        setTimeout(() => {
+            // Código para abrir o modal aqui
+        }, 100);
+    }
+
+    useEffect(() => {
+        if (gastoId !== '') {
+            console.log("Gasto ID NOVO:")
+            console.log(gastoId)
+            getUsuariosGasto();
+        }
+      }, [gastoId]);
+
+
     function handleEditGastoGrupo(gastoGrupo) {
         setGastoId(gastoGrupo.gasto_id)
         setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
-        openAddItemGastoGrupo()
+        
+        // getUsuariosGasto()
+        setTimeout(() => {
+            setClicks(clicks => clicks + 1)
+            openAddItemGastoGrupo();
+        }, 150); 
     }
+
 
     function handleCloseItem() {
         closeAddItemGastoGrupo()
@@ -55,32 +131,6 @@ export default function GroupPage() {
         closeCreateGroup();
     };
 
-    const handleCreateSuccess = () => {
-        setFlag(flag + 1);
-    }
-
-    function getGroupInfo() {
-        axios({
-            method: "post",
-            url: "http://localhost:8000/grupos/gastos-grupo/",
-            data: {
-                grupo_id: grupoId
-            },
-        })
-            .then(response => {
-                setGastos(response.data)
-                console.log(response.data)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-    }
-
-    const {
-        isOpen: isVisible,
-        onClose,
-        onOpen,
-    } = useDisclosure({ defaultIsOpen: false })
 
     function alert() {
         onClose()
@@ -97,12 +147,23 @@ export default function GroupPage() {
     }
 
     return (
-
         <div>
             {isVisible ? (
-                <Alert>Link: http://localhost:5173/join/?grupo={grupoId} 
-                    <Icon as={RiFileCopyLine} w={5} h={5} mr={2} onClick={handleCopy} />
-                    <button className="alert" onClick={alert}>X</button>
+                <Alert>Link: http://localhost:5173/join/?grupo={grupoId}
+                    <Button className='buttonCopy'
+                        onClick={() => {
+                            toast({
+                                title: 'Link Copiado.',
+                                status: 'success',
+                                isClosable: true,
+                            })
+                            handleCopy()
+                        }
+                        }
+                    >
+                        Copiar Link
+                    </Button>
+                    <Icon as={MdClose} w={5} h={5} mr={2} className="alert" onClick={alert}/>
                 </Alert>
             ) : 
             <Button onClick={onOpen}>Gerar Link</Button>}
@@ -124,10 +185,11 @@ export default function GroupPage() {
                                     onClick={() => handleEditGastoGrupo(gasto)}
                                 />
                                 <Icon
-                                    color='red.500'
+                                    as={AiOutlinePlus}
+                                    color='black.500'
                                     w={5}
                                     h={5}
-                                    onClick={() => handleDeleteClick(gasto.id)}
+                                    onClick={() => handleGetInfoGasto(gasto)}
                                 />
                             </div>
                         </div>
@@ -139,7 +201,7 @@ export default function GroupPage() {
                 <Button onClick={handleClose}>Fechar</Button>
             </CreateGastoGroup>
 
-            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
+            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gasto_Id={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
                 <Button onClick={handleCloseItem}>Fechar</Button>
             </AddItemGroupGasto>
         </div>

@@ -62,6 +62,8 @@ export default function Home() {
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
 
+  const [novaTag, setNovaTag] = useState(0)
+  
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
@@ -280,6 +282,7 @@ export default function Home() {
         
         if (response.status == 201) {
           console.log('Dados enviados com sucesso:', response.data);
+          setNovaTag(novaTag => novaTag + 1);
           setCreatedTag('')
           onModalTagClose()
           setFlag(flag => flag + 1);
@@ -300,6 +303,7 @@ export default function Home() {
       <header className='home'>
         <div className="bt-sb">
         <ToggleSearchStatus
+                novaTag={novaTag}
                 user={username}
                 onGastosChange={setGastos}
               />
