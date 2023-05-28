@@ -199,7 +199,7 @@ export default function GroupPage() {
                 <Button onClick={handleClose}>Fechar</Button>
             </CreateGastoGroup>
 
-            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gasto_Id={gastoId} usuariosGastos={usuariosGastos} >
+            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gasto_Id={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
                 <Button onClick={handleCloseItem}>Fechar</Button>
             </AddItemGroupGasto>
         </div>
