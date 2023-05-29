@@ -38,8 +38,8 @@ const lineChartData = {
       fill: true,
       label: 'Total de Gastos',
       data: [],
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgb(53, 162, 235, 0.3)',
+      borderColor: 'rgb(111, 153, 81)',
+      backgroundColor: 'rgb(111, 153, 81, 0.3)',
     },
   ],
 };
