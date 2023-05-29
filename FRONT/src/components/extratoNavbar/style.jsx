@@ -7,6 +7,10 @@ export const Navbar = styled.nav`
     height: 100px;
     background-color: #005555;
     position: relative;
+
+`
+
+export const ContUl = styled.div`   
     margin-left: 200px;
 `
 
