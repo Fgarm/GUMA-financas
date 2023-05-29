@@ -34,7 +34,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   function getUsuarios(){
     axios({
     method: "post",
-    url: "http://localhost:8000/grupos/usuarios-grupo/",
+    url: "http://localhost:8000/grupos/usuario-em-gasto/",
     data: {
       grupo_id: groups_id,
     },

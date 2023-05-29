@@ -49,7 +49,7 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
 
     const usernames = usuarios.map(user => user.username);
 
-    let users;
+    let users = '';
 
     for (let i = 0; i < usernames.length; i++) {
       if (i === usernames.length - 1) {
@@ -61,7 +61,7 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
     }
 
     const data = {
-        preco_unitario: valor,
+        preco_unitario: parseFloat(valor),
         quantidade: parseInt(quantidade, 10),
         descricao: descricao,
         id_GastosGrupo_id: gasto_Id,
