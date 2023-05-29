@@ -12,6 +12,7 @@
     --10-green: #6F9951;
     --10-gray-transparent: rgba(213, 221, 223, 0.8);
     --10-gray: #D5DDDF;
+    --10-cian: #00FFFE;
 }
 
 .container-logo-username {
@@ -69,7 +70,6 @@
     margin: 2% 0 0 0;
 
     /* colocar espaçamento entre as letras */
-    
 }
 
 .grupos {
@@ -94,6 +94,9 @@
 } */
 
 .sidebar {
+    width: 14.5%;
+    height: 100%;
+    float: left;
     
     position: fixed; /* Fixed Sidebar (stay in place on scroll) */
     z-index: 1; /* Stay on top */
@@ -107,16 +110,13 @@
     flex-direction: column;
     gap: 10px; /* Adicionar espaçamento entre itens */
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     
     font-family: 'Inter', 'Manrope', sans-serif;
-    color: var(--10-gray);
-
-    transition: width 0.3s ease;
     
-    width: 14.5%;
-    height: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     background-color: var(--30-dark-green);
+    color: var(--10-gray);
+    transition: width 0.3s ease;
 }
 
 .sidebar-item {
@@ -130,10 +130,6 @@
 
 .sidebar-item .label {
     font-size: 16px;
-}
-
-.sidebar-item .active {
-    background-color: #005555;
 }
 
 
@@ -156,9 +152,9 @@
 
 .sidebar div.flex:hover {
     color: #ffff;
-    background-color: #648c483e;
+    background-color: #1b272775;
     cursor: pointer;
-    transition: background-color 0.4s ease;
+    transition: background-color 0.9s ease;
     transition: color 0.3s ease;
 }
 

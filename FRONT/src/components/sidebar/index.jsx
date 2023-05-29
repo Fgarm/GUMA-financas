@@ -38,8 +38,7 @@ export default function Sidebar(props) {
 
     const [grupos, setGrupos] = useState([]);
     const user = localStorage.getItem('cadastro_user');
-    const [showGroup, setShowGroup] = useState(false)
-    const [activeButton, setActiveButton] = useState(null);
+    const [showGroup, setShowGroup] = useState(false);
 
     const navigate = useNavigate();
 
@@ -71,12 +70,10 @@ export default function Sidebar(props) {
 
     const handleCreateClick = () => {
         openCreateGroup();
-        // setState cor da fonte
     };
     
     const handleClose = () => {
         closeCreateGroup();
-        // setState cor da fonte = false
     };
 
     const handleLogOut = () => {

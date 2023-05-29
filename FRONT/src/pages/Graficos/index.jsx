@@ -14,11 +14,13 @@ export default function Graficos() {
   const username = localStorage.getItem('cadastro_user');
 
   return (
-      <div className="GraficosPage">
+      <>
         <Sidebar user={username} />
-        <LineChartComponent/>
-        <DoughnutChartComponent/>
-      </div>
+        <div className="GraficosPage">
+          <LineChartComponent/>
+          <DoughnutChartComponent/>
+        </div>
+      </>
   );
 
 }

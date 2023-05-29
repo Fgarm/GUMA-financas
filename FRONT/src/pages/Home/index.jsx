@@ -4,12 +4,12 @@ import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 import { BiLogOut } from "react-icons/bi";
+
 import { BsTag } from "react-icons/bs";
 import { BsTagFill } from "react-icons/bs";
 import { BsTags } from "react-icons/bs";
 import { BsFillTagsFill } from "react-icons/bs";
 import { BsCurrencyDollar } from "react-icons/bs"; // $ p gasto
-import { BsCashStack } from "react-icons/bs"; // ou esse
 
 import { useNavigate } from 'react-router-dom';
 
@@ -300,317 +300,326 @@ export default function Home() {
   
     
     return (
-      
-      <div className="body" style={{backgroundColor: '#1B2727'}}>
+      <>
       <Sidebar user={username}/>
-      <header className='home'>
-        <div className="bt-sb">
-        <ToggleSearchStatus
-                user={username}
-                onGastosChange={setGastos}
-              />
-          <Button 
-            pr='10px' 
-            onClick={onModalTagOpen}>
-            Adicionar Tag
-          </Button>
-          <Button 
-            pr='10px' 
-            onClick={handleCreateClick}>
-            Adicionar Gasto
-            </Button>
-        </div>
-      </header>
+      <div className="body" style={{backgroundColor: '#1B2727'}}>
+        <header className='home'>
+          <div className="bt-sb">
+            <ToggleSearchStatus
+                    user={username}
+                    onGastosChange={setGastos}
+            />
+            <div className='new-tag-and-gasto-button-container'>
+              <Button 
+                className='new-tag-and-gasto-button'
+                pr='10px' 
+                onClick={onModalTagOpen}>
+                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsFillTagsFill} w={5} h={5}/>
+                Nova Tag
+              </Button>
+              <Button 
+                className='new-tag-and-gasto-button'
+                pr='10px' 
+                onClick={handleCreateClick}>
+                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsCurrencyDollar} w={5} h={5}/>
+                Novo Gasto
+              </Button>
+            </div>
+          </div>
+        </header>
 
               
-      <div>
-        <Modal
-          isOpen={isModalTagOpen}
-          onClose={onModalTagClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
+        <div>
+          <Modal
+            isOpen={isModalTagOpen}
+            onClose={onModalTagClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
 
-            <ModalHeader
-              mb={0} 
-              className='modal_header'>
-              Criando Tag
-            </ModalHeader>
+              <ModalHeader
+                mb={0} 
+                className='modal_header'>
+                Criando Tag
+              </ModalHeader>
 
-            <ModalBody>
-              <FormControl mt={4}>
-                <label>Categoria</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setCreatedTag(e.target.value)
-                }} />
+              <ModalBody>
+                <FormControl mt={4}>
+                  <label>Categoria</label>
+                  <br></br>
+                  <Input onChange={(e) => {
+                    setCreatedTag(e.target.value)
+                  }} />
 
-              </FormControl>
-            </ModalBody>
+                </FormControl>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button 
-                colorScheme='blue' 
-                mr={3} 
-                onClick={handleCreateTag}>
-                Criar
-              </Button>
-              <Button onClick={onModalTagClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
+              <ModalFooter>
+                <Button 
+                  colorScheme='blue' 
+                  mr={3} 
+                  onClick={handleCreateTag}>
+                  Criar
+                </Button>
+                <Button onClick={onModalTagClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
       
-      <div>
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isModalCreateOpen}
-          onClose={onModalCreateClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader 
-              mb={0} 
-              className='modal_header'>
-              Criando Gasto
-            </ModalHeader>
-            <ModalBody>
+        <div>
+          <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isModalCreateOpen}
+            onClose={onModalCreateClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader 
+                mb={0} 
+                className='modal_header'>
+                Criando Gasto
+              </ModalHeader>
+              <ModalBody>
 
-              <FormControl mt={4}>
-                <label >Nome</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setNome(e.target.value)
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Valor</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setValor(e.target.value);
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Data</label>
-                <br></br>
-                <Input 
-                  type="date"
-                  onChange={(e) =>
-                  setSelectedDate(e.target.value)
-                } />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label>Status</label>
-                <br></br>
-                <Select
-                 placeholder='Selecione uma opção' 
-                 onChange={(e) => {
-                  if (e.target.value == 'pago') {
-                    setPago(true)
-                  } else if (e.target.value == 'nao-pago') {
-                    setPago(false)
-                  }
-                }}>
-                  <option value='pago'>Pago</option>
-                  <option value='nao-pago'>Não Pago</option>
-                </Select>
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Tags</label>
-                <br></br>
-                <TagsInput
-                  tags={tags} 
-                  defaultValue={editTags}
-                  onTagsChange={handleTagsChange} 
-                  user={username} />
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button 
-                colorScheme='blue' 
-                mr={3} 
-                onClick={handleSubmit}>
-                Criar
-              </Button>
-              <Button onClick={onModalCreateClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
-
-      <div>
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isModalEditOpen}
-          onClose={onModalEditClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader 
-              mb={0} 
-              className='modal_header'>
-              Editando Gasto
-            </ModalHeader>
-            <ModalBody>
-
-              <FormControl mt={4}>
-                <label >Nome</label>
-                <br></br>
-                <Input 
-                  defaultValue={nome}
-                  onChange={(e) => {
+                <FormControl mt={4}>
+                  <label >Nome</label>
+                  <br></br>
+                  <Input onChange={(e) => {
                     setNome(e.target.value)
                   }} />
-              </FormControl>
+                </FormControl>
 
-              <FormControl mt={4}>
-                <label >Valor</label>
-                <br></br>
-                <Input 
-                  defaultValue={valor}
-                  onChange={(e) => {
-                  setValor(e.target.value)
-                }} />
-              </FormControl>
+                <FormControl mt={4}>
+                  <label >Valor</label>
+                  <br></br>
+                  <Input onChange={(e) => {
+                    setValor(e.target.value);
+                  }} />
+                </FormControl>
 
-              <FormControl mt={4}>
-                <label >Data</label>
-                <br></br>
-                <Input 
-                  defaultValue={data}
-                  type="date" 
-                  onChange={(e) =>
+                <FormControl mt={4}>
+                  <label >Data</label>
+                  <br></br>
+                  <Input 
+                    type="date"
+                    onChange={(e) =>
                     setSelectedDate(e.target.value)
-                } />
-              </FormControl>
+                  } />
+                </FormControl>
 
-              <FormControl mt={4}>
-                <label>Status</label>
-                <br></br>
-                <Select
-                  defaultValue={editStatus}
-                 placeholder='Selecione uma opção' 
-                 onChange={(e) => {
-                  if (e.target.value == 'pago') {
-                    setPago(true)
-                  } else if (e.target.value == 'nao-pago') {
-                    setPago(false)
-                  }
-                }}>
-                  <option value='pago'>Pago</option>
-                  <option value='nao-pago'>Não Pago</option>
-                </Select>
-              </FormControl>
+                <FormControl mt={4}>
+                  <label>Status</label>
+                  <br></br>
+                  <Select
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
+                    <option value='pago'>Pago</option>
+                    <option value='nao-pago'>Não Pago</option>
+                  </Select>
+                </FormControl>
 
-              <FormControl mt={4}>
-                <label>Tags</label>
-                <br></br>
-                <TagsInput 
-                  tags={tags} 
-                  editado={editTags}
-                  onTagsChange={handleTagsChange} 
-                  user={username} 
-                />
-              </FormControl>
-            </ModalBody>
+                <FormControl mt={4}>
+                  <label >Tags</label>
+                  <br></br>
+                  <TagsInput
+                    tags={tags} 
+                    defaultValue={editTags}
+                    onTagsChange={handleTagsChange} 
+                    user={username} />
+                </FormControl>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button 
-                colorScheme='blue'
-                mr={3} 
-                onClick={handleEdit}>
-                Salvar
-              </Button>
-              <Button onClick={onModalEditClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
-
-      <div>
-        <AlertDialog
-          isOpen={isAlertDialogOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onAlertDialogClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader 
-                fontSize='lg' 
-                fontWeight='bold'>
-                Deletar Gastos
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Deseja realmente deletar esse gasto?
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onAlertDialogClose}>
-                  Cancelar
+              <ModalFooter>
+                <Button 
+                  colorScheme='blue' 
+                  mr={3} 
+                  onClick={handleSubmit}>
+                  Criar
                 </Button>
+                <Button onClick={onModalCreateClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
 
-                <Button colorScheme='red' ml={3} onClick={handleDelete}>
-                  Deletar
+        <div>
+          <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isModalEditOpen}
+            onClose={onModalEditClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader 
+                mb={0} 
+                className='modal_header'>
+                Editando Gasto
+              </ModalHeader>
+              <ModalBody>
+
+                <FormControl mt={4}>
+                  <label >Nome</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={nome}
+                    onChange={(e) => {
+                      setNome(e.target.value)
+                    }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Valor</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={valor}
+                    onChange={(e) => {
+                    setValor(e.target.value)
+                  }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Data</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={data}
+                    type="date" 
+                    onChange={(e) =>
+                      setSelectedDate(e.target.value)
+                  } />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Status</label>
+                  <br></br>
+                  <Select
+                    defaultValue={editStatus}
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
+                    <option value='pago'>Pago</option>
+                    <option value='nao-pago'>Não Pago</option>
+                  </Select>
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Tags</label>
+                  <br></br>
+                  <TagsInput 
+                    tags={tags} 
+                    editado={editTags}
+                    onTagsChange={handleTagsChange} 
+                    user={username} 
+                  />
+                </FormControl>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button 
+                  colorScheme='blue'
+                  mr={3} 
+                  onClick={handleEdit}>
+                  Salvar
                 </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </div>
+                <Button onClick={onModalEditClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+
+        <div>
+          <AlertDialog
+            isOpen={isAlertDialogOpen}
+            leastDestructiveRef={cancelRef}
+            onClose={onAlertDialogClose}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader 
+                  fontSize='lg' 
+                  fontWeight='bold'>
+                  Deletar Gastos
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Deseja realmente deletar esse gasto?
+                </AlertDialogBody>
+
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onAlertDialogClose}>
+                    Cancelar
+                  </Button>
+
+                  <Button colorScheme='red' ml={3} onClick={handleDelete}>
+                    Deletar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        </div>
 
 
-      <div className="gasto">
-        {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-          gastos.map((gasto, key) => (
-            <div key={gasto.id} className="gasto_information">
-              <div className='header'>
-                <h1>
-                  {gasto.nome}
-                </h1>
-                <div>
-                  <Icon 
-                    as={MdOutlineModeEditOutline} 
-                    w={5} 
-                    h={5} 
-                    mr={2} 
-                    onClick={() => handleEditClick(gasto)} 
-                  />
-                  <Icon 
-                    as={MdDelete} 
-                    color='red.500' 
-                    w={5} 
-                    h={5} 
-                    onClick={() => handleDeleteClick(gasto.id)} 
-                  />
+        <div className="gasto">
+          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+            gastos.map((gasto, key) => (
+              <div key={gasto.id} className="gasto_information">
+                <div className='header'>
+                  <h1>
+                    {gasto.nome}
+                  </h1>
+                  <div>
+                    <Icon
+                      className='edit-icon-gasto' 
+                      as={MdOutlineModeEditOutline} 
+                      w={5} 
+                      h={5} 
+                      mr={2} 
+                      onClick={() => handleEditClick(gasto)} 
+                      />
+                    <Icon 
+                      className='delete-icon-gasto' 
+                      as={MdDelete} 
+                      color='red.500' 
+                      w={5} 
+                      h={5} 
+                      onClick={() => handleDeleteClick(gasto.id)} 
+                    />
+                  </div>
                 </div>
+                <h2>
+                  R$ {gasto.valor}
+                </h2>
+                <h2>
+                  {formatarData(gasto.data)}
+                </h2>
+                <h2>
+                </h2>
+                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
+                <h2>
+                {gasto.tag}
+                </h2>
+
               </div>
-              <h2>
-                R$ {gasto.valor}
-              </h2>
-              <h2>
-                {formatarData(gasto.data)}
-              </h2>
-              <h2>
-              </h2>
-              {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
-              <h2>
-              {gasto.tag}
-              </h2>
+            ))
 
-            </div>
-          ))
+          )}
+        </div>
 
-        )}
       </div>
-
-    </div>
-  )
+      </>
+    )
 }

@@ -8,6 +8,11 @@ header.home {
     width: 100%;
 }
 
+.body {
+    width: calc(100% - 14.5%);
+    float: right;
+}
+
 /* .presentation {
     border-top: 10px;
     display: flex;
@@ -24,7 +29,7 @@ header.home {
 }
 
 .modal_header {
-    background-color: #008080;
+    background-color: var(--30-dark-green);
 }
 
 .tags-input-container {
@@ -81,11 +86,11 @@ span.error-message {
 
 .gasto {
     gap: 20px;
-    width: 80%;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
-    margin-top: 60px;
-    margin-left: 200px; /* AQUIIII */
+    margin-top: 3%;
+    padding: 1.5%;
     border-radius: 5px;
     justify-content: space-evenly;
 }
@@ -96,7 +101,7 @@ span.error-message {
     margin-top: 15px;
     border-radius: 5px;
     border: 0.5px solid;
-    background-color: white;
+    background-color: var(--10-gray);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -110,7 +115,7 @@ span.error-message {
 }
 
 h2.green {
-    color: green;
+    color: var(--30-dark-green);
 }
 
 h2.red {
@@ -149,6 +154,23 @@ h2.red {
     flex-direction: row;
     justify-content: flex-end;
 }
+
+.new-tag-and-gasto-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6%;
+}
+
+.new-tag-and-gasto-button {
+    background-color: var(--10-green)!important;
+    color: white!important;
+    width: 80%;
+    padding: 0 1.5rem 0!important;
+    /* gap: 4px; */
+}
+
 
 .customCheckBoxHolder {
     margin: 5px;

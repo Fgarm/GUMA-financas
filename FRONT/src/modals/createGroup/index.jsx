@@ -62,7 +62,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
             <ModalHeader 
               mb={0} 
               className='modal_header'>
-              Criando Grupo
+              Criando Novo Grupo
             </ModalHeader>
 
             <ModalBody>
@@ -88,7 +88,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
 
             <ModalFooter>
               <Button 
-                colorScheme='blue' 
+                style={{ backgroundColor: '#6F9951' }}
                 mr={3} 
                 onClick={handleSubmit}>
                 Criar
