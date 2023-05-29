@@ -7,9 +7,10 @@
     
     /* border: 1px solid var(--dark); */
     border-radius: 5%;
-    box-shadow:  28px 28px 39px #aeaeae,
-             -28px -28px 39px #f0f0f0;
+    box-shadow:  6px 6px 12px #aeaeae,
+                -6px -6px 12px #f0f0f0;
 }
+
 
 @media screen and (max-width: 1000px) {
     .LineChartComponent {
