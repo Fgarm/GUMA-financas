@@ -37,6 +37,7 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
   // }, [usuariosGastos]);
 
   useEffect(() => {
+    console.log(usuariosGastos)
     const usuariosArray = usuariosGastos.map(usuario => ({
       nome: usuario.nome,
       username: usuario.username
