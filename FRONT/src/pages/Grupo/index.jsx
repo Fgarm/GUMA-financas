@@ -129,15 +129,16 @@ export default function GroupPage() {
     };
 
 
-    function alert() {
-        onClose()
-    }
+    // function alert() {
+    //     onClose()
+    // }
 
     function handleCopy() {
         setIsClicked(!isClicked);
         clipboardCopy(`http://localhost:5173/join/?grupo=${grupoId}`)
             .then(() => {
                 console.log('Texto copiado com sucesso!');
+                onClose()
             })
             .catch((error) => {
                 console.error('Erro ao copiar o texto:', error);
@@ -161,7 +162,7 @@ export default function GroupPage() {
                     >
                         Copiar Link
                     </Button>
-                    <Icon as={MdClose} w={5} h={5} mr={2} className="alert" onClick={alert}/>
+                    {/* <Icon as={MdClose} w={5} h={5} mr={2} className="alert" onClick={alert}/> */}
                 </Alert>
             ) :
 

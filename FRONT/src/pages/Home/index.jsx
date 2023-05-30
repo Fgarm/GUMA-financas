@@ -56,6 +56,7 @@ export default function Home() {
   const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
+  const [tagColor, setTagColor] = useState('')
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
@@ -269,10 +270,11 @@ export default function Home() {
   function handleCreateTag() {
 
     const categoria = createdTag
-    const cor = 'dad8d8'
+    const cor = tagColor
     const user = localStorage.getItem('cadastro_user')
     const newTag = { categoria, cor, user }
     const tag = newTag
+    console.log(JSON.stringify(tag))
     axios.post('http://localhost:8000/tags/criar-tag/', tag, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -342,9 +344,19 @@ export default function Home() {
                 <Input onChange={(e) => {
                   setCreatedTag(e.target.value)
                 }} />
+              </FormControl>
 
+              <FormControl mt={4}>
+                <label>Cor</label>
+                <br></br>
+                <Input 
+                placeholder="Ex: 000000"
+                onChange={(e) => {
+                  setTagColor(e.target.value)
+                }} />
               </FormControl>
             </ModalBody>
+            <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
 
             <ModalFooter>
               <Button 

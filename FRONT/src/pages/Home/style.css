@@ -296,3 +296,7 @@ h2.red {
 .body {
     background-color: teal;
 } */
+
+span.hexadecimal{
+    font-size: 12px;
+}
