@@ -26,5 +26,48 @@ span.error {
 }
 
 .center {
-    color:black;
+    color: var(--10-gray);
+}
+
+.form-page-container {
+    height: 100%;
+    max-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 2.5%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow-y: hidden;
+
+    background-color: var(--60-background-dark);
+}
+
+.formUp {
+    margin: 0% 0px;
+    padding: 5%;
+    width: 100%;
+
+    display: flex;
+    position: relative;
+    justify-content: center;
+
+    background-color: var(--60-background-dark);
+}
+
+.submit-button {
+    background-color: var(--10-green)!important;
+    color: #fff;
+}
+
+.white-guma-logo {
+    height: auto;
+    max-width: 28%;
+
+    margin: 0 auto;
+    padding: 0px;
+    position: relative;
 }

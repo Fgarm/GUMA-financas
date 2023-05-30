@@ -1,27 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import "./style.css";
-
-import { Icon } from "@chakra-ui/react";
-import { TbHomeDollar} from "react-icons/tb";
-import { BiLogOut } from "react-icons/bi";
-import { MdGroups } from "react-icons/md";
-import { BsBarChartFill } from "react-icons/bs";
-import { AiOutlineUsergroupAdd } from "react-icons/ai";
-import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
-
 import { useNavigate } from 'react-router-dom';
 
+import { Icon } from "@chakra-ui/react";
+import { BiLogOut } from "react-icons/bi";
+import { MdGroups } from "react-icons/md";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import { BsBarChartFill } from "react-icons/bs";
+import { BsFillBarChartLineFill } from "react-icons/bs";
+
+import { BsCurrencyDollar } from "react-icons/bs"; // $
+import { BsCurrencyBitcoin } from "react-icons/bs"; // B do bitcoin
+import { BsCashCoin } from "react-icons/bs"; // uma nota e uma moeda
+
+import { BsCoin } from "react-icons/bs"; // uma moeda
+import { BsCashStack } from "react-icons/bs"; // uma nota normal com outra atras (tipo um bolo de din)
+import { BsCash } from "react-icons/bs"; // só uma nota (igual o de cima, mas só uma)
+
+// import { BsFillBagCheckFill } from "react-icons/bs"; // uma sacola com check
+// import { BsFillBagDashFill } from "react-icons/bs"; // uma sacola com um menos (-)
+// import { BsFillBagFill } from "react-icons/bs"; // so a sacola
+// import { BsFillBagHeartFill } from "react-icons/bs";
+// import { BsFillBagPlusFill } from "react-icons/bs";
+// import { BsFillBagXFill } from "react-icons/bs";
+
+
+import Groups from "../../modals/createGroup";
 import { useDisclosure } from '@chakra-ui/react';
 import { Button } from "@chakra-ui/react";
 
-import Groups from "../../modals/createGroup";
 
 import axios from 'axios';
+import { BsFillTagFill } from 'react-icons/bs';
 
 export default function Sidebar(props) {
+
     const [grupos, setGrupos] = useState([]);
     const user = localStorage.getItem('cadastro_user');
-    const [showGroup, setShowGroup] = useState(false)
+    const [showGroup, setShowGroup] = useState(false);
 
     const navigate = useNavigate();
 
@@ -31,7 +48,6 @@ export default function Sidebar(props) {
         localStorage.setItem('grupo_id', id)
         navigate('/group');
     }
-
     function getGroupsUser() {
         axios({
             method: "post",
@@ -48,58 +64,78 @@ export default function Sidebar(props) {
                 console.log(error)
             })
     }
-
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
-
-
-
     const handleCreateClick = () => {
         openCreateGroup();
     };
-
+    
     const handleClose = () => {
         closeCreateGroup();
     };
 
     const handleLogOut = () => {
         console.log('logout')
+        // setState cor da fonte
         localStorage.removeItem('cadastro_user')
         localStorage.removeItem('token')
-        //localStorage.clear();
         navigate('/');
     }
-
+    
     function handleStatistics() {
         navigate('/extratos');
     }
 
-    function handleHome() {
+    function handleMyExpenses() {
         navigate('/home');
     }
 
-    return (
-        <div className="sidenav">
-            <p className="presentation">Olá, {props.user}</p>
+    function handleDashboard() {
+        navigate('/dashboard');
+    }
 
-            <div className="flex" onClick={handleHome}>
-                <Icon as={TbHomeDollar} w={7} h={7} color="red.500" /> Meus Gastos
+    return (
+        <div className="sidebar">
+
+            <div className="container-logo-username">
+                <img src="../../../guma.png" className="guma-logo" alt="GUMA Logo"/>
+                <p className="presentation">Olá,<br></br>{props.user}</p>
             </div>
+
+            <div className="subtitle-sidebar">ANALYTICS</div>
+
+            {/* <div className="flex" onClick={handleStatistics}>
+                <Icon as={BsBarChartFill} w={5} h={5}  /> Análise de Gastos
+            </div> */}
+
+            <div className="flex" onClick={handleMyExpenses}>
+                <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Gastos
+            </div>
+
+            <div className="flex" onClick={handleMyExpenses}>
+                <Icon as={BsCashStack} w={5} h={5}  /> Saldo
+            </div>
+
+            <div className="flex" onClick={handleDashboard}>
+                <Icon as={BsBarChartFill} w={5} h={5}  /> Gráficos
+            </div>
+
+
+
+            <div className="subtitle-sidebar grupos">GRUPOS</div>
+
             <div
-                className="flex" onClick={handleCreateClick}>
-                <Icon as={AiOutlineUsergroupAdd} w={7} h={7} color="green.500" /> Criar Grupo
-            </div>
-            <div className="flex" onClick={handleStatistics}>
-                <Icon as={BsBarChartFill} w={7} h={7} color="blue.500" /> Análise de Gastos
+                className="flex"
+                onClick={handleCreateClick}>
+                <Icon as={AiOutlineUsergroupAdd} w={6} h={6}  /> Novo Grupo
             </div>
             <div className="flex" onClick={getGroupsUser}>
-                <Icon as={MdGroups} w={7} h={7} color="black.500"/> Grupos
-                    
+                <Icon as={MdGroups} w={6} h={6} /> Grupos
+
                 {showGroup == true ? <Icon as={RiArrowDropUpLine} w={7} h={7} /> : <Icon as={RiArrowDropDownLine} w={7} h={7}/>}
             </div>
                 <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup} user={user}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </Groups>
-
                 {showGroup && grupos.length !== 0 ? (
                         grupos.map((grupo, key) => (
                     <div className="flex" onClick={() => navigateGroup(grupo.grupo_id)}>
@@ -108,8 +144,8 @@ export default function Sidebar(props) {
                         ))
                     ) : null}
 
-            <div className="flex" onClick={handleLogOut}>
-                <Icon as={BiLogOut} w={7} h={7} color="red.500" /> Sair
+            <div className="flex logout" style={{marginLeft: '10%'}} onClick={handleLogOut}>
+                <Icon as={BiLogOut} w={6} h={6}  /> Logout
             </div>
         </div>
     )

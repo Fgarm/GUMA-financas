@@ -4,7 +4,7 @@ import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
 import MyPage from "../pages/Groups";
 import GroupPage from "../pages/Grupo";
-import ChartComponent from "../components/chart";
+import Graficos from "../pages/Graficos";
 import EntrarComLink from "../components/joinGroup";
 import Extratos from "../pages/Extratos"
 import { Navigate, createBrowserRouter } from "react-router-dom";
@@ -40,10 +40,10 @@ const Routering = createBrowserRouter([
     },
     
     {
-        path: "/statistics",
+        path: "/dashboard",
         element: 
         <React.StrictMode>
-            <ChartComponent/>,
+            <Graficos />
         </React.StrictMode>
     },
 

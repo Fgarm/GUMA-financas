@@ -1,0 +1,69 @@
+.DonutChartContainer {
+    max-height: 62%;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2%;
+
+    border-radius: 5%;
+    box-shadow:  6px 6px 12px #aeaeae,
+             -6px -6px 12px #f0f0f0;
+
+    position: relative;
+}
+
+@media screen and (max-width: 1000px) {
+    .DonutChartContainer {
+        height: 65%;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        padding: 3% 2% 4%;
+        margin: 4%;
+    }
+
+    /* alterar os outros tbm */
+}
+
+.DonutChartComponent {
+    height: calc(100% - 75%);
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 2%;
+    position: absolute;
+
+    /* border: solid 1px red; */
+}
+
+.month-year-input-container {
+    height: calc(100% - 90%);
+    width: 80%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: bottom;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+
+    /* border: 1px solid red; */
+    justify-content: space-evenly;
+    /* color: white; */
+}
+
+.month-input, .year-input {
+    margin: 0 -15%;
+    width: 17%;
+
+    background-color: var(--dark-gray);
+    color: var(--60-background-dark);
+    border: none;
+}
+
+.month-input:hover, .year-input:hover {
+    cursor: pointer;
+}
