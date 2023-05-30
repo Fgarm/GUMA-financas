@@ -95,6 +95,7 @@ export default function LogUp() {
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='first_name'
             name='first_name'
             {...register('first_name')}
@@ -113,6 +114,7 @@ export default function LogUp() {
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='last_name'
             name='last_name'
             {...register('last_name')}
@@ -131,6 +133,7 @@ export default function LogUp() {
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='username'
             name='username'
             {...register('username')}
@@ -149,6 +152,7 @@ export default function LogUp() {
 
           <Input
             type="email"
+            style={{ color: '#D5DDDF' }}
             id='email'
             name='email'
             {...register('email')}
@@ -169,6 +173,7 @@ export default function LogUp() {
           <InputGroup size='md'>
             <Input
               pr='4.5rem'
+              style={{ color: '#D5DDDF' }}
               type={visible ? 'text' : 'password'}
               id='password'
               name='password'

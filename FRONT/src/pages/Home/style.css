@@ -216,7 +216,7 @@ h2.red {
 }
 
 .customCheckBoxInput:checked+.customCheckBoxWrapper .customCheckBox {
-    background-color: #005555;
+    background-color: var(--30-dark-green);
     color: white;
     box-shadow: rgba(0, 0, 0, 0.23) 0px -4px 1px 0px inset, rgba(255, 255, 255, 0.17) 0px -1px 1px 0px, rgba(0, 0, 0, 0.17) 0px 2px 4px 1px;
 }
@@ -226,7 +226,7 @@ h2.red {
 }
 
 .customCheckBoxInput:checked+.customCheckBoxWrapper .customCheckBox:hover {
-    background-color: #005555;
+    background-color: var(--30-dark-green);
     box-shadow: rgba(0, 0, 0, 0.26) 0px -4px 1px 0px inset, rgba(255, 255, 255, 0.17) 0px -1px 1px 0px, rgba(0, 0, 0, 0.15) 0px 3px 6px 2px;
 }
 
