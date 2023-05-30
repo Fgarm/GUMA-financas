@@ -212,9 +212,9 @@ export default function GroupPage() {
                     ))
                 )}
             </div>
-            <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoID} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
+            {/* <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoID} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
                 <Button onClick={handleGetInfoGasto}>Fechar</Button>
-            </ShowInfoGroup>
+            </ShowInfoGroup> */}
 
             <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked} clicks={clicks}>
                 <Button onClick={handleClose}>Fechar</Button>
