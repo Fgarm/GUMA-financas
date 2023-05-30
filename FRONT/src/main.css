@@ -14,14 +14,34 @@
     
     --10-gray-transparent: rgba(213, 221, 223, 0.8);
     --10-gray-transparent-2: rgba(213, 221, 223, 0.2);
+    --dark-gray: #8c939439;
 
-    --10-cian: #00FFFE;
+    /* --10-cian: #00fffe; usa essa não, mt artificial */
 }
 
 .body {
     width: calc(100% - 15%);
     float: right;
     background-color: var(--60-background-dark);
+}
+
+header.home {
+    padding: 20px;
+    padding-right: 30px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    /* background-color: #005555; var(--30-dark-green) */
+    width: 100%;
+    height: 12vh;
+    position: relative;
+}
+
+.bt-sb {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 .page-title {

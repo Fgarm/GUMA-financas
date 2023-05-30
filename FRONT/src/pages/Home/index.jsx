@@ -302,8 +302,9 @@ export default function Home() {
     return (
       <>
       <Sidebar user={username}/>
-      <div className="body" style={{backgroundColor: '#1B2727'}}>
+      <div className="body">
         <header className='home'>
+          <h1 className='page-title'>Meus Gastos</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
                     user={username}
@@ -314,14 +315,14 @@ export default function Home() {
                 className='new-tag-and-gasto-button'
                 pr='10px' 
                 onClick={onModalTagOpen}>
-                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsFillTagsFill} w={5} h={5}/>
+                <Icon style={{marginLeft: '-10px', marginRight: '10px'}} as={BsFillTagsFill} w={5} h={5}/>
                 Nova Tag
               </Button>
               <Button 
                 className='new-tag-and-gasto-button'
                 pr='10px' 
                 onClick={handleCreateClick}>
-                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsCurrencyDollar} w={5} h={5}/>
+                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsCurrencyDollar} w={6} h={5}/>
                 Novo Gasto
               </Button>
             </div>

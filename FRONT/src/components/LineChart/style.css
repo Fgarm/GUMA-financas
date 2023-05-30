@@ -1,13 +1,15 @@
 .LineChartComponent {
-    height: 65%;
-    width: 55%;
+    height: 62%; /* 65% */
+    width: auto; /* 55% */
+    min-width: 55%;
     display: flex;
     justify-content: center;
     padding: 4% 2% 3%;
+    position: relative;
     
     /* border: 1px solid var(--dark); */
     border-radius: 5%;
-    box-shadow:  6px 6px 12px #aeaeae,
+    box-shadow:  6px 6px 11px #aeaeae,
                 -6px -6px 12px #f0f0f0;
 }
 
