@@ -19,7 +19,7 @@ export default function SaldoBlock(){
     
     React.useEffect(() => {
         getPost();
-    }, [])
+    },[])
     
     if (!post) return "no post"
     
@@ -40,8 +40,8 @@ export default function SaldoBlock(){
                     post.map((e) => (
                        
                        <Tr>
-                            <Td>{e.data.split("T1")[0]}</Td>
-                            <Td>{e.data.split("T1")[1].split(".")[0]}</Td>
+                            <Td>{e.data.split("T")[0]}</Td>
+                            <Td>{e.data.split("T")[1].split(".")[0]}</Td>
                             <Td>R$:{e.valor}</Td>
                             <Td>R$:{e.saldo}</Td>
                             

@@ -54,6 +54,7 @@ export default function LogIn() {
       .then(response => {
         if (response.status === 200 && response.data.access) {
           localStorage.setItem('cadastro_user', data.username)
+          console.log(localStorage.getItem('cadastro_user'))
           console.log(response.data.access)
           localStorage.setItem('token', response.data.token);
           navigate('/home', { replace: true });

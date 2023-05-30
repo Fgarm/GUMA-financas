@@ -1,6 +1,5 @@
 import React, {useEffect, useRef,} from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 export default function EntrarComLink() {
 

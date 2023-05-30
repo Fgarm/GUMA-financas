@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from Bancario.models import Bancario, Saldos
+from Gastos.models import Gasto
 from rest_framework.response import Response
 from rest_framework import status
 import datetime
@@ -26,7 +27,7 @@ class BancarioView(APIView):
         except:
             return Response(f"Conta nao Cadastrada", status=status.HTTP_417_EXPECTATION_FAILED)
         
-        Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.datetime.today(), saldo=bancario.saldo_atual, valor=request.data["saldo"])
+        Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.datetime.today(), saldo=float(bancario.saldo_atual) + request.data["saldo"], valor=request.data["saldo"])
         bancario.saldo_atual = float(bancario.saldo_atual) + request.data["saldo"]
         bancario.save()
 
@@ -66,3 +67,14 @@ class BancarioView(APIView):
 
 
         return Response(response_saldo,status=status.HTTP_200_OK)
+    
+
+    # #vou fazer ainda
+    # @api_view(['POST'])
+    # def extrato_saldos(request):
+    #     gastos = Gasto.objects.filter(username=request.username)
+
+    #     gastos.sort(key=lambda data : data.data, reverse=True)
+
+    #     for gasto in gastos:
+    #         print(f"{gasto.data} {gasto.nome}")
