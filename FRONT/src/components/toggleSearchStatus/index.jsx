@@ -61,6 +61,7 @@ export default function ToggleSearchStatus(props) {
         }
       })
       .catch(error => {
+        setGastos([]);
         console.log(error);
       })
     }
