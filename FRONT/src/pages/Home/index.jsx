@@ -3,6 +3,7 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
+import { BiLogOut } from "react-icons/bi";
 
 import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
@@ -353,9 +354,19 @@ export default function Home() {
                   <Input onChange={(e) => {
                     setCreatedTag(e.target.value)
                   }} />
+                </FormControl>
 
+                <FormControl mt={4}>
+                  <label>Cor</label>
+                  <br></br>
+                  <Input
+                    placeholder="Ex: 000000"
+                    onChange={(e) => {
+                      setTagColor(e.target.value)
+                    }} />
                 </FormControl>
               </ModalBody>
+              <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
 
               <ModalFooter>
                 <Button
@@ -577,7 +588,6 @@ export default function Home() {
 
 
         <div className="gasto">
-
           {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
             gastos.map((gasto, key) => (
               <div key={gasto.id} className="gasto_information">

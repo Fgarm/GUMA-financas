@@ -135,6 +135,7 @@ h2.red {
 }
 
 .new-tag-and-gasto-button {
+    margin-top: 15px;
     width: 95%;
     padding: 0 1.5rem 0 !important;
 
