@@ -51,43 +51,6 @@ export default function GroupPage() {
         getGroupInfo();
     }, [flag]);
 
-    function getUsuariosGasto() {
-        if (gastoId !== '') {
-            axios({
-                method: "post",
-                url: "http://localhost:8000/grupos/usuario-em-gasto/",
-                data: {
-                    gasto_id: gastoId
-                },
-            })
-                .then(response => {
-                    console.log("Usuários do gasto:")
-                    setUsuariosGastos(response.data)
-                    console.log(usuariosGastos)
-                })
-                .catch(error => {
-                    console.log(gastoId)
-                    console.log(error)
-                });
-        }
-    }
-
-    function getItens() {
-        axios({
-            method: "post",
-            url: "http://localhost:8000/grupos/itens-gastos/",
-            data: {
-                gasto_id: gastoId,
-            },
-        }).then(response => {
-            setItensGasto(response.data)
-            console.log(response.data)
-        }
-        ).catch(error => {
-            console.log(error)
-        })
-    }
-
     function getGroupInfo() {
         axios({
             method: "post",
@@ -98,20 +61,60 @@ export default function GroupPage() {
         })
             .then(response => {
                 setGastos(response.data)
-                console.log(response.data)
+                // console.log(response.data)
             })
             .catch(error => {
                 console.log(error)
             })
     }
 
-    function handleGetInfoGasto(gasto) {
-        setGastoId(gasto.gasto_id)
-        setGrupoID(gasto.grupo_id)
-        setNomeGasto(gasto.nome)
+    function getUsuariosGasto() {
+        if (gastoId !== '') {
+            axios({
+                method: "post",
+                url: "http://localhost:8000/grupos/usuario-em-gasto/",
+                data: {
+                    gasto_id: gastoId
+                },
+            })
+                .then(response => {
+                    console.log("Usuários do gasto:"+response.data)
+                    setUsuariosGastos(response.data)
+                    // console.log(usuariosGastos)
+                })
+                .catch(error => {
+                    // console.log(gastoId)
+                    console.log(error)
+                });
+        }
+    }
+
+    function getItens() {
+        if (gastoId !== '') {
+            axios({
+                method: "post",
+                url: "http://localhost:8000/grupos/itens-gastos/",
+                data: {
+                    gasto_id: gastoId,
+                },
+            }).then(response => {
+                console.log("ITENS GASTO:")
+                console.log(response.data)
+                setItensGasto(response.data)
+            }
+            ).catch(error => {
+                console.log(error)
+            })
+        }
+    }
+
+    function handleGetInfoGasto(gastoGrupo) {
+        setGastoId(gastoGrupo.gasto_id)
+        setGrupoID(gastoGrupo.grupo_id)
+        setNomeGasto(gastoGrupo.nome)
         getItens()
-        console.log("ITENS")
-        console.log(itensGasto)
+        getUsuariosGasto()
+        setClicks(clicks => clicks + 1)
 
         setTimeout(() => {
             setClicks(clicks => clicks + 1)
@@ -121,8 +124,6 @@ export default function GroupPage() {
 
     useEffect(() => {
         if (gastoId !== '') {
-            console.log("Gasto ID NOVO:")
-            console.log(gastoId)
             getUsuariosGasto();
         }
     }, [gastoId]);
@@ -132,14 +133,20 @@ export default function GroupPage() {
         setGastoId(gastoGrupo.gasto_id)
         setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
-
+        getItens()
         getUsuariosGasto()
         setClicks(clicks => clicks + 1)
         setTimeout(() => {
+            setClicks(clicks => clicks + 1)
             openAddItemGastoGrupo();
-        }, 300);
+        }, 100);
     }
 
+    useEffect(() => {
+        if (gastoId !== '') {
+            getItens();
+        }
+    }, [gastoId]);
 
     function handleCloseItem() {
         closeAddItemGastoGrupo()
@@ -210,31 +217,37 @@ export default function GroupPage() {
                 </header>
 
                 <div className="gasto">
-                    {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-                        gastos.map((gasto, key) => (
-                            <div key={gasto.id} className="gasto_information">
-                                <h1>{gasto.nome}</h1>
-                                <div>
-                                    <Icon
-                                        as={MdAddShoppingCart}
-                                        w={5}
-                                        h={5}
-                                        mr={2}
-                                        onClick={() => handleEditGastoGrupo(gasto)}
-                                    />
-                                    <Icon
-                                        as={AiOutlinePlus}
-                                        color='black.500'
-                                        w={5}
-                                        h={5}
-                                        onClick={() => handleGetInfoGasto(gasto)}
-                                    />
+                    {gastos.length === 0 ? (
+                        <p>Não há gastos com os parâmetros especificados</p>
+                    ) : (
+                        gastos.map((gasto, index) => {
+                            const key = gasto.id || index; // Usando gasto.id ou índice como chave
 
+                            return (
+                                <div key={key} className="gasto_information">
+                                    <h1>{gasto.nome}</h1>
+                                    <div>
+                                        <Icon
+                                            as={MdAddShoppingCart}
+                                            w={5}
+                                            h={5}
+                                            mr={2}
+                                            onClick={() => handleEditGastoGrupo(gasto)}
+                                        />
+                                        <Icon
+                                            as={AiOutlinePlus}
+                                            color="black.500"
+                                            w={5}
+                                            h={5}
+                                            onClick={() => handleGetInfoGasto(gasto)}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                            );
+                        })
                     )}
                 </div>
+
                 <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoID} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
                     <Button onClick={handleGetInfoGasto}>Fechar</Button>
                 </ShowInfoGroup>

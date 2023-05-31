@@ -365,7 +365,7 @@ export default function Home() {
                       setTagColor(e.target.value)
                     }} />
                 </FormControl>
-              <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
+                <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
               </ModalBody>
 
               <ModalFooter>
@@ -586,52 +586,50 @@ export default function Home() {
           </AlertDialog>
         </div>
 
-
         <div className="gasto">
-          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastos.map((gasto, key) => (
-              <div key={gasto.id} className="gasto_information">
-                <div className='header'>
-                  <h1>
-                    {gasto.nome}
-                  </h1>
-                  <div>
-                    <Icon
-                      className='edit-icon-gasto'
-                      as={MdOutlineModeEditOutline}
-                      w={5}
-                      h={5}
-                      mr={2}
-                      onClick={() => handleEditClick(gasto)}
-                    />
-                    <Icon
-                      className='delete-icon-gasto'
-                      as={MdDelete}
-                      color='red.500'
-                      w={5}
-                      h={5}
-                      onClick={() => handleDeleteClick(gasto.id)}
-                    />
+          {gastos.length === 0 ? (
+            <p>Não há gastos com os parâmetros especificados</p>
+          ) : (
+            gastos.map((gasto, index) => {
+              const key = gasto.id || index;
+
+              return (
+                <div key={key} className="gasto_information">
+                  <div className="header">
+                    <h1>{gasto.nome}</h1>
+                    <div>
+                      <Icon
+                        className="edit-icon-gasto"
+                        as={MdOutlineModeEditOutline}
+                        w={5}
+                        h={5}
+                        mr={2}
+                        onClick={() => handleEditClick(gasto)}
+                      />
+                      <Icon
+                        className="delete-icon-gasto"
+                        as={MdDelete}
+                        color="red.500"
+                        w={5}
+                        h={5}
+                        onClick={() => handleDeleteClick(gasto.id)}
+                      />
+                    </div>
                   </div>
+                  <h2>R$ {gasto.valor}</h2>
+                  <h2>{formatarData(gasto.data)}</h2>
+                  {gasto.pago > 0 ? (
+                    <h2 style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</h2>
+                  ) : (
+                    <h2 style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</h2>
+                  )}
+                  <h2>{gasto.tag}</h2>
                 </div>
-                <h2>
-                  R$ {gasto.valor}
-                </h2>
-                <h2>
-                  {formatarData(gasto.data)}
-                </h2>
-                <h2>
-                </h2>
-                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</h2> : <h2 style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</h2>}
-                <h2>
-                  {gasto.tag}
-                </h2>
-
-              </div>
-            ))
-
+              );
+            })
           )}
         </div>
+
 
       </div>
     </>
