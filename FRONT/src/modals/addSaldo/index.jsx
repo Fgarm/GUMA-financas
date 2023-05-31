@@ -3,13 +3,15 @@ import { ContModal, ModalAddSaldo, Close, Saldo, TitleModal, ADICIONAR } from ".
 import axios from "axios"
 
 const BaseUrl = "http://127.0.0.1:8000/bancario/add-saldo/"
-const username = localStorage.getItem('cadastro_user')
 
 export default function AddSaldo_modal({isOpen, setIsOpen}){ 
     
     const [saldo, setSaldos] = useState(0)
 
     async function Cadastrar_Saldo(){
+        
+        let username = localStorage.getItem('cadastro_user')
+
         if (saldo != 0){
             await axios.post(BaseUrl, {
                 username: username,

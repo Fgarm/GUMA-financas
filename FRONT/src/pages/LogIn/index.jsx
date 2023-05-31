@@ -16,7 +16,7 @@ import axios from 'axios';
 
 
 export default function LogIn() {
-
+  localStorage.clear();
   const navigate = useNavigate();
 
   const createUserFormSchema = z.object(

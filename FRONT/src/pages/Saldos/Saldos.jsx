@@ -6,9 +6,13 @@ import Sidebar from "../../components/sidebar/index.jsx"
 import {Container} from "./Style.jsx"
 
 
-
+const username = localStorage.getItem('cadastro_user')
 
 export default function Saldo(){
+
+
+    
+
 
     return(
         <div>
