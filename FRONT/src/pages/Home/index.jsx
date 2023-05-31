@@ -365,8 +365,8 @@ export default function Home() {
                       setTagColor(e.target.value)
                     }} />
                 </FormControl>
-              </ModalBody>
               <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
+              </ModalBody>
 
               <ModalFooter>
                 <Button

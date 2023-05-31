@@ -142,7 +142,7 @@ export default function DoughnutChartComponent() {
 
             axios.post('http://localhost:8000/api/gastos/gastos-mais-relevantes/', request)
                 .then(response => {
-                    console.log("response: ", response.data)
+                    console.log("response AQUI: ", response.data)
                     setChartData(response.data);
                 })
                 .catch(error => {
