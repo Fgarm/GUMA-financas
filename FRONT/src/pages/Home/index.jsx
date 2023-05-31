@@ -58,6 +58,7 @@ export default function Home() {
   const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
+  const [tagColor, setTagColor] = useState('')
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
@@ -271,10 +272,11 @@ export default function Home() {
   function handleCreateTag() {
 
     const categoria = createdTag
-    const cor = 'dad8d8'
+    const cor = tagColor
     const user = localStorage.getItem('cadastro_user')
     const newTag = { categoria, cor, user }
     const tag = newTag
+    console.log(JSON.stringify(tag))
     axios.post('http://localhost:8000/tags/criar-tag/', tag, {
       headers: {
         'Authorization': `Bearer ${token}`
