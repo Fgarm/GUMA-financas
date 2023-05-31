@@ -133,11 +133,11 @@ export default function GroupPage() {
         setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
 
-        // getUsuariosGasto()
+        getUsuariosGasto()
+        setClicks(clicks => clicks + 1)
         setTimeout(() => {
-            setClicks(clicks => clicks + 1)
             openAddItemGastoGrupo();
-        }, 150);
+        }, 300);
     }
 
 
@@ -243,7 +243,7 @@ export default function GroupPage() {
                     <Button onClick={handleClose}>Fechar</Button>
                 </CreateGastoGroup>
 
-                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
+                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
                     <Button onClick={handleCloseItem}>Fechar</Button>
                 </AddItemGroupGasto>
             </div>

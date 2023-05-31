@@ -19,7 +19,7 @@ import {
   import './style.css';
 
 
-export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gasto_Id, usuariosGastos, clicks}) {
+export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, usuariosGastos, clicks}) {
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
@@ -69,10 +69,12 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
         preco_unitario: parseFloat(valor),
         quantidade: parseInt(quantidade, 10),
         descricao: descricao,
-        id_GastosGrupo_id: gasto_Id,
+        id_GastosGrupo_id: gastoId,
         usuarios: users,
         pesos: pesos
-    }
+    } 
+
+    console.log(data.id_GastosGrupo_id);
 
     console.log(JSON.stringify(data))
 
