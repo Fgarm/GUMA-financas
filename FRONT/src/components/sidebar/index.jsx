@@ -88,6 +88,10 @@ export default function Sidebar(props) {
     function handleMyExpenses() {
         navigate('/home');
     }
+    
+    function handleDashboard() {
+        navigate('/dashboard');
+    }
 
     function handleSaldo(){
         navigate('/saldos')
@@ -110,11 +114,11 @@ export default function Sidebar(props) {
             {/* <div className="flex" onClick={handleStatistics}>
                 <Icon as={BsBarChartFill} w={5} h={5}  /> Análise de Gastos
             </div> */}
-
+            
             <div className="flex" onClick={handleMyExpenses}>
                 <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Gastos
             </div>
-
+            
             <div className="flex" onClick={handleSaldo}>
                 <Icon as={BsCashStack} w={5} h={5}  /> Saldo
             </div>
@@ -124,9 +128,9 @@ export default function Sidebar(props) {
             </div>
 
 
-
+            
             <div className="subtitle-sidebar grupos">GRUPOS</div>
-
+            
             <div
                 className="flex"
                 onClick={handleCreateClick}>
@@ -134,7 +138,7 @@ export default function Sidebar(props) {
             </div>
             <div className="flex" onClick={getGroupsUser}>
                 <Icon as={MdGroups} w={6} h={6} /> Grupos
-
+                    
                 {showGroup == true ? <Icon as={RiArrowDropUpLine} w={7} h={7} /> : <Icon as={RiArrowDropDownLine} w={7} h={7}/>}
             </div>
                 <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup} user={user}>

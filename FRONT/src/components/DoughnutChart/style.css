@@ -29,27 +29,27 @@
 .DonutChartComponent {
     height: calc(100% - 75%);
     width: 100%;
-
+    
     display: flex;
     flex-direction: column;
     align-items: center;
     top: 2%;
     position: absolute;
-
+    
     /* border: solid 1px red; */
 }
 
 .month-year-input-container {
     height: calc(100% - 90%);
     width: 80%;
-
+    
     display: flex;
     flex-direction: row;
     justify-content: bottom;
     align-items: center;
     position: absolute;
     bottom: 0;
-
+    
     /* border: 1px solid red; */
     justify-content: space-evenly;
     /* color: white; */
@@ -58,7 +58,7 @@
 .month-input, .year-input {
     margin: 0 -15%;
     width: 17%;
-
+    
     background-color: var(--dark-gray);
     color: var(--60-background-dark);
     border: none;

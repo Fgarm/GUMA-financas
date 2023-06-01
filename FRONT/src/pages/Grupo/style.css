@@ -30,27 +30,3 @@
     background-color: var(--10-gray);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
-
-.group-button {
-    margin-top: 10px;
-    width: 95%;
-    padding: 0 1.5rem 0 !important;
-
-    font-size: 1.1em !important;
-    letter-spacing: 0.05em;
-
-    background-color: var(--10-gray-transparent-2) !important;
-    color: #fff !important;
-}
-
-.link-button {
-    width: 25%;
-    margin-top: 10px;
-    padding: 0 1.5rem 0 !important;
-
-    font-size: 1.1em !important;
-    letter-spacing: 0.05em;
-
-    /* background-color: var(--10-gray-transparent-2) !important;
-    color: #fff !important; */
-}

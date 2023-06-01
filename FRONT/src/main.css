@@ -5,13 +5,13 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+  
 :root {
     --60-background-dark: #1B2727;
     --30-dark-green: #3C5149;
     --10-green: #6F9951;
     --10-gray: #D5DDDF;
-
+    
     --10-gray-transparent: rgba(213, 221, 223, 0.8);
     --10-gray-transparent-2: rgba(213, 221, 223, 0.2);
     --dark-gray: #8c939439;
@@ -64,14 +64,14 @@ header.home {
     width: 100%;
     left: 0px;
     top: 24px;
-
+    
     gap: 6%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
 }
-
+ 
 .guma-logo {
     max-width: 25%;
     height: auto;
@@ -142,23 +142,22 @@ header.home {
     width: 15%;
     height: 100%;
     float: left;
-
     position: fixed; /* Fixed Sidebar (stay in place on scroll) */
     z-index: 1; /* Stay on top */
     left: 0; /* Stay in left */
     top: 0;
 
     overflow-x: hidden; /* Disable horizontal scroll (??) */
-
+    
     padding: 1%;
     display: flex; 
     flex-direction: column;
     gap: 10px; /* Adicionar espaçamento entre itens */
     align-items: center;
-
+    
     font-family: 'Inter', 'Manrope', sans-serif;
     letter-spacing: 0.06em;
-
+    
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     background-color: var(--30-dark-green);
     color: var(--10-gray);
@@ -194,7 +193,7 @@ header.home {
     font-size: 1.1rem;
     line-height: 35px;
     letter-spacing: 0.1rem;
-
+    
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -232,23 +231,23 @@ header.home {
         /* border: solid 1px red; */
         position: relative;
     }
-
+    
     .guma-logo {
         max-width: 40%;
         height: auto;
-
+        
         position: absolute;
         margin-right: 0 auto;
         padding: 0px;
         top: 0;
     }
-
+    
     .presentation {
         /* flex: 1; */
         display: flex;
         flex-direction: row;
         position: absolute;
-
+    
         font-family: 'Inter', 'Manrope', sans-serif;
         font-style: normal;
         font-weight: 100;
@@ -258,7 +257,7 @@ header.home {
 
         left: center;
         bottom: 0;
-
+    
         color: var(--10-gray);
     }
 }
@@ -270,14 +269,14 @@ header.home {
         left: 0px;
         top: 24px;
         margin-bottom: 7%;
-
+        
         gap: 6%;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
     }
-
+     
     .guma-logo {
         max-width: 25%;
         height: auto;
@@ -285,7 +284,7 @@ header.home {
         margin-right: 3%;
         margin-left: 4.5%;
     }
-
+    
     .presentation {
         flex: 1;
         display: flex;
@@ -293,21 +292,21 @@ header.home {
         /* gap: 10px; */
         align-items: center;
         position: relative;
-
+    
         font-family: 'Inter', 'Manrope', sans-serif;
         font-style: normal;
         font-weight: 100;
         font-size: 1.3rem;
         line-height: 30px;
-
+    
         color: var(--10-gray);
     }
-
+    
     .sidebar div.flex {
         width: 100%;
         height: 6%;
         padding: 5%;
-
+    
         gap: 5%;
         display: flex;
         margin: 0.4%;

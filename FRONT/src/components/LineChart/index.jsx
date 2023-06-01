@@ -64,11 +64,11 @@ export const lineChartOptions = {
 // Hook que carrega os dados do gráfico de Linha por meio da API do Back
 export function useLineChartData() {
   const [chartData, setChartData] = useState(null);
-
+  
   useEffect(() => {
     const user = localStorage.getItem("cadastro_user");
     const request = { user };
-
+    
     axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
     .then(response => {
         console.log("response: ", response.data)
@@ -91,14 +91,14 @@ export default function LineChartComponent() {
   if(!chartData) {
     return <h1>Carregando Gráficos...</h1>;
   }
-
+  
   lineChartData.datasets[0].data = chartData["data"];
   lineChartData.labels = chartData["labels"];
-
+  
   // para debug
   // console.log("dados q importam: ", data.datasets[0].data)
   // console.log("dados q importam: ", data.labels)
-
+  
   return (
     <div className="LineChartComponent">
       <Line datasetIdKey='id' options={lineChartOptions} data={lineChartData} />
@@ -106,3 +106,4 @@ export default function LineChartComponent() {
   );
 
 }
+

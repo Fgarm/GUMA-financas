@@ -15,7 +15,7 @@ export const Table = styled.table`
 `
 export const Th = styled.th`
     padding: 20px;
-    background-color: #3C5149;
+    background-color: #005555;
     border-radius: 10px;
 
 `

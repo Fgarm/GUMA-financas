@@ -35,14 +35,14 @@ span.error {
     width: 100%;
     margin: 0;
     padding: 2.5%;
-
+    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow-y: hidden;
-
+    
     background-color: var(--60-background-dark);
 }
 
@@ -50,11 +50,11 @@ span.error {
     margin: 0% 0px;
     padding: 5%;
     width: 100%;
-
+    
     display: flex;
     position: relative;
     justify-content: center;
-
+    
     background-color: var(--60-background-dark);
 }
 
@@ -66,7 +66,7 @@ span.error {
 .white-guma-logo {
     height: auto;
     max-width: 28%;
-
+    
     margin: 0 auto;
     padding: 0px;
     position: relative;

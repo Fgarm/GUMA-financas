@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function TagsInput(props) {
     const user = props.user
     //const cor = 'dad8d8'
+    const [selectedValue, setSelectedValue] = useState(props.editado || "")
 
     function handleChange(e) {
 
@@ -11,6 +12,8 @@ export default function TagsInput(props) {
         const categoria = value
 
         const newTag = { categoria, cor, user }
+
+        setSelectedValue(value)
 
         console.log(newTag)
 
@@ -23,7 +26,7 @@ export default function TagsInput(props) {
         <div>
             <div className="tags-input-container">
 
-                <select name="tags" id="tags" className="tags-input" onChange={handleChange} value={props.editado}> 
+                <select name="tags" id="tags" className="tags-input" onChange={handleChange} value={selectedValue}> 
                     
                     <option value=""></option>
 

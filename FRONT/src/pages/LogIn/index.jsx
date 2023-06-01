@@ -16,8 +16,7 @@ import axios from 'axios';
 
 
 export default function LogIn() {
-
-  // localStorage.clear();
+  localStorage.clear();
   const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
@@ -55,6 +54,7 @@ export default function LogIn() {
       .then(response => {
         if (response.status === 200 && response.data.access) {
           localStorage.setItem('cadastro_user', data.username)
+          console.log(localStorage.getItem('cadastro_user'))
           console.log(response.data.access)
           localStorage.setItem('token', response.data.token);
           navigate('/home', { replace: true });
@@ -71,10 +71,9 @@ export default function LogIn() {
 
   return (
 
-    
     <div className='form-page-container'>
       <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
-
+        
         <div className='white-guma-logo'>
         <Image src="../../guma-white.png" alt="Descrição da imagem" />
         </div>
@@ -104,7 +103,7 @@ export default function LogIn() {
           <br></br>
 
           <InputGroup size='md'>
-
+            
             <Input
               pr='4.5rem'
               style={{ color: '#D5DDDF' }}
