@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/sidebar';
 import axios from 'axios';
 import { useDisclosure } from '@chakra-ui/react';
@@ -10,9 +10,10 @@ import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 import { MdAddShoppingCart } from "react-icons/md";
 import { BsCurrencyDollar } from "react-icons/bs";
 
-import { Icon } from '@chakra-ui/react';
+import { Alert, AlertDescription, Box, CloseButton, Flex, Icon } from '@chakra-ui/react';
 
 export default function GroupPage() {
+
 
     const grupoId = localStorage.getItem('grupo_id');
     const [gastoId, setGastoId] = useState('')
@@ -33,7 +34,7 @@ export default function GroupPage() {
         getGroupInfo();
     }, [flag]);
 
-    function handleEditGastoGrupo(gastoGrupo){
+    function handleEditGastoGrupo(gastoGrupo) {
         setGastoId(gastoGrupo.gasto_id)
         setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
@@ -65,13 +66,23 @@ export default function GroupPage() {
                 grupo_id: grupoId
             },
         })
-        .then(response => {
-            setGastos(response.data)
-            console.log(response.data)
-        })
-        .catch(error => {
-            console.log(error)
-        })
+            .then(response => {
+                setGastos(response.data)
+                console.log(response.data)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    const {
+        isOpen: isVisible,
+        onClose,
+        onOpen,
+    } = useDisclosure({ defaultIsOpen: false })
+
+    function alert(){
+        onClose()
     }
 
     return (

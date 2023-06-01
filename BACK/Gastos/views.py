@@ -11,6 +11,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime
 import numpy as np
+from django.contrib.auth.models import User
+from Tags.models import Tag
+
 
 
 class GastoApiView(APIView):

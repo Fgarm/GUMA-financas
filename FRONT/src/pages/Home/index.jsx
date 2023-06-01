@@ -196,6 +196,7 @@ export default function Home() {
         const data = response.data;
         setGastos(data);
         setShouldRunEffect(true)
+        console.log(response.data)
       })
       .catch(error => {
         console.log(error);

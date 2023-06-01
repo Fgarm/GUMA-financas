@@ -3,8 +3,10 @@ import "./style.css";
 import { useNavigate } from 'react-router-dom';
 
 import { Icon } from "@chakra-ui/react";
+import { TbHomeDollar} from "react-icons/tb";
 import { BiLogOut } from "react-icons/bi";
 import { MdGroups } from "react-icons/md";
+import { BsBarChartFill } from "react-icons/bs";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { BsBarChartFill } from "react-icons/bs";
@@ -67,6 +69,8 @@ export default function Sidebar(props) {
     }
 
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
+
+
 
     const handleCreateClick = () => {
         openCreateGroup();
