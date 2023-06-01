@@ -298,5 +298,89 @@ class GastoApiView(APIView):
             data.append(somaTodosGastosMes)
 
         # inverte ambas listas para ficar da forma correta no gráfico
-        data_json = {'data': data[::-1], 'labels': labels[::-1]}
-        return JsonResponse(data_json)
+        json_response = {'data': data[::-1], 'labels': labels[::-1]}
+        return JsonResponse(json_response)
+
+
+    @api_view(['GET', 'POST'])
+    def get_gastos_mais_relevantes(request):
+
+        # obtendo as tags do user selecionado
+        try:
+            tags = Tag.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe
+        except Tag.DoesNotExist:
+            return Response("Nome de usuário incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
+        
+        # obtendo os gastos do usuário naquele mês e naquele ano
+        try:
+            gastos = Gasto.objects.filter(user=request.data["user"], data__month=request.data["mes"], data__year=request.data["ano"])
+
+        except Gasto.DoesNotExist:
+            return Response("O usuário não tem nenhum gasto no período especificado", status=status.HTTP_404_NOT_FOUND)
+
+        data = []   # cada posição: valor total de gastos daquela tag 
+        labels = [] # tags
+        colors = [] # cor de cada tag
+
+        gastos_por_categoria = {}
+        gastos_por_categoria['outros'] = 0
+        cor_por_categoria = {}
+        cor_por_categoria['outros'] = 'dad8d8'
+        for tag in tags:
+            gastos_por_categoria[tag.categoria] = 0
+            cor_por_categoria[tag.categoria] = tag.cor
+        
+        for gasto in gastos:
+            if gasto.tag in gastos_por_categoria:
+                gastos_por_categoria[gasto.tag] = gastos_por_categoria[gasto.tag] + gasto.valor
+            else:
+                gastos_por_categoria["outros"] = gastos_por_categoria["outros"] + gasto.valor
+        
+        for categoria in gastos_por_categoria:
+            if gastos_por_categoria[categoria] != 0:
+                data.append(gastos_por_categoria[categoria])
+                labels.append(categoria)
+                colors.append(cor_por_categoria[categoria])
+
+        if len(data) > 5:
+
+            # argsort "ordena" a lista data de forma crescente e obtém os indices desses valores
+            indices = np.argsort(data)
+
+            # do mais relevante (maior) para o menos relevante (menor) - ordem decrescente
+            data_maiores_valores = []
+            labels_maiores_valores = []
+            colors_maiores_valores = []
+                
+            # obtendo os 5 maiores valores da lista 'data' - os 5 mais relevantes
+            data_maiores_valores = [data[i] for i in indices[-1:-6:-1]]
+                
+            # obtendo quais categorias correspondem à esses maiores valores
+            labels_maiores_valores = [labels[i] for i in indices[-1:-6:-1]]
+
+            # obtendo quais cores correspondentes à esses maiores valores
+            colors_maiores_valores = [colors[i] for i in indices[-1:-6:-1]]
+
+            json_response = {'data': data_maiores_valores, 'labels': labels_maiores_valores, 'colors': colors_maiores_valores}
+            return JsonResponse(json_response)
+        
+        else:
+            
+            # retorna as (quantidades de) labels e cores corretamente caso o usuário tenha mais que 5 tags e o total de gastos de uma delas seja zero
+            quantidade_valida = data.__len__()
+            
+            for i in range(quantidade_valida):
+                if labels[i] == "outros":
+                    labels[i] = "Não classificados"
+
+
+            if quantidade_valida < 5:
+                labels = [labels[i] for i in range(quantidade_valida)]
+                colors = [colors[i] for i in range(quantidade_valida)]
+                data = [data[i] for i in range(quantidade_valida)]
+
+            # apenas devolve os arrays caso o tamanho seja exatamente 5
+            json_response = {'data': data, 'labels': labels, 'colors': colors}
+            return JsonResponse(json_response)

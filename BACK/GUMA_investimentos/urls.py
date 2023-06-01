@@ -26,6 +26,6 @@ urlpatterns = [
     path('grupos/', include('Grupos.urls')),
 
     #Rotas Bancario
-    path('bancario/', include('Bancario.urls'))
+    path('bancario/', include('Bancario.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

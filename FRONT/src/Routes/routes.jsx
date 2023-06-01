@@ -2,6 +2,9 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
+
+import Graficos from "../pages/Graficos";
+
 import MyPage from "../pages/Groups";
 import GroupPage from "../pages/Grupo";
 import ChartComponent from "../components/chart";
@@ -41,10 +44,10 @@ const Routering = createBrowserRouter([
     },
     
     {
-        path: "/statistics",
+        path: "/dashboard",
         element: 
         <React.StrictMode>
-            <ChartComponent/>,
+            <Graficos />
         </React.StrictMode>
     },
 

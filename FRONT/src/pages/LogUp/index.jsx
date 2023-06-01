@@ -90,11 +90,12 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor='first_name'>Nome</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor='first_name'>Nome</label>
           <br></br>
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='first_name'
             name='first_name'
             {...register('first_name')}
@@ -108,11 +109,12 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="last_name">Sobrenome</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="last_name">Sobrenome</label>
           <br></br>
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='last_name'
             name='last_name'
             {...register('last_name')}
@@ -126,11 +128,12 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="username">Username</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="username">Username</label>
           <br></br>
 
           <Input
             type="text"
+            style={{ color: '#D5DDDF' }}
             id='username'
             name='username'
             {...register('username')}
@@ -144,11 +147,12 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="email">E-mail</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="email">E-mail</label>
           <br></br>
 
           <Input
             type="email"
+            style={{ color: '#D5DDDF' }}
             id='email'
             name='email'
             {...register('email')}
@@ -162,21 +166,22 @@ export default function LogUp() {
 
         <div>
 
-          <label htmlFor="password">Senha</label>
+          <label style={{ color: '#D5DDDF' }} htmlFor="password">Senha</label>
 
           <br></br>
 
           <InputGroup size='md'>
             <Input
               pr='4.5rem'
+              style={{ color: '#D5DDDF' }}
               type={visible ? 'text' : 'password'}
               id='password'
               name='password'
               {...register('password')}
             />
 
-            <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
-              {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon />}
+            <InputRightElement style={{ marginRight: '0.5rem' }} width='2.5rem' onClick={handleVisibleChange}>
+              {visible ? <ViewIcon color='#6F9951' /> : <ViewOffIcon color='#6F9951' />}
             </InputRightElement>
           </InputGroup>
 
@@ -184,7 +189,7 @@ export default function LogUp() {
 
         </div>
 
-        <Button type="submit" colorScheme='teal' variant='solid' size="md">Registrar</Button>
+        <Button type="submit" className='submit-button' variant='solid' size="md">Registrar</Button>
 
         <Link href="/" color='blue.500'>Já tem uma conta&#63;</Link>
 

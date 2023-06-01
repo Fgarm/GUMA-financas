@@ -8,6 +8,7 @@ import CreateGastoGroup from '../../modals/createGastoGrupo';
 import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 
 import { MdAddShoppingCart } from "react-icons/md";
+import { BsCurrencyDollar } from "react-icons/bs";
 
 import { Alert, AlertDescription, Box, CloseButton, Flex, Icon } from '@chakra-ui/react';
 
@@ -85,57 +86,57 @@ export default function GroupPage() {
     }
 
     return (
+        <>
+            <Sidebar user={username}/>
+            <div className='body'>
 
-        <div>
-            {isVisible ? (
-            // <Alert status="success" variant="subtle" flexDirection="column" alignItems="flex-start" maxW="sm">
-            //   <AlertDescription>
-            //     Link: http://localhost:5173/join/?grupo={grupoId}
-            //   </AlertDescription>
-            //   <Flex justifyContent="space-between" alignItems="center" mt={2}>
-            //     <Button> Copiar</Button>
-            //     <CloseButton onClick={onClose} />
-            //   </Flex>
-            // </Alert>
-            <Alert className='alert'>Link: http://localhost:5173/join/?grupo={grupoId} <button onClick={alert}>X</button></Alert> 
-          ) : <Button onClick={onOpen}>Gerar Link</Button>}
-          
-            <Button onClick={handleCreateClick}>Criar Gasto do Grupo</Button>
-            <h1>GroupPage</h1>
+                <header className='home'>
+                    
+                    <h1 className='page-title'>Página do Grupo</h1>
 
-            <div className="gasto">
-                {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-                    gastos.map((gasto, key) => (
-                        <div key={gasto.id} className="gasto_information">
-                            <h1>{gasto.nome}</h1>
-                            <div>
-                                <Icon
-                                    as={MdAddShoppingCart}
-                                    w={5}
-                                    h={5}
-                                    mr={2}
-                                    onClick={() => handleEditGastoGrupo(gasto)}
-                                />
-                                <Icon
-                                    color='red.500'
-                                    w={5}
-                                    h={5}
-                                    onClick={() => handleDeleteClick(gasto.id)}
-                                />
+                    <div className='new-tag-and-gasto-button-container'>
+                        <Button className='new-tag-and-gasto-button' onClick={handleCreateClick}>
+                            <Icon style={{marginLeft: '-2px', marginRight: '9px'}} as={BsCurrencyDollar} w={5} h={5}/>
+                            Novo Gasto do Grupo
+                        </Button>
+                    </div>
+
+                </header>
+
+                <div className="gasto">
+                    {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+                        gastos.map((gasto, key) => (
+                            <div key={gasto.id} className="gasto_information">
+                                <h1>{gasto.nome}</h1>
+                                <div>
+                                    <Icon 
+                                        as={MdAddShoppingCart}
+                                        w={5} 
+                                        h={5} 
+                                        mr={2} 
+                                        onClick={() => handleEditGastoGrupo(gasto)} 
+                                    />
+                                    <Icon 
+                                        color='red.500' 
+                                        w={5} 
+                                        h={5} 
+                                        onClick={() => handleDeleteClick(gasto.id)} 
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))
-                )}
+                        ))
+                    )}
+                </div>
+
+                <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
+                        <Button onClick={handleClose}>Fechar</Button>
+                </CreateGastoGroup>
+
+                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
+                    <Button onClick={handleCloseItem}>Fechar</Button>
+                </AddItemGroupGasto>
             </div>
-
-            <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
-                <Button onClick={handleClose}>Fechar</Button>
-            </CreateGastoGroup>
-
-            <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} >
-                <Button onClick={handleCloseItem}>Fechar</Button>
-            </AddItemGroupGasto>
-        </div>
+        </>
     )
 };
 
