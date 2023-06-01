@@ -35,4 +35,3 @@ function ExtratoNavbar() {
 }
 
 export default ExtratoNavbar
-

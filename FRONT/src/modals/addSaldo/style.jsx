@@ -25,7 +25,7 @@ export const ModalAddSaldo = styled.div`
 `
 
 export const Close = styled.div`
-    border: 2px solid #049292;
+    border: 2px solid #6F9951;
     position: absolute;
     right: 15px;
     bottom: 15px;
@@ -35,13 +35,13 @@ export const Close = styled.div`
     transition: .3s;
 
     &:hover{
-        background-color: #049292;
+        background-color: #6F9951;
         color: white;
     }
 `
 
 export const ADICIONAR = styled.div`
-    border: 2px solid #049292;
+    border: 2px solid #6F9951;
     position: absolute;
     margin-right: 70px;
     right: 15px;
@@ -52,7 +52,7 @@ export const ADICIONAR = styled.div`
     transition: .3s;
 
     &:hover{
-        background-color: #049292;
+        background-color: #6F9951;
         color: white;
     }
 `

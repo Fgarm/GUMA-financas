@@ -7,7 +7,6 @@ import Graficos from "../pages/Graficos";
 
 import MyPage from "../pages/Groups";
 import GroupPage from "../pages/Grupo";
-import ChartComponent from "../components/chart";
 import EntrarComLink from "../components/joinGroup";
 import Extratos from "../pages/Extratos"
 import Saldo from "../pages/Saldos/Saldos";
@@ -64,9 +63,10 @@ const Routering = createBrowserRouter([
         element: <MyPage/>,
     },
 
+
     {
-        path: "/extratos",
-        element: <Extratos />,
+        path: "/saldos",
+        element: <Saldo />,
     },
 
     {

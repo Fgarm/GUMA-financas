@@ -3,10 +3,8 @@ import "./style.css";
 import { useNavigate } from 'react-router-dom';
 
 import { Icon } from "@chakra-ui/react";
-import { TbHomeDollar} from "react-icons/tb";
 import { BiLogOut } from "react-icons/bi";
 import { MdGroups } from "react-icons/md";
-import { BsBarChartFill } from "react-icons/bs";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { BsBarChartFill } from "react-icons/bs";
@@ -50,7 +48,6 @@ export default function Sidebar(props) {
         localStorage.setItem('grupo_id', id)
         navigate('/group');
     }
-
     function getGroupsUser() {
         axios({
             method: "post",
@@ -67,11 +64,7 @@ export default function Sidebar(props) {
                 console.log(error)
             })
     }
-
     const { isOpen: isCreateGroupOpen, onOpen: openCreateGroup, onClose: closeCreateGroup } = useDisclosure();
-
-
-
     const handleCreateClick = () => {
         openCreateGroup();
     };
@@ -87,7 +80,7 @@ export default function Sidebar(props) {
         localStorage.removeItem('token')
         navigate('/');
     }
-
+    
     function handleStatistics() {
         navigate('/extratos');
     }
@@ -96,6 +89,14 @@ export default function Sidebar(props) {
         navigate('/home');
     }
     
+    function handleDashboard() {
+        navigate('/dashboard');
+    }
+
+    function handleSaldo(){
+        navigate('/saldos')
+    }
+
     function handleDashboard() {
         navigate('/dashboard');
     }
@@ -118,7 +119,7 @@ export default function Sidebar(props) {
                 <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Gastos
             </div>
             
-            <div className="flex" onClick={handleMyExpenses}>
+            <div className="flex" onClick={handleSaldo}>
                 <Icon as={BsCashStack} w={5} h={5}  /> Saldo
             </div>
 
@@ -143,7 +144,6 @@ export default function Sidebar(props) {
                 <Groups isOpen={isCreateGroupOpen} onClose={closeCreateGroup} user={user}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </Groups>
-
                 {showGroup && grupos.length !== 0 ? (
                         grupos.map((grupo, key) => (
                     <div className="flex" onClick={() => navigateGroup(grupo.grupo_id)}>

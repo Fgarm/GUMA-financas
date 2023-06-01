@@ -1,5 +1,6 @@
 import React, {useEffect, useRef,} from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function EntrarComLink() {
 
@@ -27,6 +28,7 @@ export default function EntrarComLink() {
             navigate('/group')
         }
         catch(error) {
+            alert("Já cadastrado grupo")
             console.log(error)   // Criar página pra os diferentes erros, ou levar para uma página de grupo menos específica
             navigate('/home')
             alert("Link inválido.")

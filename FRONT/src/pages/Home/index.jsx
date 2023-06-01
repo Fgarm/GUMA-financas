@@ -5,13 +5,10 @@ import '../../main.css';
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 import { BiLogOut } from "react-icons/bi";
 
-import { BsTag } from "react-icons/bs";
-import { BsTagFill } from "react-icons/bs";
-import { BsTags } from "react-icons/bs";
-import { BsFillTagsFill } from "react-icons/bs";
-import { BsCurrencyDollar } from "react-icons/bs"; // $ p gasto
+import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
+
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
@@ -39,6 +36,7 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
+  background,
 } from '@chakra-ui/react'
 
 import axios from 'axios';
@@ -63,11 +61,14 @@ export default function Home() {
   const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
+  const [tagColor, setTagColor] = useState('')
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
+
+  const [novaTag, setNovaTag] = useState(0)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -93,14 +94,14 @@ export default function Home() {
   //   }
   // });
 
-  function handleTagsChange(newTag) { 
+  function handleTagsChange(newTag) {
     setTagsList(newTag);
   }
 
   const handleSubmit = () => {
 
     const tag_submit = tagsList;
-    
+
     const dados = {
       nome,
       valor,
@@ -135,7 +136,7 @@ export default function Home() {
   const handleEdit = () => {
 
     const tag_edit = tagsList;
-    
+
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -149,7 +150,7 @@ export default function Home() {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(response => {
+      .then(response => {
         if (response.status == 204) {
           onModalEditClose();
           setNome('');
@@ -211,7 +212,7 @@ export default function Home() {
         user: username
       },
     })
-      .then((response) => { 
+      .then((response) => {
         setTags(response.data);
         console.log(tags)
         setShouldRunEffect(true)
@@ -246,10 +247,10 @@ export default function Home() {
     setValor(data.valor)
     setSelectedDate(data.data)
     setEditTags(data.tag)
-    if(data.pago == true){
+    if (data.pago == true) {
       setEditStatus('pago')
       setPago(true)
-    } else if(data.pago == false){
+    } else if (data.pago == false) {
       setEditStatus('nao-pago')
       setPago(false)
     }
@@ -274,23 +275,25 @@ export default function Home() {
   function handleCreateTag() {
 
     const categoria = createdTag
-    const cor = 'dad8d8'
+    const cor = tagColor
     const user = localStorage.getItem('cadastro_user')
     const newTag = { categoria, cor, user }
     const tag = newTag
+    console.log(JSON.stringify(tag))
     axios.post('http://localhost:8000/tags/criar-tag/', tag, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
       .then(response => {
-        
+
         if (response.status == 201) {
           console.log('Dados enviados com sucesso:', response.data);
+          setNovaTag(novaTag => novaTag + 1);
           setCreatedTag('')
           onModalTagClose()
           setFlag(flag => flag + 1);
-        } else if (response.status == 400){
+        } else if (response.status == 400) {
           alert("Tag já existente")
         }
       })
@@ -308,29 +311,30 @@ export default function Home() {
           <h1 className='page-title'>Meus Gastos</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
-                    user={username}
-                    onGastosChange={setGastos}
+              novaTag={novaTag}
+              user={username}
+              onGastosChange={setGastos}
             />
             <div className='new-tag-and-gasto-button-container'>
-              <Button 
+              <Button
                 className='new-tag-and-gasto-button'
-                pr='10px' 
+                pr='10px'
                 onClick={onModalTagOpen}>
-                <Icon style={{marginLeft: '-10px', marginRight: '10px'}} as={BsFillTagsFill} w={5} h={5}/>
+                <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
                 Nova Tag
               </Button>
-              <Button 
+              <Button
                 className='new-tag-and-gasto-button'
-                pr='10px' 
+                pr='10px'
                 onClick={handleCreateClick}>
-                <Icon style={{marginLeft: '-1px', marginRight: '9px'}} as={BsCurrencyDollar} w={6} h={5}/>
+                <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={BsCurrencyDollar} w={6} h={5} />
                 Novo Gasto
               </Button>
             </div>
           </div>
         </header>
 
-              
+
         <div>
           <Modal
             isOpen={isModalTagOpen}
@@ -340,7 +344,7 @@ export default function Home() {
             <ModalContent>
 
               <ModalHeader
-                mb={0} 
+                mb={0}
                 className='modal_header'>
                 Criando Tag
               </ModalHeader>
@@ -352,14 +356,24 @@ export default function Home() {
                   <Input onChange={(e) => {
                     setCreatedTag(e.target.value)
                   }} />
-
                 </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Cor</label>
+                  <br></br>
+                  <Input
+                    placeholder="Ex: 000000"
+                    onChange={(e) => {
+                      setTagColor(e.target.value)
+                    }} />
+                </FormControl>
+                <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
               </ModalBody>
 
               <ModalFooter>
-                <Button 
-                  colorScheme='blue' 
-                  mr={3} 
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
                   onClick={handleCreateTag}>
                   Criar
                 </Button>
@@ -368,7 +382,7 @@ export default function Home() {
             </ModalContent>
           </Modal>
         </div>
-      
+
         <div>
           <Modal
             initialFocusRef={initialRef}
@@ -378,8 +392,8 @@ export default function Home() {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader 
-                mb={0} 
+              <ModalHeader
+                mb={0}
                 className='modal_header'>
                 Criando Gasto
               </ModalHeader>
@@ -440,9 +454,9 @@ export default function Home() {
               </ModalBody>
 
               <ModalFooter>
-                <Button 
-                  colorScheme='blue' 
-                  mr={3} 
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
                   onClick={handleSubmit}>
                   Criar
                 </Button>
@@ -530,9 +544,9 @@ export default function Home() {
               </ModalBody>
 
               <ModalFooter>
-                <Button 
-                  colorScheme='blue'
-                  mr={3} 
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
                   onClick={handleEdit}>
                   Salvar
                 </Button>
@@ -574,6 +588,7 @@ export default function Home() {
           </AlertDialog>
         </div>
 
+        
 
         <div className="gasto">
           {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (

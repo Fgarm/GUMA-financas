@@ -6,7 +6,7 @@ export default function PeopleInput(props) {
     const [addedPeople, setAddedPeople] = useState([])
 
     useEffect(() => {
-        console.log(usuarios);
+        props.onUsuariosChange(usuarios);
     }, [usuarios]);
 
     function handleChange(e) {
@@ -27,16 +27,15 @@ export default function PeopleInput(props) {
         }else{
             setUsuarios(usuarios+','+value)
         }
-        console.log(usuarios)
      }
 
      function removePerson(index, value) {
         const newPeoples = addedPeople.filter((el, i) => i !== index);
         setAddedPeople(newPeoples);
 
-        const nomesArray = usuarios.split(', '); 
+        const nomesArray = usuarios.split(','); 
         const novoArray = nomesArray.filter((item) => item.trim() !== value.trim());
-        const novaString = novoArray.join(', ');
+        const novaString = novoArray.join(',');
         setUsuarios(novaString); 
     }
 
@@ -53,12 +52,12 @@ export default function PeopleInput(props) {
 
                 <select name="people" id="people" className="people-input" onChange={handleChange}> 
 
-                    <option value=""></option>
+                    <option value="">Usuários</option>
 
-                    {people.length === 0 ? <p></p> :
+                    {props.usuarios.length === 0 ? <p></p> :
                      (
-                        people.map((nome, key) => (
-                            <option value={nome}>{nome}</option>
+                        props.usuarios.map((nome, key) => (
+                            <option value={nome.username}>{nome.nome}</option>
                         ))
                     )}
                 </select>

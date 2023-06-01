@@ -20,9 +20,9 @@ export const Th = styled.th`
 
 `
 export const Tr = styled.tr`
-    background-color: #049292;
+    background-color: #6F9951;
 
-    &:nth-child(even) {background-color: #05c9c9;}
+    &:nth-child(even) {background-color: #3f582c;}
 `
 
 export const Td = styled.td`
