@@ -1,69 +1,55 @@
 import { useState } from "react";
 
 export default function TagsInput(props) {
-
-    const [tags, setTags] =  useState([])
-    const [showError, setShowError] = useState(false);
-
     const user = props.user
-    const cor = 'dad8d8' 
+    //const cor = 'dad8d8'
+    const [selectedValue, setSelectedValue] = useState(props.editado || "")
 
     function handleChange(e) {
+
         const value = e.target.value
-        if(!value.trim()) return
-        if (tags.some(tag => tag.categoria === value)) {
-            e.target.value = '';
-            return;
-        }
-    
+        const cor = e.target.selectedOptions[0].getAttribute('data-cor'); // Obtém a cor selecionada
         const categoria = value
 
-        const newTag = {categoria, cor, user}
+        const newTag = { categoria, cor, user }
 
-        const newTags = [...tags, newTag];
-        if (tags.length == 1) {
-            e.target.value = '';
-            setShowError(true)
-            console.log(tags)
-            return
-        }
-        setTags(newTags);
-        props.onTagsChange(newTags);
-        e.target.value = ''
+        setSelectedValue(value)
+
+        console.log(newTag)
+
+        props.onTagsChange(newTag);
     }
 
-    function removeTags(index) {
-        const newTags = tags.filter((el, i) => i !== index);
-        setTags(newTags);
-        props.onTagsChange(newTags);
-    }
 
-    return(
+    return (
 
-    <div>
-        <div className="tags-input-container">
-            {tags.map((tag, index) => (
-                <div className="tags-items" key={index}>
-                    <span className="text">{tag.categoria}</span>
-                    <span className="close" onClick={() => removeTags(index)}>&times;</span>
-                </div>
-            ))}
+        <div>
+            <div className="tags-input-container">
 
-            <select name="tags" id="tags" className="tags-input" onChange={handleChange}>
-                <option value="">Selecione suas tags</option>
-                <option value="mercado">Mercado</option>
-                <option value="luz">Luz</option>
-                <option value="agua">Água</option>
-                <option value="internet">Internet</option>
-                <option value="lazer">Lazer</option>
-            </select>
+                <select name="tags" id="tags" className="tags-input" onChange={handleChange} value={selectedValue}> 
+                    
+                    <option value=""></option>
 
-            {showError && (
-                <span className="error-message">Limite de 1 tag atingido.</span>
-            )}
+                    {props.tags.length === 0 ? (    
+                        <p></p>
+                    ) : (
+                    props.tags.map((tag, key) => (
+                        <option
+                        key={key}
+                        style={{ color: `#${tag.cor}` }}
+                        value={tag.categoria}
+                        data-cor={tag.cor}
+                        >
+                        {tag.categoria}
+                        </option>
+                    ))
+                    )}
+
+                </select>
+
+            </div>
+
         </div>
-
-    </div>
-    ) 
+    )
 };
 

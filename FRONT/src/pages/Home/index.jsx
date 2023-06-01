@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
+import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 import { BiLogOut } from "react-icons/bi";
 
+import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+
 import { useNavigate } from 'react-router-dom';
+
 
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
+import Sidebar from '../../components/sidebar';
+import formatarData from '../../functions/formatData';
+import ToggleSearchStatus from '../../components/toggleSearchStatus';
+import TagsInputSearch from '../../components/tagInputSearch';
 
 import {
   AlertDialog,
@@ -28,6 +36,7 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
+  background,
 } from '@chakra-ui/react'
 
 import axios from 'axios';
@@ -43,16 +52,23 @@ export default function Home() {
   const [valor, setValor] = useState(0);
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState('');
-  // const [category, setCategory] = useState([])
+  const [tags, setTags] = useState([]);
+
+  const [tagsList, setTagsList] = useState({})
+
   const [gastos, setGastos] = useState([])
+  const [editStatus, setEditStatus] = useState(false)
+  const [editTags, setEditTags] = useState('')
 
   const [createdTag, setCreatedTag] = useState('')
+  const [tagColor, setTagColor] = useState('')
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
+
+  const [novaTag, setNovaTag] = useState(0)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
@@ -66,40 +82,36 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  window.addEventListener("beforeunload", function (event) {
-    const perfTiming = performance.getEntriesByType("navigation")[0];
-    if (perfTiming.type === "reload") {
-      localStorage.setItem("token", token);
-      localStorage.setItem("cadastro_user", username);
-      sessionStorage.setItem("reloading", "true");
-    } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("cadastro_user");
-    }
-  });
+  // window.addEventListener("beforeunload", function (event) {
+  //   const perfTiming = performance.getEntriesByType("navigation")[0];
+  //   if (perfTiming.type === "reload") {
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("cadastro_user", username);
+  //     sessionStorage.setItem("reloading", "true");
+  //   } else {
+  //     localStorage.removeItem("token");
+  //     localStorage.removeItem("cadastro_user");
+  //   }
+  // });
 
-  function handleTagsChange(newTags) {
-    setTags(newTags[0]);
-  }
-
-  function formatarData(data) {
-    const partesData = data.split('-');
-    const dia = partesData[2];
-    const mes = partesData[1];
-    const ano = partesData[0];
-    return `${dia}/${mes}/${ano}`;
+  function handleTagsChange(newTag) {
+    setTagsList(newTag);
   }
 
   const handleSubmit = () => {
+
+    const tag_submit = tagsList;
+
     const dados = {
-      user: username,
       nome,
       valor,
       data,
       pago,
-      tag: tags.categoria
+      tag: tag_submit.categoria,
+      user: username
+
     };
-    console.log(JSON.stringify(dados))
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -107,7 +119,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
         } else {
           alert('Erro de dados submetidos')
           return
@@ -122,16 +134,8 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-    const dados = {
-      id,
-      nome,
-      valor,
-      data,
-      pago,
-      tag: tags.categoria
-    };
 
-    console.log(dados)
+    const tag_edit = tagsList;
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
@@ -140,7 +144,7 @@ export default function Home() {
       valor: valor,
       data: data,
       pago: pago,
-      tag: tags.categoria
+      tag: tag_edit.categoria
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -148,8 +152,11 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
-          console.log('Dados editados com sucesso:', response.dados);
           onModalEditClose();
+          setNome('');
+          setValor(0);
+          setSelectedDate('');
+          setPago();
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
@@ -186,11 +193,28 @@ export default function Home() {
         user: username
       },
     })
-
       .then((response) => {
         const data = response.data;
-        console.log(data)
         setGastos(data);
+        setShouldRunEffect(true)
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  const getTags = () => {
+    axios({
+      method: "post",
+      url: "http://localhost:8000/tags/tag-per-user/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => {
+        setTags(response.data);
+        console.log(tags)
         setShouldRunEffect(true)
       })
       .catch(error => {
@@ -198,32 +222,15 @@ export default function Home() {
       })
   }
 
-  // const getTags = () => {
-  //   axios({
-  //     method: "post",
-  //     url: "http://localhost:8000/tags/tag-per-user/",
-  //     data: {
-  //       user: username
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log(JSON.stringify(response.data))
-  //       setCategory(data);
-  //       setShouldRunEffect(true)
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
-
   const handleLogOut = () => {
     localStorage.removeItem('cadastro_user')
     localStorage.removeItem('token')
-    navigate('/');
+    // navigate('/');
   }
 
   const handleCreateClick = (data) => {
-    // getTags();
+    getTags();
+    tagsList.categoria = ''
     onModalCreateOpen();
   }
 
@@ -233,7 +240,20 @@ export default function Home() {
   }
 
   const handleEditClick = (data) => {
-    setId(data);
+    getTags()
+    tagsList.categoria = data.tag
+    setId(data.id);
+    setNome(data.nome)
+    setValor(data.valor)
+    setSelectedDate(data.data)
+    setEditTags(data.tag)
+    if (data.pago == true) {
+      setEditStatus('pago')
+      setPago(true)
+    } else if (data.pago == false) {
+      setEditStatus('nao-pago')
+      setPago(false)
+    }
     onModalEditOpen();
   }
 
@@ -241,335 +261,382 @@ export default function Home() {
     getGastos();
   }, [flag]);
 
-  useEffect(() => {
-    if (shouldRunEffect) {
-      searchFilter();
-    } else {
-      setShouldRunEffect(true);
-    }
-  }, [searchValue, searchOption]);
-
-  const searchFilter = () => {
-    if (searchOption == 'status' && searchValue == false || searchOption == 'status' && searchValue == true) {
-      axios({
-        method: "post",
-        url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
-        data: {
-          user: username,
-          pago: searchValue
-        },
-      })
-        .then((response) => {
-          console.log(response.data)
-          if (response.status == 200) {
-            const data = response.data;
-            setGastos(data);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        })
-    } else if (searchOption == 'tags') {
-      axios({
-        method: "post",
-        url: "http://localhost:8000/api/gastos/gastos-per-tag/",
-        data: {
-          user: username,
-          tag: searchValue
-        },
-      })
-        .then((response) => {
-          if (response.statusCode == 200) {
-            const data = response.data;
-            setGastos(data);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        })
-    }
-
-  };
-
 
   function handleSearchType(type) {
     console.log(type)
-    setSearchOption(type)
+    // setSearchOption(type)
   }
 
   function handleSearch(data) {
     console.log(data)
-    setSearchValue(data)
+    // setSearchValue(data)
   }
 
   function handleCreateTag() {
 
     const categoria = createdTag
-    const cor = 'dad8d8'
+    const cor = tagColor
     const user = localStorage.getItem('cadastro_user')
     const newTag = { categoria, cor, user }
     const tag = newTag
+    console.log(JSON.stringify(tag))
     axios.post('http://localhost:8000/tags/criar-tag/', tag, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
       .then(response => {
-        console.log()
+
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.dados);
+          console.log('Dados enviados com sucesso:', response.data);
+          setNovaTag(novaTag => novaTag + 1);
           setCreatedTag('')
           onModalTagClose()
           setFlag(flag => flag + 1);
-        } else if (response.status == 400){
+        } else if (response.status == 400) {
           alert("Tag já existente")
         }
       })
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
-  }
-
-
-  return (
-
-    <div >
-      <header className='home'>
-        <div className='presentation'>
-          <Icon as={BiLogOut} w={7} h={7} color="red.500" onClick={handleLogOut} />
-          <h2>Olá, {username}</h2>
-        </div>
-        <div className="bt-sb">
-          <SearchBar setValueSearch={handleSearch} setSearchType={handleSearchType} />
-          <Button pr='10px' onClick={onModalTagOpen}>Adicionar Tag</Button>
-          <Button pr='10px' onClick={handleCreateClick}>Adicionar Gasto</Button>
-        </div>
-      </header>
-
-      <div>
-        <Modal
-          isOpen={isModalTagOpen}
-          onClose={onModalTagClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Tag</ModalHeader>
-            <ModalBody>
-              <FormControl mt={4}>
-                <label>Categoria</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setCreatedTag(e.target.value)
-                }} />
-
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleCreateTag}>
-                Criar
+    }
+  
+    
+    return (
+      <>
+      <Sidebar user={username}/>
+      <div className="body">
+        <header className='home'>
+          <h1 className='page-title'>Meus Gastos</h1>
+          <div className="bt-sb">
+            <ToggleSearchStatus
+              novaTag={novaTag}
+              user={username}
+              onGastosChange={setGastos}
+            />
+            <div className='new-tag-and-gasto-button-container'>
+              <Button
+                className='new-tag-and-gasto-button'
+                pr='10px'
+                onClick={onModalTagOpen}>
+                <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
+                Nova Tag
               </Button>
-              <Button onClick={onModalTagClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
-      <div>
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isModalCreateOpen}
-          onClose={onModalCreateClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Criando Gasto</ModalHeader>
-            <ModalBody>
-
-              <FormControl mt={4}>
-                <label >Nome</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setNome(e.target.value)
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Valor</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setValor(e.target.value);
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Data</label>
-                <br></br>
-                <Input type="date" onChange={(e) =>
-                  setSelectedDate(e.target.value)
-                } />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label>Status</label>
-                <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
-                  if (e.target.value == 'pago') {
-                    setPago(true)
-                  } else if (e.target.value == 'nao-pago') {
-                    setPago(false)
-                  }
-                }}>
-                  <option value='pago'>Pago</option>
-                  <option value='nao-pago'>Não Pago</option>
-                </Select>
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Tags</label>
-                <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
-                Criar
+              <Button
+                className='new-tag-and-gasto-button'
+                pr='10px'
+                onClick={handleCreateClick}>
+                <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={BsCurrencyDollar} w={6} h={5} />
+                Novo Gasto
               </Button>
-              <Button onClick={onModalCreateClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
-
-      <div>
-        <Modal
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-          isOpen={isModalEditOpen}
-          onClose={onModalEditClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader mb={0} className='modal_header'>Editando Gasto</ModalHeader>
-            <ModalBody>
-
-              <FormControl mt={4}>
-                <label >Nome</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setNome(e.target.value)
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Valor</label>
-                <br></br>
-                <Input onChange={(e) => {
-                  setValor(e.target.value)
-
-                }} />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label >Data</label>
-                <br></br>
-                <Input type="date" onChange={(e) =>
-                  setSelectedDate(e.target.value)
-                } />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label>Status</label>
-                <br></br>
-                <Select placeholder='Selecione uma opção' onChange={(e) => {
-                  if (e.target.value == 'pago') {
-                    setPago(true)
-                  } else if (e.target.value == 'nao-pago') {
-                    setPago(false)
-                  }
-                }}>
-                  <option value='pago'>Pago</option>
-                  <option value='nao-pago'>Não Pago</option>
-                </Select>
-              </FormControl>
-
-              <FormControl mt={4}>
-                <label>Tags</label>
-                <br></br>
-                <TagsInput onTagsChange={handleTagsChange} user={username} />
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={handleEdit}>
-                Salvar
-              </Button>
-              <Button onClick={onModalEditClose}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </div>
-
-      <div>
-        <AlertDialog
-          isOpen={isAlertDialogOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onAlertDialogClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                Deletar Gastos
-              </AlertDialogHeader>
-
-              <AlertDialogBody>
-                Deseja realmente deletar esse gasto?
-              </AlertDialogBody>
-
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onAlertDialogClose}>
-                  Cancelar
-                </Button>
-
-                <Button colorScheme='red' ml={3} onClick={handleDelete}>
-                  Deletar
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </div>
-
-      <div className="gasto">
-        {gastos.length === 0 ? <p></p> : (
-          gastos.map((gasto, key) => (
-            <div key={gasto.id} className="gasto_information">
-              <div className='header'>
-                <h1>
-                  {gasto.nome}
-                </h1>
-                <div>
-                  <Icon as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto.id)} />
-                  <Icon as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                </div>
-              </div>
-              <h2>
-                R$ {gasto.valor}
-              </h2>
-              <h2>
-                {formatarData(gasto.data)}
-              </h2>
-              <h2>
-              </h2>
-              {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
-
             </div>
-          ))
+          </div>
+        </header>
 
-        )}
+
+        <div>
+          <Modal
+            isOpen={isModalTagOpen}
+            onClose={onModalTagClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+
+              <ModalHeader
+                mb={0}
+                className='modal_header'>
+                Criando Tag
+              </ModalHeader>
+
+              <ModalBody>
+                <FormControl mt={4}>
+                  <label>Categoria</label>
+                  <br></br>
+                  <Input onChange={(e) => {
+                    setCreatedTag(e.target.value)
+                  }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Cor</label>
+                  <br></br>
+                  <Input
+                    placeholder="Ex: 000000"
+                    onChange={(e) => {
+                      setTagColor(e.target.value)
+                    }} />
+                </FormControl>
+                <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
+                  onClick={handleCreateTag}>
+                  Criar
+                </Button>
+                <Button onClick={onModalTagClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+
+        <div>
+          <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isModalCreateOpen}
+            onClose={onModalCreateClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader
+                mb={0}
+                className='modal_header'>
+                Criando Gasto
+              </ModalHeader>
+              <ModalBody>
+
+                <FormControl mt={4}>
+                  <label >Nome</label>
+                  <br></br>
+                  <Input onChange={(e) => {
+                    setNome(e.target.value)
+                  }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Valor</label>
+                  <br></br>
+                  <Input onChange={(e) => {
+                    setValor(e.target.value);
+                  }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Data</label>
+                  <br></br>
+                  <Input 
+                    type="date"
+                    onChange={(e) =>
+                    setSelectedDate(e.target.value)
+                  } />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Status</label>
+                  <br></br>
+                  <Select
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
+                    <option value='pago'>Pago</option>
+                    <option value='nao-pago'>Não Pago</option>
+                  </Select>
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Tags</label>
+                  <br></br>
+                  <TagsInput
+                    tags={tags} 
+                    defaultValue={editTags}
+                    onTagsChange={handleTagsChange} 
+                    user={username} />
+                </FormControl>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
+                  onClick={handleSubmit}>
+                  Criar
+                </Button>
+                <Button onClick={onModalCreateClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+
+        <div>
+          <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isModalEditOpen}
+            onClose={onModalEditClose}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader 
+                mb={0} 
+                className='modal_header'>
+                Editando Gasto
+              </ModalHeader>
+              <ModalBody>
+
+                <FormControl mt={4}>
+                  <label >Nome</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={nome}
+                    onChange={(e) => {
+                      setNome(e.target.value)
+                    }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Valor</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={valor}
+                    onChange={(e) => {
+                    setValor(e.target.value)
+                  }} />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label >Data</label>
+                  <br></br>
+                  <Input 
+                    defaultValue={data}
+                    type="date" 
+                    onChange={(e) =>
+                      setSelectedDate(e.target.value)
+                  } />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Status</label>
+                  <br></br>
+                  <Select
+                    defaultValue={editStatus}
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
+                    <option value='pago'>Pago</option>
+                    <option value='nao-pago'>Não Pago</option>
+                  </Select>
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <label>Tags</label>
+                  <br></br>
+                  <TagsInput 
+                    tags={tags} 
+                    editado={editTags}
+                    onTagsChange={handleTagsChange} 
+                    user={username} 
+                  />
+                </FormControl>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  style={{background: '#6F9951'}}
+                  mr={3}
+                  onClick={handleEdit}>
+                  Salvar
+                </Button>
+                <Button onClick={onModalEditClose}>Cancelar</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </div>
+
+        <div>
+          <AlertDialog
+            isOpen={isAlertDialogOpen}
+            leastDestructiveRef={cancelRef}
+            onClose={onAlertDialogClose}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader 
+                  fontSize='lg' 
+                  fontWeight='bold'>
+                  Deletar Gastos
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Deseja realmente deletar esse gasto?
+                </AlertDialogBody>
+
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onAlertDialogClose}>
+                    Cancelar
+                  </Button>
+
+                  <Button colorScheme='red' ml={3} onClick={handleDelete}>
+                    Deletar
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+        </div>
+
+        
+
+        <div className="gasto">
+          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+            gastos.map((gasto, key) => (
+              <div key={gasto.id} className="gasto_information">
+                <div className='header'>
+                  <h1>
+                    {gasto.nome}
+                  </h1>
+                  <div>
+                    <Icon
+                      className='edit-icon-gasto' 
+                      as={MdOutlineModeEditOutline} 
+                      w={5} 
+                      h={5} 
+                      mr={2} 
+                      onClick={() => handleEditClick(gasto)} 
+                      />
+                    <Icon 
+                      className='delete-icon-gasto' 
+                      as={MdDelete} 
+                      color='red.500' 
+                      w={5} 
+                      h={5} 
+                      onClick={() => handleDeleteClick(gasto.id)} 
+                    />
+                  </div>
+                </div>
+                <h2>
+                  R$ {gasto.valor}
+                </h2>
+                <h2>
+                  {formatarData(gasto.data)}
+                </h2>
+                <h2>
+                </h2>
+                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
+                <h2>
+                {gasto.tag}
+                </h2>
+
+              </div>
+            ))
+
+          )}
+        </div>
+
       </div>
-
-    </div>
-  )
+      </>
+    )
 }

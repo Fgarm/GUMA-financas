@@ -1,0 +1,11 @@
+.flex-search{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+}
+
+.tags-input-search {
+    background-color: var(--10-gray-transparent);
+    color: var(--60-background-dark);
+}

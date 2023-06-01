@@ -1,0 +1,59 @@
+.flex-search {
+    gap: 7px;
+    padding: 10px;
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.gasto {
+    gap: 20px;
+    width: 100%;
+    min-height: calc(100vh - 12vh);
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 4.5% 1.5% 1.5% 1.5%;
+    border-radius: 5px;
+    justify-content: space-evenly;
+}
+
+.gasto_information {
+    width: 30%;
+    height: 27%;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+    border: 0.5px solid;
+    background-color: var(--10-gray);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+.group-button {
+    margin-top: 10px;
+    width: 95%;
+    padding: 0 1.5rem 0 !important;
+
+    font-size: 1.1em !important;
+    letter-spacing: 0.05em;
+
+    background-color: var(--10-gray-transparent-2) !important;
+    color: #fff !important;
+}
+
+.group-button:hover {
+    background-color: var(--10-green) !important;
+    cursor: pointer;
+    transition: background-color 0.4s ease-out;
+}
+
+.link-button {
+    width: 25%;
+    margin-top: 10px;
+    padding: 0 1.5rem 0 !important;
+
+    font-size: 1.1em !important;
+    letter-spacing: 0.05em;
+}

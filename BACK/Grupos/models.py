@@ -11,6 +11,7 @@ class Grupo(models.Model):
     grupo_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     nome = models.CharField(max_length=255)
     descricao= models.TextField(blank=True)
+    criador = models.IntegerField(blank=True, null=True)
     #image = models.ImageField(upload_to=upload_image_book, blank=True, null=True)
 
     usuario = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="group_user", through="Grupo_User")

@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 
-import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { Input, InputGroup, InputRightElement, Button, Link, Image } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ import axios from 'axios';
 
 
 export default function LogIn() {
-
+  localStorage.clear();
   const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
@@ -54,6 +54,7 @@ export default function LogIn() {
       .then(response => {
         if (response.status === 200 && response.data.access) {
           localStorage.setItem('cadastro_user', data.username)
+          console.log(localStorage.getItem('cadastro_user'))
           console.log(response.data.access)
           localStorage.setItem('token', response.data.token);
           navigate('/home', { replace: true });
@@ -70,55 +71,65 @@ export default function LogIn() {
 
   return (
 
-    <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
+    <div className='form-page-container'>
+      <form className='formUp' onSubmit={handleSubmit(onSubmit)}>
+        
+        <div className='white-guma-logo'>
+        <Image src="../../guma-white.png" alt="Descrição da imagem" />
+        </div>
 
-      <div>
+        <div>
+        
 
-        <label htmlFor="username">Username</label>
-        <br></br>
+          <label style={{ color: '#D5DDDF' }} htmlFor="username">Username</label>
+          <br></br>
 
-        <Input
-          type="text"
-          id='username'
-          {...register('username')}
-          htmlSize={27}
-          width='auto'
-        />
-
-        {errors.username && <span className='error'>{errors.username.message}</span>}
-
-      </div>
-
-      <div>
-
-        <label htmlFor="password">Senha</label>
-        <br></br>
-
-        <InputGroup size='md'>
           <Input
-            pr='4.5rem'
-            type={visible ? 'text' : 'password'}
-            id='password'
-            {...register('password')}
+            type="text"
+            style={{ color: '#D5DDDF' }}
+            id='username'
+            {...register('username')}
+            htmlSize={27}
+            width='auto'
           />
 
-          <InputRightElement width='2.5rem' onClick={handleVisibleChange}>
+          {errors.username && <span className='error'>{errors.username.message}</span>}
 
-            {visible ? <ViewIcon color='black.300' /> : <ViewOffIcon />}
+        </div>
 
-          </InputRightElement>
-        </InputGroup>
+        <div>
 
-        {errors.password && <span className='error'>{errors.password.message} </span>}
+          <label style={{ color: '#D5DDDF' }} htmlFor="password">Senha</label>
+          <br></br>
 
-      </div>
+          <InputGroup size='md'>
+            
+            <Input
+              pr='4.5rem'
+              style={{ color: '#D5DDDF' }}
+              type={visible ? 'text' : 'password'}
+              id='password'
+              {...register('password')}
+            />
+
+            <InputRightElement style={{ marginRight: '0.5rem' }} width='2.5rem' onClick={handleVisibleChange}>
+
+              {visible ? <ViewIcon color='#6F9951' /> : <ViewOffIcon color='#6F9951' />}
+
+            </InputRightElement>
+          </InputGroup>
+
+          {errors.password && <span className='error'>{errors.password.message} </span>}
+
+        </div>
 
 
-      <Button type="submit" colorScheme='teal' variant='solid' size="md">Entrar</Button>
+        <Button type="submit" className='submit-button' variant='solid' size="md">Entrar</Button>
 
-      <p>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
+        <p className='center'>Não possui conta&#63; <Link href="/logup" color="blue.500">Cadastre-se</Link></p>
 
-    </form>
+      </form>
+    </div>
   )
 
 }

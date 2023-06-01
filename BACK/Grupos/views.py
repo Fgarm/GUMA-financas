@@ -1,31 +1,76 @@
-import asyncio
-import json
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .models import Grupo, Gastos_Grupo, Itens, Iten_User, GrupoGasto_User, Grupo_User
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 class GrupoView(APIView):
 
     @api_view(['POST'])
     def cadastrar_grupo(request):
-        try:
-            Grupo.objects.create(nome=request.data["nome"], descricao=request.data["descricao"])
+            user_id = User.objects.filter(username=request.data["username"]).first()
+            grupo = Grupo.objects.create(nome=request.data["nome"],
+                                        descricao=request.data["descricao"],
+                                        criador=user_id.id)
+            
+            Grupo_User.objects.create(grupo_id=grupo.grupo_id, usuario_id=user_id.id)
             return Response("GRUPO CADASTRADO", status=status.HTTP_201_CREATED)
-        except:
-            return Response("GRUPO NÃO CADASTRADO", status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        # except:
+        #     return Response("GRUPO NÃO CADASTRADO", status=status.HTTP_400_BAD_REQUEST)
         
     @api_view(['POST'])
     def cadastrar_gasto_grupo(request):
+
+        gasto = Gastos_Grupo.objects.create(nome_gasto=request.data["nome_gasto"],
+                                    id_grupo_id=request.data["id_grupo_id"])
+        
+        users = request.data["usuarios"].split(",")
         try:
-            Gastos_Grupo.objects.create(nome_gasto=request.data["nome_gasto"],
-                                        id_grupo_id=request.data["id_grupo_id"])
+            users_id = list()
+            for user in users:
+                user_id = User.objects.filter(username=user).first().id
+                users_id.append(user_id)
+
+            for id in users_id:
+                GrupoGasto_User.objects.create(usuario_id=id, conta_id=gasto.grupoGasto_id, pago=False)
             
-            return Response("GASTO CADASTRADO", status=status.HTTP_201_CREATED)
+            return Response(f"Gastos {gasto.nome_gasto} e Usuaruios {users_id} CADASTRADOS",status=status.HTTP_200_OK)
         except:
-            return Response("GASTO NÃO CADASTRADO", status=status.HTTP_400_BAD_REQUEST)
+            gasto.delete()
+            return Response(f"erro ao cadastrar os usuarios {users}",status=status.HTTP_400_BAD_REQUEST)
+            
+    @api_view(['POST'])
+    def cadastrar_item_associar_users(request): 
+        preco_uni = request.data["preco_unitario"]
+        quantidade = request.data["quantidade"]
+        preco_total = float(preco_uni * quantidade)
+
+        item = Itens.objects.create(descricao=request.data["descricao"],
+                                id_GastosGrupo_id=request.data["id_GastosGrupo_id"],
+                                preco_unitario=request.data["preco_unitario"],
+                                preco_total_item=preco_total,
+                                quantidade=request.data["quantidade"]
+                            )
+        
+        users = request.data["usuarios"].split(",")
+        pesos = request.data["pesos"].split(",")
+        users_id = list()
+        for user in users:
+            user_id = User.objects.filter(username=user).first().id
+            users_id.append(user_id)
+        for i, id in enumerate(users_id):
+            Iten_User.objects.create(peso=pesos[i], item_id=item.item_id, usuario_id=id)
+        
+        gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
+        gasto_atual = float(gasto_g.valor_total)
+        gasto_g.valor_total = gasto_atual + preco_total
+        gasto_g.save()
+
+        return Response(item.item_id,status=status.HTTP_200_OK)
 
     @api_view(['POST'])
     def cadastrar_item(request):  
@@ -40,7 +85,7 @@ class GrupoView(APIView):
                                     preco_total_item=preco_total,
                                     quantidade=request.data["quantidade"]
                                 )
-            
+         
             gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
             gasto_atual = float(gasto_g.valor_total)
             gasto_g.valor_total = gasto_atual + preco_total
@@ -66,6 +111,7 @@ class GrupoView(APIView):
     @api_view(['POST'])
     def associar_user_grupoGastos(request): 
         users_conta = request.data["user_contas"].split(",")
+
         try:
             for item in users_conta:
                 item = item[1:-1]
@@ -79,17 +125,39 @@ class GrupoView(APIView):
 
     @api_view(['POST'])
     def associar_usuario_grupo (request):
+        print(request)
+        print(request.data)
         try:
-            Grupo_User.objects.create(grupo_id=request.data['grupo_id'], usuario_id=request.data['user_id'])
-            return Response("USUARIO CADASTRADA", status=status.HTTP_201_CREATED)
+            user = User.objects.get(username=request.data["user"])
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+        except User.MultipleObjectsReturned:
+            return Response("Há muitos usuários com msm username", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Grupo_User.objects.get(grupo_id=request.data['grupo_id'], usuario_id=user.id)
+            raise Exception(Grupo_User.MultipleObjectsReturned)
+        except Grupo_User.DoesNotExist:
+            pass
+        except Grupo_User.MultipleObjectsReturned:
+            return Response("Usuário já está no grupo", status=status.HTTP_304_NOT_MODIFIED)
+
+        except ValidationError:
+            return Response("Esse id de grupo não é válido", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Grupo_User.objects.create(grupo_id=request.data['grupo_id'], usuario_id=user.id)
+            return Response("Usuário cadastrado no grupo", status=status.HTTP_201_CREATED)
         except:
-            return Response("USUARIO NÃO CADASTRADA", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Usuário não cadastrado no grupo", status=status.HTTP_400_BAD_REQUEST)
         
+
+    @api_view(['POST'])
+    def gerar_link_grupo (request):
+        return Response(f"http://127.0.0.1:8000/join/?grupo={request.data['uuid_grupo']}")
+    
 
     # Select das informações de grupo
 
     @api_view(['POST'])
-    
     def grupos_user(request):
         user_id = User.objects.filter(username=request.data["username"]).first()
         grupoUsers = Grupo_User.objects.filter(usuario_id=user_id)
@@ -103,7 +171,7 @@ class GrupoView(APIView):
     
         return Response(grupo_list,status=status.HTTP_200_OK)
 
-    
+    @api_view(['POST'])
     def usuarios_grupo(request):
         try:
             grupo_list = Grupo_User.objects.filter(grupo_id=request.data["grupo_id"])
@@ -157,12 +225,12 @@ class GrupoView(APIView):
     
     @api_view(['POST'])    
     def usuarios_em_gastos(request):
-        user_gastos = GrupoGasto_User.objects.filter(conta_id=request.data["conta_id"])
+        user_gastos = GrupoGasto_User.objects.filter(conta_id=request.data["gasto_id"])
 
         userg_list = list()
         for ug in user_gastos:
-            username = User.objects.filter(id=ug.usuario_id).first().username
-            ug_dict = {"username": username}   
+            user = User.objects.filter(id=ug.usuario_id).first()
+            ug_dict = {"id": user.id, "username": user.username, "nome": f"{user.first_name} {user.last_name}", "email": user.email}  
             userg_list.append(ug_dict)         
         return Response(userg_list, status=status.HTTP_200_OK)
 

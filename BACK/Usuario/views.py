@@ -11,6 +11,8 @@ from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from Usuario.serializer import UserSerializer
+from Bancario.models import Bancario, Saldos
+import datetime
 
 
 @csrf_exempt
@@ -33,6 +35,8 @@ def cadastro (request):
         email=serializer.data["email"], 
         password=serializer.data["password"]
     )
+
+    Bancario.objects.create(saldo_atual=0, id_usuario_id=user.id, date=datetime.date.today())
 
     user.first_name = serializer.data["first_name"]
     user.last_name = serializer.data["last_name"]
