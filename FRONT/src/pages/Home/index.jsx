@@ -35,6 +35,7 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
+  background,
 } from '@chakra-ui/react'
 
 import axios from 'axios';
@@ -370,7 +371,7 @@ export default function Home() {
 
               <ModalFooter>
                 <Button
-                  colorScheme='blue'
+                  style={{background: '#6F9951'}}
                   mr={3}
                   onClick={handleCreateTag}>
                   Criar
@@ -453,7 +454,7 @@ export default function Home() {
 
               <ModalFooter>
                 <Button
-                  colorScheme='blue'
+                  style={{background: '#6F9951'}}
                   mr={3}
                   onClick={handleSubmit}>
                   Criar
@@ -588,7 +589,7 @@ export default function Home() {
 
         <div className="gasto">
           {gastos.length === 0 ? (
-            <p>Não há gastos com os parâmetros especificados</p>
+            <p style={{color: '#D5DDDF', fontFamily: 'Manrope'}}>Não há gastos com os parâmetros especificados</p>
           ) : (
             gastos.map((gasto, index) => {
               const key = gasto.id || index;

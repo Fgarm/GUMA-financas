@@ -15,7 +15,7 @@ export default function Saldo(){
 
     return(
         <div>    
-                <Sidebar user={username} />
+            <Sidebar user={username} />
             <Container>
                 <SaldoBlock />
                 <StickBotton />

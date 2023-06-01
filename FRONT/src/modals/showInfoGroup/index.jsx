@@ -102,7 +102,7 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
                 Pesos
               </Button> */}
               <Button colorScheme='red' mr={3} onClick={onClose}>
-                Close
+                Fechar
               </Button>
             </Grid>
           </ModalFooter>
