@@ -9,6 +9,7 @@ import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "reac
 
 import { useNavigate } from 'react-router-dom';
 
+
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
