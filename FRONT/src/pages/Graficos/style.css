@@ -1,39 +1,39 @@
 .GraficosPage {
-    height: 100vh;
-    /* remover em algum momento (talvez) */
-    width: calc(100% - 15%);
+  height: 100vh; /* remover em algum momento (talvez) */
+  width: calc(100% - 15%);
+  
+  display: flex;
+  float: right;
+  flex-direction: column;
 
-    display: flex;
-    float: right;
-    flex-direction: column;
-
-    background-color: var(--60-background-dark);
+  background-color: var(--60-background-dark);
 }
 
 .body-dashboard {
-    width: 100%;
-    min-height: calc(100vh - 12vh);
+  width: 100%;
+  min-height: calc(100vh - 12vh);
+  
+  margin: 0;
+  padding: 3% 1.5% 1.5% 1.5%;
+  flex-direction: row;
+  position: relative;
 
-    margin: 0;
-    padding: 3% 1.5% 1.5% 1.5%;
-    flex-direction: row;
-    position: relative;
-
-    display: flex;
-    justify-items: space-evenly;
-    gap: 2.8em;
-    /* flex-wrap: wrap; */
-
-    /* border: 1px solid blue; */
-    background-color: var(--10-gray);
+  display: flex;
+  justify-items: space-evenly;
+  gap: 2.8em;
+  /* flex-wrap: wrap; */
+  
+  /* border: 1px solid blue; */
+  background-color: var(--10-gray);
 }
 
 @media screen and (max-width: 1000px) {
-    .GraficosPage {
-        display: flex;
-        padding: 3%;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-    }
+  .GraficosPage {
+    display: flex;
+    padding: 3%;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
 }
+

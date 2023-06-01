@@ -29,14 +29,14 @@ ChartJS.register(
     Legend,
     ArcElement // p grafico de rosquinha
 );
-
+    
 // Global
 const dataAtual = new Date();
 const anoAtual = dataAtual.getFullYear();
 
 // converte formato de cor de hexadecimal para RGB
 function hexToRgb(listHex) {
-
+    
     const backgroundColorList = []
     const borderColorList = []
 
@@ -109,12 +109,12 @@ export const doughnutChartData = {
 
 // componente do gráfico doughnut para os gastos mais relevantes
 export default function DoughnutChartComponent() {
-
+    
     // chartData: { data, labels(tags), colors }
     const [chartData, setChartData] = useState(null);
     const [month, setMonth] = useState(dataAtual.getMonth()+1);
     const [year, setYear] = useState(dataAtual.getFullYear());
-
+    
     const handleSelectMonthChange = (event) => {
         setMonth(event.target.value);
     };
@@ -122,7 +122,7 @@ export default function DoughnutChartComponent() {
     const handleSelectYearChange = (event) => {
         setYear(event.target.value);
     };
-
+    
     // carrega os dados do gráfico de Rosquinha por meio da API do Back
     useEffect(() => {
 
@@ -137,12 +137,12 @@ export default function DoughnutChartComponent() {
                 mes,
                 ano,
             };
-
+            
             console.log("request: ", request)
-
+            
             axios.post('http://localhost:8000/api/gastos/gastos-mais-relevantes/', request)
                 .then(response => {
-                    console.log("response AQUI: ", response.data)
+                    console.log("response: ", response.data)
                     setChartData(response.data);
                 })
                 .catch(error => {
@@ -150,7 +150,7 @@ export default function DoughnutChartComponent() {
                     setChartData(null);
                 });
         };
-
+        
         setChartData(null);
         fetchDoughnutChartData();
 
@@ -159,7 +159,7 @@ export default function DoughnutChartComponent() {
     if (!chartData) {
         return <h1>Carregando Gráficos...</h1>;
     }
-
+    
     // data
     doughnutChartData.datasets[0].data = chartData["data"]
 
@@ -168,10 +168,10 @@ export default function DoughnutChartComponent() {
 
     // colors
     const colorObject = hexToRgb(chartData["colors"])
-
+    
     doughnutChartData.datasets[0].backgroundColor = colorObject.backgroundColorList
     doughnutChartData.datasets[0].borderColor = colorObject.borderColorList
-
+    
     // para debug
     // console.log("data: ", doughnutChartData.datasets[0].data)
     // console.log("labels/tags: ", doughnutChartData.labels)
@@ -181,15 +181,15 @@ export default function DoughnutChartComponent() {
         'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
         'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
     ];
-
+    
     const anos = [
         anoAtual, anoAtual-1, anoAtual-2, anoAtual-3
     ]
-
+    
     return (
         <div className="DonutChartContainer">
             <Doughnut className="DonutChartComponent" options={doughnutOptions} data={doughnutChartData} />
-
+            
             <div className="month-year-input-container">
 
                 <select className="month-input" value={month} onChange={handleSelectMonthChange}>

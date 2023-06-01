@@ -4,4 +4,13 @@ from GUMA_investimentos.settings import *
 # override only local changes such as databases
 # run with makefile
 
-DATABASE = {...}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'guma_financas',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}

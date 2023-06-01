@@ -18,7 +18,7 @@ export default function Graficos() {
         <Sidebar user={username} />
         <div className="GraficosPage">
           <header className='home'>
-
+                  
             <h1 className='page-title'>Dashboard</h1>
 
             <div className='new-tag-and-gasto-button-container'>

@@ -7,15 +7,12 @@ const BaseUrl = "http://127.0.0.1:8000/bancario/extrato-saldo/"
 export default function SaldoBlock(){
     const [post, setPost] = React.useState(null);
     const username = localStorage.getItem('cadastro_user')
-    console.log(username)
 
     const getPost = async () => {
         await axios.post(BaseUrl, {
             username: username
         }).then(response => {
             setPost(response.data)
-            console.log("este é userame: " + username)
-            console.log(response.data)
         });
     }
     

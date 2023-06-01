@@ -299,12 +299,12 @@ export default function Home() {
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
-  }
-
-
-  return (
-    <>
-      <Sidebar user={username} />
+    }
+  
+    
+    return (
+      <>
+      <Sidebar user={username}/>
       <div className="body">
         <header className='home'>
           <h1 className='page-title'>Meus Gastos</h1>
@@ -417,25 +417,25 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label >Data</label>
                   <br></br>
-                  <Input
+                  <Input 
                     type="date"
                     onChange={(e) =>
-                      setSelectedDate(e.target.value)
-                    } />
+                    setSelectedDate(e.target.value)
+                  } />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
                   <Select
-                    placeholder='Selecione uma opção'
-                    onChange={(e) => {
-                      if (e.target.value == 'pago') {
-                        setPago(true)
-                      } else if (e.target.value == 'nao-pago') {
-                        setPago(false)
-                      }
-                    }}>
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
@@ -445,9 +445,9 @@ export default function Home() {
                   <label >Tags</label>
                   <br></br>
                   <TagsInput
-                    tags={tags}
+                    tags={tags} 
                     defaultValue={editTags}
-                    onTagsChange={handleTagsChange}
+                    onTagsChange={handleTagsChange} 
                     user={username} />
                 </FormControl>
               </ModalBody>
@@ -474,8 +474,8 @@ export default function Home() {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader
-                mb={0}
+              <ModalHeader 
+                mb={0} 
                 className='modal_header'>
                 Editando Gasto
               </ModalHeader>
@@ -484,7 +484,7 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label >Nome</label>
                   <br></br>
-                  <Input
+                  <Input 
                     defaultValue={nome}
                     onChange={(e) => {
                       setNome(e.target.value)
@@ -494,22 +494,22 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label >Valor</label>
                   <br></br>
-                  <Input
+                  <Input 
                     defaultValue={valor}
                     onChange={(e) => {
-                      setValor(e.target.value)
-                    }} />
+                    setValor(e.target.value)
+                  }} />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <label >Data</label>
                   <br></br>
-                  <Input
+                  <Input 
                     defaultValue={data}
-                    type="date"
+                    type="date" 
                     onChange={(e) =>
                       setSelectedDate(e.target.value)
-                    } />
+                  } />
                 </FormControl>
 
                 <FormControl mt={4}>
@@ -517,14 +517,14 @@ export default function Home() {
                   <br></br>
                   <Select
                     defaultValue={editStatus}
-                    placeholder='Selecione uma opção'
-                    onChange={(e) => {
-                      if (e.target.value == 'pago') {
-                        setPago(true)
-                      } else if (e.target.value == 'nao-pago') {
-                        setPago(false)
-                      }
-                    }}>
+                  placeholder='Selecione uma opção' 
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
@@ -533,11 +533,11 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Tags</label>
                   <br></br>
-                  <TagsInput
-                    tags={tags}
+                  <TagsInput 
+                    tags={tags} 
                     editado={editTags}
-                    onTagsChange={handleTagsChange}
-                    user={username}
+                    onTagsChange={handleTagsChange} 
+                    user={username} 
                   />
                 </FormControl>
               </ModalBody>
@@ -563,8 +563,8 @@ export default function Home() {
           >
             <AlertDialogOverlay>
               <AlertDialogContent>
-                <AlertDialogHeader
-                  fontSize='lg'
+                <AlertDialogHeader 
+                  fontSize='lg' 
                   fontWeight='bold'>
                   Deletar Gastos
                 </AlertDialogHeader>
@@ -587,52 +587,55 @@ export default function Home() {
           </AlertDialog>
         </div>
 
-        <div className="gasto">
-          {gastos.length === 0 ? (
-            <p style={{color: '#D5DDDF', fontFamily: 'Manrope'}}>Não há gastos com os parâmetros especificados</p>
-          ) : (
-            gastos.map((gasto, index) => {
-              const key = gasto.id || index;
+        
 
-              return (
-                <div key={key} className="gasto_information">
-                  <div className="header">
-                    <h1>{gasto.nome}</h1>
-                    <div>
-                      <Icon
-                        className="edit-icon-gasto"
-                        as={MdOutlineModeEditOutline}
-                        w={5}
-                        h={5}
-                        mr={2}
-                        onClick={() => handleEditClick(gasto)}
+        <div className="gasto">
+          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+            gastos.map((gasto, key) => (
+              <div key={gasto.id} className="gasto_information">
+                <div className='header'>
+                  <h1>
+                    {gasto.nome}
+                  </h1>
+                  <div>
+                    <Icon
+                      className='edit-icon-gasto' 
+                      as={MdOutlineModeEditOutline} 
+                      w={5} 
+                      h={5} 
+                      mr={2} 
+                      onClick={() => handleEditClick(gasto)} 
                       />
-                      <Icon
-                        className="delete-icon-gasto"
-                        as={MdDelete}
-                        color="red.500"
-                        w={5}
-                        h={5}
-                        onClick={() => handleDeleteClick(gasto.id)}
-                      />
-                    </div>
+                    <Icon 
+                      className='delete-icon-gasto' 
+                      as={MdDelete} 
+                      color='red.500' 
+                      w={5} 
+                      h={5} 
+                      onClick={() => handleDeleteClick(gasto.id)} 
+                    />
                   </div>
-                  <h2>R$ {gasto.valor}</h2>
-                  <h2>{formatarData(gasto.data)}</h2>
-                  {gasto.pago > 0 ? (
-                    <h2 style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</h2>
-                  ) : (
-                    <h2 style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</h2>
-                  )}
-                  <h2>{gasto.tag}</h2>
                 </div>
-              );
-            })
+                <h2>
+                  R$ {gasto.valor}
+                </h2>
+                <h2>
+                  {formatarData(gasto.data)}
+                </h2>
+                <h2>
+                </h2>
+                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
+                <h2>
+                {gasto.tag}
+                </h2>
+
+              </div>
+            ))
+
           )}
         </div>
 
-
       </div>
-    </>
-  )
+      </>
+    )
 }
