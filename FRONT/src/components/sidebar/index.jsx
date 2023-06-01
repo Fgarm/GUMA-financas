@@ -89,6 +89,10 @@ export default function Sidebar(props) {
         navigate('/home');
     }
 
+    function handleSaldo(){
+        navigate('/saldos')
+    }
+
     function handleDashboard() {
         navigate('/dashboard');
     }
@@ -111,7 +115,7 @@ export default function Sidebar(props) {
                 <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Gastos
             </div>
 
-            <div className="flex" onClick={handleMyExpenses}>
+            <div className="flex" onClick={handleSaldo}>
                 <Icon as={BsCashStack} w={5} h={5}  /> Saldo
             </div>
 
