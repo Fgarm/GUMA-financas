@@ -2,8 +2,8 @@ import styled from "styled-components";
 
 
 export const Container = styled.div`
-    background-color: rgba(48, 48, 48);
-    height: 960px;
+    background-color: #1B2727;
+    min-height: 100vh;
     box-sizing: border-box;
     overflow: hidden;
 `

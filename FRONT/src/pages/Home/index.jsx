@@ -544,7 +544,7 @@ export default function Home() {
 
               <ModalFooter>
                 <Button
-                  colorScheme='blue'
+                  style={{background: '#6F9951'}}
                   mr={3}
                   onClick={handleEdit}>
                   Salvar
