@@ -19,7 +19,6 @@ import {
   ModalHeader,
 } from '@chakra-ui/react'
 
-import { LuUsers } from "react-icons/lu";
 
 import axios from 'axios'
 
@@ -29,7 +28,7 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
   // const [usuariosGasto, setUsuariosGasto] = useState('')
   // const [itensGasto, setItensGasto] = useState('')
   const [modalContent, setModalContent] = useState('names');
-
+  
   // function getPesos() {
   //   if (gastoId !== '') {
   //     axios({
@@ -53,14 +52,14 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
     if (modalContent === 'names') {
       return usuariosGastos.map((user) =>
         <UnorderedList>
-          <ListItem>{user.nome}</ListItem>
+          <ListItem style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }} >{user.nome}</ListItem>
         </UnorderedList>
       );
-    } else if (modalContent === 'ages') {
+    } else if (modalContent === 'itens') {
 
       return itensGasto.map((item) =>
         <UnorderedList>
-          <ListItem>{item.quantidade} X {item.descricao} : R${item.preco_total}</ListItem>
+          <ListItem style={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>{item.quantidade} X {item.descricao} : R${item.preco_total}</ListItem>
         </UnorderedList>);
     } 
     // else if (modalContent === 'pesos') {
@@ -78,7 +77,7 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader className='modal_header'>Informações do Grupo</ModalHeader>
+          <ModalHeader style={{background:'#3C5149'}}>Informações do Grupo</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <ul>{renderContent()}</ul>
@@ -92,10 +91,10 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
               mr={2}
               onClick={() => handleButtonClick('names')} colorScheme={modalContent === 'names' ? 'blue' : 'gray'} /> */}
             <Grid templateColumns="repeat(3, 1fr)" columnGap={4} alignItems="center">
-              <Button onClick={() => handleButtonClick('names')} colorScheme={modalContent === 'names' ? 'blue' : 'gray'}>
+            <Button onClick={() => handleButtonClick('names')} style={{ background: modalContent === 'names' ? '#6F9951' : '#CBD5E0' }}>
                 Usuarios
               </Button>
-              <Button onClick={() => handleButtonClick('ages')} colorScheme={modalContent === 'ages' ? 'blue' : 'gray'}>
+              <Button onClick={() => handleButtonClick('itens')} style={{ background: modalContent === 'itens' ? '#6F9951' : '#CBD5E0'}}>
                 Itens
               </Button>
               {/* <Button onClick={() => handleButtonClick('pesos')} colorScheme={modalContent === 'pesos' ? 'blue' : 'gray'}>

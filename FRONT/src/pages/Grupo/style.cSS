@@ -43,6 +43,12 @@
     color: #fff !important;
 }
 
+.group-button:hover {
+    background-color: var(--10-green) !important;
+    cursor: pointer;
+    transition: background-color 0.4s ease-out;
+}
+
 .link-button {
     width: 25%;
     margin-top: 10px;
@@ -50,7 +56,4 @@
 
     font-size: 1.1em !important;
     letter-spacing: 0.05em;
-
-    /* background-color: var(--10-gray-transparent-2) !important;
-    color: #fff !important; */
 }

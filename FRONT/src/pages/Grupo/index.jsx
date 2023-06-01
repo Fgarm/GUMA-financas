@@ -8,9 +8,10 @@ import ShowInfoGroup from '../../modals/showInfoGroup';
 import clipboardCopy from 'clipboard-copy';
 
 import { AiOutlinePlus } from "react-icons/ai";
+import { GrCircleInformation } from "react-icons/gr";
 import { MdClose, MdAddShoppingCart } from "react-icons/md";
 import { BsCurrencyDollar } from "react-icons/bs";
-
+import { RiFileCopyLine } from "react-icons/ri";
 import { Alert, Icon, Button, useDisclosure, useToast } from '@chakra-ui/react';
 import { set } from 'zod';
 
@@ -206,11 +207,12 @@ export default function GroupPage() {
                 <header className='home'>
                     <h1 className='page-title'>Página do Grupo</h1>
                     <div className='button-container'>
-                        <Button className='new-tag-and-gasto-button' onClick={handleCreateClick}>
+                        <Button className='group-button' onClick={handleCreateClick}>
                             <Icon style={{ marginLeft: '-2px', marginRight: '9px' }} as={BsCurrencyDollar} w={5} h={5} />
                             Novo Gasto do Grupo
                         </Button>
                         <Button onClick={onOpen} className='group-button'>
+                            <Icon style={{ marginLeft: '-2px', marginRight: '9px' }} as={RiFileCopyLine} w={5} h={5} />
                             Gerar Link
                         </Button>
                     </div>
@@ -235,7 +237,7 @@ export default function GroupPage() {
                                             onClick={() => handleEditGastoGrupo(gasto)}
                                         />
                                         <Icon
-                                            as={AiOutlinePlus}
+                                            as={GrCircleInformation}
                                             color="black.500"
                                             w={5}
                                             h={5}

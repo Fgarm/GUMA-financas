@@ -141,7 +141,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
             <ModalFooter>
               <Button 
-                colorScheme='blue' 
+                style={{background: '#6F9951'}} 
                 mr={3} 
                 onClick={handleSubmit}>
                 Criar
