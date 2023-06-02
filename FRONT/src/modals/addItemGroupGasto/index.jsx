@@ -31,6 +31,10 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
 
   const [pesos, setPesos] = useState('');
 
+  function verificaStringNumerica(string) {
+    return /\d/.test(string);
+  }
+
   // useEffect(() => {
   //     const usuariosString = usuariosGastos.map(usuario => usuario.nome).join(',');
   //     setUsuarios(usuariosString);
@@ -73,6 +77,11 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
         usuarios: users,
         pesos: pesos
     } 
+
+    if(isNaN(data.preco_unitario) || isNaN(data.quantidade) || data.descricao === '' || data.usuarios === '' || data.pesos === '' || verificaStringNumerica(descricao)) {
+      alert('Preencha todos os campos');
+      return;
+    }
 
     console.log(data.id_GastosGrupo_id);
 

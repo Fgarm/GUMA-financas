@@ -19,12 +19,13 @@ export default function GroupPage() {
     const [textToCopy, setTextToCopy] = useState('');
 
     const grupoId = localStorage.getItem('grupo_id');
+    const username = localStorage.getItem('cadastro_user');
+
     const [gastoId, setGastoId] = useState('')
     const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
     const [itensGasto, setItensGasto] = useState('')
 
-    const username = localStorage.getItem('cadastro_user');
 
     const [clicks, setClicks] = useState(0);
 
@@ -62,7 +63,6 @@ export default function GroupPage() {
         })
             .then(response => {
                 setGastos(response.data)
-                // console.log(response.data)
             })
             .catch(error => {
                 console.log(error)
