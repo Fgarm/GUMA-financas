@@ -6,18 +6,21 @@ import PeopleInput from '../../components/peopleInput';
 import {
   Button,
   ChakraProvider,
+  Checkbox,
   FormLabel,
   FormControl,
   FormHelperText,
-  Grid, 
-  GridItem, 
-  Input, 
+  Flex,
+  Grid,
+  GridItem,
+  Input,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalFooter,
   ModalBody,
   ModalHeader,
+  Stack,
   useDisclosure,
 } from '@chakra-ui/react'
 
@@ -116,10 +119,32 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [mostrarDiv, setMostrarDiv] = useState(false);
   const [mostrarBotao, setMostrarBotao] = useState(true);
 
-  const handleClick = () => {
-    setMostrarDiv(true);
-    setMostrarBotao(false);
+  const handleButtonClick = () => {
+    setMostrarDiv(!mostrarDiv);
+    setMostrarBotao(!mostrarBotao);
   };
+  
+
+  function CheckboxList({ usuariosGrupo }) {
+    return (
+      <Stack spacing={2}>
+        {usuariosGrupo && usuariosGrupo.map((user) => (
+          <FormControl>
+            <ChakraProvider>
+              <Grid templateColumns="1fr 1fr" gap={4}>
+                <GridItem>
+                  <Checkbox key={user.id}>{user.nome}</Checkbox>
+                </GridItem>
+                <GridItem>
+                  <Input placeholder="Peso" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                </GridItem>
+              </Grid>
+            </ChakraProvider>
+          </FormControl>
+        ))}
+      </Stack>
+    );
+  }
 
   return (
 
@@ -144,7 +169,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               <FormLabel>Nome</FormLabel>
               <Input onChange={(e) => {
                 setNome(e.target.value)
-              }}  _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+              }} _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
             </FormControl>
 
             <FormControl mt={4}>
@@ -158,12 +183,40 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               {mostrarBotao && <Button
                 style={{ background: '#6F9951' }}
                 mr={3}
-                onClick={handleClick}
+                onClick={handleButtonClick}
               > Novo Item </Button>}
 
               {mostrarDiv && (
-              <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoId} usuariosGastos={usuariosGastos}> 
-                </AddItemGroupGasto>
+                <div>
+                  <FormControl>
+                    <Input placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                    {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
+                  </FormControl>
+                  <br></br>
+                  <FormControl>
+                    <ChakraProvider>
+                      <Grid templateColumns="1fr 1fr" gap={4}>
+                        <GridItem>
+                          <Input placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                        </GridItem>
+                        <GridItem>
+                          <Input placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                        </GridItem>
+                      </Grid>
+                    </ChakraProvider>
+                  </FormControl>
+                  <br></br>
+                  <FormLabel>Participantes e consumo</FormLabel>
+                  <div>
+                    <CheckboxList usuariosGrupo={usuariosGrupo} />
+                  </div>
+                  <br></br>
+                  <Flex justifyContent="flex-start">
+                    <Button marginRight="0.5rem">Cadastrar Item</Button>
+                    <Button marginRight="0.5rem" onClick={handleButtonClick}>Excluir</Button>
+                  </Flex>
+
+                </div>
               )}
 
             </FormControl>

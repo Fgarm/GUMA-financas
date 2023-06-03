@@ -4,6 +4,7 @@ import {
   ChakraProvider,
   Checkbox,
   CheckboxGroup,
+  Flex,
   FormControl,
   FormLabel,
   Grid,
@@ -19,14 +20,9 @@ import axios from 'axios';
 import './style.css';
 
 
-export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, usuariosGastos, clicks }) {
-
-  // const users = [
-  //   { id: 1, name: 'User 1' },
-  //   { id: 2, name: 'User 2' },
-  //   { id: 3, name: 'User 3' },
-  // ];
-
+export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuariosGastos, usuariosGrupo, clicks }) {
+  console.log("AQUI TESTE")
+  console.log(usuariosGrupo)
   const toast = useToast()
 
   const [checkedItems, setCheckedItems] = React.useState([false, false])
@@ -43,8 +39,7 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
 
   const [usuarios, setUsuarios] = useState([]);
 
-  const [pesos, setPesos] = useState('');
-
+  const [pesos, setPesos] = useState(''); 
   // useEffect(() => {
   //     const usuariosString = usuariosGastos.map(usuario => usuario.nome).join(',');
   //     setUsuarios(usuariosString);
@@ -61,8 +56,6 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
       setUsuarios(usuariosArray);
     }
   }, [usuariosGastos, clicks]);
-
-
 
   const handleSubmit = () => {
 
@@ -118,113 +111,29 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
       });
   }
 
-  const handleCheckboxChange = (userId) => (e) => {
-    const updatedUserCheckboxes = userCheckboxes.map((userCheckbox) => {
-      if (userCheckbox.userId === userId) {
-        return {
-          ...userCheckbox,
-          checked: e.target.checked,
-        };
-      }
-      return userCheckbox;
-    });
-    setUserCheckboxes(updatedUserCheckboxes);
-  };
-
-  const initializeUserCheckboxes = () => {
-    const initialUserCheckboxes = usuariosGastos.map((user) => ({
-      userId: user.id,
-      checked: false, // Definido como false para não ficarem selecionados
-    }));
-    setUserCheckboxes(initialUserCheckboxes);
-  };
-
-  // Inicializar os checkboxes ao montar o componente
-  useEffect(() => {
-    initializeUserCheckboxes();
-  }, []);
+  function CheckboxList({ usuariosGrupo }) {
+    return (
+      <Stack spacing={2}>
+        {usuariosGrupo && usuariosGrupo.map((user) => (
+          <FormControl>
+            <ChakraProvider>
+              <Grid templateColumns="1fr 1fr" gap={4}>
+                <GridItem>
+                  <Checkbox key={user.id}>{user.nome}</Checkbox>
+                </GridItem>
+                <GridItem>
+                  <Input placeholder="Peso" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                </GridItem>
+              </Grid>
+            </ChakraProvider>
+          </FormControl>
+        ))}
+      </Stack>
+    );
+  }
 
 
   return (
-    //   <div>
-    //   {/* <Modal
-    //     initialFocusRef={initialRef}
-    //     finalFocusRef={finalRef}
-    //     isOpen={isOpen}
-    //     onClose={onClose}
-    //   >
-    //     <ModalOverlay />
-    //     <ModalContent>
-    //       <ModalHeader 
-    //         mb={0} 
-    //         className='modal_header'>
-    //         {nomeGasto}
-    //       </ModalHeader>
-
-    //       <ModalBody>
-    //         <FormControl mt={4}>
-    //           <label>Item</label>
-    //           <br></br>
-    //           <Input onChange={(e) => {
-    //             setDescricao(e.target.value)
-    //           }} />
-    //         </FormControl>
-
-    //         <FormControl mt={4}>
-    //           <label>Quantidade</label>
-    //           <br></br>
-    //           <Input 
-    //           onChange={(e) => {
-    //             setQuantidade(e.target.value)
-    //           }} />
-    //         </FormControl>
-
-    //         <FormControl mt={4}>
-    //           <label>Preço Unitário</label>
-    //           <br></br>
-    //           <Input onChange={(e) => {
-    //             setValor(e.target.value)
-    //           }} />
-    //         </FormControl>
-
-    //         <FormControl mt={4}>
-    //           <label>Usuários do Gasto</label>
-    //           <br></br>
-    //           <Input
-    //             defaultValue={usuarios.map(user => user.nome).join(',')}
-    //             onChange={(e) => {
-    //               const inputUsernames = e.target.value.split(',');
-    //               const selectedUsers = usuarios.filter(user => inputUsernames.includes(user.nome));
-    //               setUsuarios(selectedUsers);
-    //             }}/>
-    //         </FormControl>
-
-    //         <FormControl mt={4}>
-    //           <label>Pesos</label>
-    //           <br></br>
-    //           <Input onChange={(e) => {
-    //             setPesos(e.target.value)
-    //           }} />
-    //         </FormControl>
-    //       </ModalBody>
-
-    //       <span className='modal_footer'>
-    //         <p>Os pesos devem ser colocados referentes à ordem de usuários do gasto</p>
-    //       </span>
-
-    //       <ModalFooter>
-    //         <Button 
-    //           colorScheme='blue' 
-    //           mr={3} 
-    //           onClick={handleSubmit}
-    //           >
-    //           Criar
-    //         </Button>
-    //         <Button onClick={onClose}>Cancelar</Button>
-    //       </ModalFooter>
-    //     </ModalContent>
-    //   </Modal> */}
-    // </div>
     <div>
       <FormControl>
         <Input placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
@@ -244,48 +153,17 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
         </ChakraProvider>
       </FormControl>
       <br></br>
-      {/* <>
-        <Checkbox
-          isChecked={allChecked}
-          isIndeterminate={isIndeterminate}
-          onChange={(e) => setCheckedItems([e.target.checked, e.target.checked])}
-        >
-          Todos usuários
-        </Checkbox>
-        <Stack pl={6} mt={1} spacing={1}>
-          <Checkbox
-            isChecked={checkedItems[0]}
-            onChange={(e) => setCheckedItems([e.target.checked, checkedItems[1]])}
-          >
-            Child Checkbox 1
-          </Checkbox>
-          <Checkbox
-            isChecked={checkedItems[1]}
-            onChange={(e) => setCheckedItems([checkedItems[0], e.target.checked])}
-          >
-            Child Checkbox 2
-          </Checkbox>
-        </Stack>
-      </> */}
       <FormLabel>Participantes e consumo</FormLabel>
-      <>
-        {userCheckboxes.map((userCheckbox) => {
-          const user = usuariosGastos.find((user) => user.id === userCheckbox.userId);
-          return (
-            <div key={userCheckbox.userId}>
-              <Checkbox
-                isChecked={userCheckbox.checked}
-                onChange={handleCheckboxChange(userCheckbox.userId)}
-              >
-                {user.name}
-              </Checkbox>
-            </div>
-          );
-        })}
-      </>
+      <div>
+        <CheckboxList usuariosGrupo={usuariosGrupo} />
+      </div>
       <br></br>
-      <Button>Criar</Button>
-      <Button>Cancelar</Button>
+      <Flex justifyContent="flex-start">
+        <Button marginRight="0.5rem">Cadastrar Item</Button>
+        <Button marginRight="0.5rem" onClick={onClose}>Excluir</Button>
+      </Flex>
+
+
     </div>
   );
 

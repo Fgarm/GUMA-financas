@@ -8,6 +8,8 @@ export default function PeopleInput(props) {
     useEffect(() => {
         props.onUsuariosChange(usuarios);
     }, [usuarios]);
+    console.log("MARCIS")
+    console.log(props.usuarios)
 
     function handleChange(e) {
         const value = e.target.value
@@ -22,21 +24,21 @@ export default function PeopleInput(props) {
         setAddedPeople(newPeople);
         e.target.value = ''
 
-        if(usuarios === ''){
+        if (usuarios === '') {
             setUsuarios(value)
-        }else{
-            setUsuarios(usuarios+','+value)
+        } else {
+            setUsuarios(usuarios + ',' + value)
         }
-     }
+    }
 
-     function removePerson(index, value) {
+    function removePerson(index, value) {
         const newPeoples = addedPeople.filter((el, i) => i !== index);
         setAddedPeople(newPeoples);
 
-        const nomesArray = usuarios.split(','); 
+        const nomesArray = usuarios.split(',');
         const novoArray = nomesArray.filter((item) => item.trim() !== value.trim());
         const novaString = novoArray.join(',');
-        setUsuarios(novaString); 
+        setUsuarios(novaString);
     }
 
 
@@ -50,16 +52,16 @@ export default function PeopleInput(props) {
                     </div>
                 ))}
 
-                <select name="people" id="people" className="people-input" onChange={handleChange}> 
+                <select name="people" id="people" className="people-input" onChange={handleChange}>
 
                     <option value="">Usuários</option>
 
                     {props.usuarios.length === 0 ? <p></p> :
-                     (
-                        props.usuarios.map((nome, key) => (
-                            <option value={nome.username}>{nome.nome}</option>
-                        ))
-                    )}
+                        (
+                            props.usuarios.map((nome, key) => (
+                                <option value={nome.username}>{nome.nome}</option>
+                            ))
+                        )}
                 </select>
 
             </div>

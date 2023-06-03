@@ -24,10 +24,10 @@ function PrivateRoute({ children }) {
 
 const Routering = createBrowserRouter([
 
-    // {
-    //     path: "/",
-    //     element: <LogIn/>,
-    // },
+    {
+        path: "/",
+        element: <LogIn/>,
+    },
     
     {
         path: "/logup",
@@ -75,7 +75,7 @@ const Routering = createBrowserRouter([
     },
 
     {
-        path: "/",
+        path: "group",
         element: <GroupPage/>,
     },
 
