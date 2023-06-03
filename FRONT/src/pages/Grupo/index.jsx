@@ -47,6 +47,7 @@ export default function GroupPage() {
     } = useDisclosure({ defaultIsOpen: false })
 
     const toast = useToast()
+    
 
     useEffect(() => {
         getGroupInfo();
@@ -254,7 +255,7 @@ export default function GroupPage() {
                     <Button onClick={handleGetInfoGasto}>Fechar</Button>
                 </ShowInfoGroup>
 
-                <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
+                <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked} usuariosGastos={usuariosGastos}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </CreateGastoGroup>
 
