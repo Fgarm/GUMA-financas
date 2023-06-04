@@ -592,8 +592,12 @@ export default function Home() {
 
         <div className="gasto">
           {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastos.map((gasto, key) => (
-              <div key={gasto.id} className="gasto_information">
+            gastos
+            .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
+            .map((gasto, key) => (
+                <div key={gasto.id} className="gasto_information">
+                  <h2>{formatarData(gasto.data)}</h2>
+                  <hr />
                 <div className='header'>
                   <h1>
                     {gasto.nome}
