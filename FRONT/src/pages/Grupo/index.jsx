@@ -218,7 +218,7 @@ export default function GroupPage() {
                     </div>
                 </header>
 
-                <div className="gasto">
+                <div className="gasto_grupo">
                     {gastos.length === 0 ? (
                         <p>Não há gastos com os parâmetros especificados</p>
                     ) : (
@@ -226,7 +226,7 @@ export default function GroupPage() {
                             const key = gasto.id || index; // Usando gasto.id ou índice como chave
 
                             return (
-                                <div key={key} className="gasto_information">
+                                <div key={key} className="gasto_information_grupo">
                                     <h1>{gasto.nome}</h1>
                                     <div>
                                         <Icon

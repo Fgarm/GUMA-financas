@@ -13,6 +13,17 @@
     gap: .5em;
 }
 
+.saldo-information{
+    border: 1px solid rgb(175, 226, 107);
+    padding: 10px;
+    width: 15%;
+    margin-left: 50px;
+}
+
+p{
+    color: white;
+}
+
 .tags-items {
     background-color: rgb(218, 216, 216);
     display: inline-block;
@@ -59,22 +70,34 @@ span.error-message {
     width: 100%;
     min-height: calc(100vh - 12vh);
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     margin: 0;
     padding: 4.5% 1.5% 1.5% 1.5%;
-    border-radius: 5px;
-    justify-content: space-evenly;
+    /* border-radius: 5px;
+    justify-content: space-evenly; */
 }
 
 .gasto_information {
-    width: 30%;
+    /* width: 30%;
     padding: 10px;
     margin-top: 15px;
     border-radius: 5px;
     border: 0.5px solid;
     background-color: var(--10-gray);
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); */
+    width: 100%;
+    gap: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    /* justify-content: space-between; */
+    background-color: black; /* var(--10-gray) */
+    padding: 10px;
+    border-radius: 5px;
 }
+
 
 .header {
     display: flex;

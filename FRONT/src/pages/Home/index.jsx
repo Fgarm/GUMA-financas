@@ -63,6 +63,8 @@ export default function Home() {
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
 
+  const [saldo, setSaldo] = useState(0)
+
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
   const [searchOption, setSearchOption] = useState('');
@@ -94,6 +96,20 @@ export default function Home() {
   //   }
   // });
 
+  function getSaldos() {
+    axios.post("http://localhost:8000/bancario/obter-saldo/", {
+      username: username
+    })
+      .then(response => {
+        setSaldo(response.data)
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+      
+
   function handleTagsChange(newTag) {
     setTagsList(newTag);
   }
@@ -112,6 +128,9 @@ export default function Home() {
 
     };
 
+    let saldo = pago;
+    let val = valor * -1;
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -120,6 +139,22 @@ export default function Home() {
       .then(response => {
         if (response.status == 201) {
           console.log('Dados enviados com sucesso:', response.data);
+          if(saldo){
+            console.log("saldo")
+            console.log(data)
+              axios.post("http://localhost:8000/bancario/add-saldo/", {
+                username: username,
+                saldo: val
+              })
+              .then(response => {
+                console.log('Saldo adicionado com sucesso:', response.data);
+              }
+              )
+              .catch(error => {
+                console.error('Erro ao enviar dados:', error);
+              }
+              )
+          }
         } else {
           alert('Erro de dados submetidos')
           return
@@ -152,6 +187,18 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
+          axios.post("http://localhost:8000/bancario/add-saldo/", {
+                username: username,
+                saldo: valor * -1
+              })
+              .then(response => {
+                console.log('Saldo adicionado com sucesso:', response.data);
+              }
+              )
+              .catch(error => {
+                console.error('Erro ao enviar dados:', error);
+              }
+              )
           onModalEditClose();
           setNome('');
           setValor(0);
@@ -259,6 +306,7 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
+    getSaldos();
   }, [flag]);
 
 
@@ -334,6 +382,9 @@ export default function Home() {
           </div>
         </header>
 
+        <div className="saldo-information"> 
+          {saldo < 0 ? <p style={{color: 'red'}}>Saldo: R$ -{saldo}</p> : <p>Saldo: R$ {saldo}</p>}
+        </div>
 
         <div>
           <Modal
@@ -596,13 +647,22 @@ export default function Home() {
             .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
             .map((gasto, key) => (
                 <div key={gasto.id} className="gasto_information">
-                  <h2>{formatarData(gasto.data)}</h2>
-                  <hr />
-                <div className='header'>
-                  <h1>
+                  <p>
                     {gasto.nome}
-                  </h1>
-                  <div>
+                  </p>
+                <p>
+                  R$ {gasto.valor}
+                </p>
+                <p>
+                  {formatarData(gasto.data)}
+                </p>
+                <p>
+                </p>
+                {gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</p>}
+                <p>
+                {gasto.tag}
+                </p>
+                <div>
                     <Icon
                       className='edit-icon-gasto' 
                       as={MdOutlineModeEditOutline} 
@@ -620,19 +680,6 @@ export default function Home() {
                       onClick={() => handleDeleteClick(gasto.id)} 
                     />
                   </div>
-                </div>
-                <h2>
-                  R$ {gasto.valor}
-                </h2>
-                <h2>
-                  {formatarData(gasto.data)}
-                </h2>
-                <h2>
-                </h2>
-                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
-                <h2>
-                {gasto.tag}
-                </h2>
 
               </div>
             ))
