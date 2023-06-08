@@ -15,6 +15,9 @@ from django.contrib.auth.models import User
 from Tags.models import Tag
 
 
+def hex_to_rgba(color):
+    return "rgba({}, {}, {}, 0.6)".format(int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16))
+
 
 class GastoApiView(APIView):
     @api_view(['GET'])
@@ -328,6 +331,7 @@ class GastoApiView(APIView):
         gastos_por_categoria['outros'] = 0
         cor_por_categoria = {}
         cor_por_categoria['outros'] = 'dad8d8'
+
         for tag in tags:
             gastos_por_categoria[tag.categoria] = 0
             cor_por_categoria[tag.categoria] = tag.cor
@@ -384,3 +388,79 @@ class GastoApiView(APIView):
             # apenas devolve os arrays caso o tamanho seja exatamente 5
             json_response = {'data': data, 'labels': labels, 'colors': colors}
             return JsonResponse(json_response)
+
+
+    @api_view(['GET', 'POST'])
+    def get_media_mensal_por_tag_em_periodo(request):
+        
+        # obtendo as tags do user selecionado
+        try:
+            tags = Tag.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe ou se tem alguma tag criada
+        except Tag.DoesNotExist:
+            return Response("Nome de usuário incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
+        
+        # obtendo os gastos do user selecionado
+        try:
+            gastos = Gasto.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe ou se tem algum gasto/saída cadastrado
+        except Gasto.DoesNotExist:
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
+
+
+        datasets = []
+        labels = f'Últimos {request.data["periodo"]} meses'
+        totalGastosPorTagPorMes = []
+
+        # obtendo o mês e o ano atuais
+        mesAtual = datetime.now().month + 1
+        anoAtual = datetime.now().year
+
+
+        # obtendo a média mensal por tag no período especificado
+        for tag in tags:
+            
+            # obtendo os X meses anteriores do período especificado
+            for i in range(request.data["periodo"]): # aqui eram os últimos 12 meses - agora é a quantidade de meses que vier na requisição
+
+                mesAtual -= 1
+                if mesAtual == 0:
+                    mesAtual = 12
+                    anoAtual -= 1
+
+                # soma todos os gastos do mês/ano que estão pagos e têm a tag da iteração
+                somaGastosPorMesDeUmaTag = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True and gasto.tag == tag.categoria])
+                
+                # print(tag.categoria)
+                # print("soma gastos por mes ", somaGastosPorMesDeUmaTag)
+
+                # total de gastos por tag de cada mes do período especificado
+                totalGastosPorTagPorMes.append(somaGastosPorMesDeUmaTag)
+                # print("array:", totalGastosPorTagPorMes)
+
+            mesAtual = datetime.now().month + 1
+            anoAtual = datetime.now().year
+
+            # media = (np.sum(totalGastosPorTagPorMes)) / (request.data["periodo"]) # float
+            # print(f"media da tag {tag.categoria}:", media)
+            
+            # calculando a média de gastos mensal daquela tag no período especificado e truncando para 2 casas decimais
+            media = round((np.sum(totalGastosPorTagPorMes)) / (request.data["periodo"]), 2)
+
+
+            # adiciona todos os elementos com sua chave e valor dentro de um objeto. E esse objeto será inserido no array datasets
+            datasets.append({
+                'label': tag.categoria,
+                'data': media,
+                'backgroundColor': hex_to_rgba(tag.cor)
+            })
+
+            # limpando o array para nova iteração
+            totalGastosPorTagPorMes.clear()
+
+
+        json_response = { 'datasets': datasets, 'labels': labels}
+
+        return JsonResponse(json_response)
