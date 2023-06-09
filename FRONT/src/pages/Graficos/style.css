@@ -10,6 +10,10 @@
 }
 
 .body-dashboard {
+  flex-direction: column;
+}
+
+.first-chart-container {
   width: 100%;
   min-height: calc(100vh - 12vh);
   
@@ -23,7 +27,25 @@
   gap: 2.8em;
   /* flex-wrap: wrap; */
   
-  /* border: 1px solid blue; */
+  border: 1px solid blue;
+  background-color: var(--10-gray);
+}
+
+.second-chart-container {
+  width: 100%;
+  min-height: calc(100vh - 12vh);
+  
+  margin: 0;
+  padding: 3% 1.5% 1.5% 1.5%;
+  flex-direction: row;
+  position: relative;
+
+  display: flex;
+  justify-items: space-evenly;
+  gap: 2.8em;
+  /* flex-wrap: wrap; */
+  
+  border: 1px solid greenyellow;
   background-color: var(--10-gray);
 }
 
