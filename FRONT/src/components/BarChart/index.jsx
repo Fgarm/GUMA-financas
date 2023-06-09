@@ -30,11 +30,14 @@ export const barOptions = {
     responsive: true,
     plugins: {
         legend: {
-            position: 'top',
+            position: 'bottom',
         },
         title: {
             display: true,
             text: 'Média Mensal de Gastos por Categoria em um Período',
+            font: {
+                size: 18,
+            }
         },
     },
 };
@@ -119,12 +122,12 @@ export default function BarChartComponent() {
     ];
     
     return (
-        <div className="DonutChartContainer">
+        <div className="BarChartContainer">
             <Bar options={barOptions} data={barChartData} />
             
-            <div className="month-year-input-container">
+            <div className="period-input">
 
-                <select className="month-input" value={period} onChange={handleSelectPeriodChange}>
+                <select className="input" value={period} onChange={handleSelectPeriodChange}>
 
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>

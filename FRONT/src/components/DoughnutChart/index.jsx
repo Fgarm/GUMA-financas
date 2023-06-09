@@ -61,7 +61,7 @@ export const doughnutOptions = {
     responsive: true,
     plugins: {
         legend: {
-            position: 'bottom',
+            position: 'right',
         },
         title: {
             display: true,
