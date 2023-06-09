@@ -16,7 +16,7 @@ from Tags.models import Tag
 
 
 def hex_to_rgba(color):
-    return "rgba({}, {}, {}, 0.6)".format(int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16))
+    return "rgba({}, {}, {}, 0.5)".format(int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16))
 
 
 class GastoApiView(APIView):
@@ -413,6 +413,7 @@ class GastoApiView(APIView):
         datasets = []
         labels = f'Últimos {request.data["periodo"]} meses'
         totalGastosPorTagPorMes = []
+        media = []
 
         # obtendo o mês e o ano atuais
         mesAtual = datetime.now().month + 1
@@ -423,7 +424,7 @@ class GastoApiView(APIView):
         for tag in tags:
             
             # obtendo os X meses anteriores do período especificado
-            for i in range(request.data["periodo"]): # aqui eram os últimos 12 meses - agora é a quantidade de meses que vier na requisição
+            for i in range(int(request.data["periodo"])): # aqui eram os últimos 12 meses - agora é a quantidade de meses que vier na requisição
 
                 mesAtual -= 1
                 if mesAtual == 0:
@@ -432,33 +433,28 @@ class GastoApiView(APIView):
 
                 # soma todos os gastos do mês/ano que estão pagos e têm a tag da iteração
                 somaGastosPorMesDeUmaTag = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True and gasto.tag == tag.categoria])
-                
-                # print(tag.categoria)
-                # print("soma gastos por mes ", somaGastosPorMesDeUmaTag)
 
                 # total de gastos por tag de cada mes do período especificado
                 totalGastosPorTagPorMes.append(somaGastosPorMesDeUmaTag)
-                # print("array:", totalGastosPorTagPorMes)
 
             mesAtual = datetime.now().month + 1
             anoAtual = datetime.now().year
-
-            # media = (np.sum(totalGastosPorTagPorMes)) / (request.data["periodo"]) # float
-            # print(f"media da tag {tag.categoria}:", media)
             
             # calculando a média de gastos mensal daquela tag no período especificado e truncando para 2 casas decimais
-            media = round((np.sum(totalGastosPorTagPorMes)) / (request.data["periodo"]), 2)
+            media.append(round((np.sum(totalGastosPorTagPorMes)) / float(request.data["periodo"]), 2))
 
+            # se existir alguma média não nula, essa tag será exibida no gráfico
+            if media[0] != 0:
+                # adiciona todos os elementos com sua chave e valor dentro de um objeto. E esse objeto será inserido no array datasets
+                datasets.append({
+                    'label': tag.categoria,
+                    'data': media.copy(),
+                    'backgroundColor': hex_to_rgba(tag.cor)
+                })
 
-            # adiciona todos os elementos com sua chave e valor dentro de um objeto. E esse objeto será inserido no array datasets
-            datasets.append({
-                'label': tag.categoria,
-                'data': media,
-                'backgroundColor': hex_to_rgba(tag.cor)
-            })
-
-            # limpando o array para nova iteração
+            # limpando os arrays para nova iteração
             totalGastosPorTagPorMes.clear()
+            media.clear()
 
 
         json_response = { 'datasets': datasets, 'labels': labels}
