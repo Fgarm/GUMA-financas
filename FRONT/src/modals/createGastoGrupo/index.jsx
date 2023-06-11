@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 
-import AddItemGroupGasto from '../../modals/addItemGroupGasto';
+// import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 import PeopleInput from '../../components/peopleInput';
 import {
   Button,
@@ -31,18 +30,28 @@ import './style.css'
 export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef, groups_id, handleCreateSuccess, userClicked, usuariosGastos }) {
 
   const grupoId = localStorage.getItem('grupo_id');
-
-  const [users, setUsers] = useState([]);
-
-  const [nome, setNome] = useState('');
   const token = localStorage.getItem('token');
-  // const [users, setUsers] = useState('');
+
+  const [mostrarBotao, setMostrarBotao] = useState(true)
+  const [mostrarDiv, setMostrarDiv] = useState(false)
+
+  const [itensList, setItensList] = useState({})
+  const [users, setUsers] = useState([]);
+  
+  const [nome, setNome] = useState('');
+  const [custo, setCusto] = useState(0);
+  const [pesos, setPesos] = useState('');
+  const [quantidade, setQuantidade] = useState(0);
   const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }]);
-  const { isOpen: isAddItemGastoGrupoOpen, onOpen: openAddItemGastoGrupo, onClose: closeAddItemGastoGrupo } = useDisclosure();
 
   useEffect(() => {
     getUsuarios()
   }, [userClicked])
+
+  // Tenho que verificar o que fazer aqui 
+  function handleItens() {
+    const newTag = { nome, usuariosGrupo, custo, pesos, quantidade }
+  }
 
   function getUsuarios() {
     axios({
@@ -65,7 +74,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     console.log(usuarios)
   }
 
-  const handleSubmit = () => {
+  function handleSubmit() {
 
     const data = {
       nome_gasto: nome,
@@ -75,11 +84,8 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
     console.log(data)
 
-    axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)//{
-      //     headers: {
-      //         'Authorization': `Bearer ${token}`
-      //       }
-      // })
+    axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
+
       .then(response => {
         if (response.status === 200) {
           onClose()
@@ -97,7 +103,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       });
   }
 
-  const addGastoGroupUser = () => {
+  function addGastoGroupUser() {
     axios({
       method: "post",
       url: "http://localhost:8000/grupos/associar-user-grupoGastos/",
@@ -116,14 +122,16 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       })
   }
 
-  const [mostrarDiv, setMostrarDiv] = useState(false);
-  const [mostrarBotao, setMostrarBotao] = useState(true);
-
-  const handleButtonClick = () => {
+  function handleButtonClick() {
     setMostrarDiv(!mostrarDiv);
     setMostrarBotao(!mostrarBotao);
-  };
-  
+  }
+
+  function handleExitButton() {
+    onClose();
+    setMostrarDiv(false);
+    setMostrarBotao(true);
+  }
 
   function CheckboxList({ usuariosGrupo }) {
     return (
@@ -189,7 +197,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               {mostrarDiv && (
                 <div>
                   <FormControl>
-                    <Input placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                    <Input onChange={(e) => {
+                      setNomeItem(e.target.value)
+                    }}
+                    placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                     {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                   </FormControl>
                   <br></br>
@@ -197,10 +208,16 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                     <ChakraProvider>
                       <Grid templateColumns="1fr 1fr" gap={4}>
                         <GridItem>
-                          <Input placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                          <Input onChange={(e) => {
+                            setCusto(e.target.value)
+                          }} 
+                          placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                         </GridItem>
                         <GridItem>
-                          <Input placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                          <Input onChange={(e) => {
+                            setQuantidade(e.target.value)
+                          }}
+                          placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                         </GridItem>
                       </Grid>
                     </ChakraProvider>
@@ -231,7 +248,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               onClick={handleSubmit}>
               Criar
             </Button>
-            <Button onClick={onClose}>Cancelar</Button>
+            <Button onClick={handleExitButton}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

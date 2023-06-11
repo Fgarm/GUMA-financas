@@ -1,36 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
 import {
-  ChakraProvider,
-  Checkbox,
-  CheckboxGroup,
-  Flex,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Input,
-  Button,
-  useToast,
-  Stack
-} from '@chakra-ui/react';
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalFooter,
+    ModalBody,
+    FormControl,
+    Input,
+    Textarea,
+    Button,
+    useDisclosure,
+    ModalHeader,
+  } from '@chakra-ui/react';
+  
+  import axios from 'axios';
 
-import axios from 'axios';
-
-import './style.css';
+  import './style.css';
 
 
-export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuariosGastos, usuariosGrupo, clicks }) {
-  console.log("AQUI TESTE")
-  console.log(usuariosGrupo)
-  const toast = useToast()
+export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, usuariosGastos, clicks}) {
 
-  const [checkedItems, setCheckedItems] = React.useState([false, false])
-  const [userCheckboxes, setUserCheckboxes] = useState([]);
-
-  const allChecked = checkedItems.every(Boolean)
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked
-
+  const [itensList, setItensList] = useState({})
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
   const [quantidade, setQuantidade] = useState(0);
@@ -39,7 +30,12 @@ export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuarios
 
   const [usuarios, setUsuarios] = useState([]);
 
-  const [pesos, setPesos] = useState(''); 
+  const [pesos, setPesos] = useState('');
+
+  function verificaStringNumerica(string) {
+    return /\d/.test(string);
+  }
+
   // useEffect(() => {
   //     const usuariosString = usuariosGastos.map(usuario => usuario.nome).join(',');
   //     setUsuarios(usuariosString);
@@ -57,6 +53,8 @@ export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuarios
     }
   }, [usuariosGastos, clicks]);
 
+  
+
   const handleSubmit = () => {
 
     const usernames = usuarios.map(user => user.username);
@@ -67,18 +65,23 @@ export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuarios
       if (i === usernames.length - 1) {
         users = users + usernames[i];
         break;
-      } else {
+      } else{
         users = usernames[i] + ',';
       }
     }
 
     const data = {
-      preco_unitario: parseFloat(valor),
-      quantidade: parseInt(quantidade, 10),
-      descricao: descricao,
-      id_GastosGrupo_id: gastoId,
-      usuarios: users,
-      pesos: pesos
+        preco_unitario: parseFloat(valor),
+        quantidade: parseInt(quantidade, 10),
+        descricao: descricao,
+        id_GastosGrupo_id: gastoId,
+        usuarios: users,
+        pesos: pesos
+    } 
+
+    if(isNaN(data.preco_unitario) || isNaN(data.quantidade) || data.descricao === '' || data.usuarios === '' || data.pesos === '' || verificaStringNumerica(descricao)) {
+      alert('Preencha todos os campos');
+      return;
     }
 
     console.log(data.id_GastosGrupo_id);
@@ -86,18 +89,15 @@ export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuarios
     console.log(JSON.stringify(data))
 
     axios.post('http://localhost:8000/grupos/cadastrar-item-associar-user/', data)//{
-      //     headers: {
-      //         'Authorization': `Bearer ${token}`
-      //       }
-      // })
+    //     headers: {
+    //         'Authorization': `Bearer ${token}`
+    //       }
+    // })
       .then(response => {
-        if (response.status === 200) {
+        if (response.status === 200) { 
           onClose()
-          toast({
-            title: 'Item criado',
-            status: 'success',
-            isClosable: true,
-          });
+          alert('Item Cadastrado')
+          //handleCreateSuccess()
         } else if (response.status === 409) {
           alert('Grupo de nome já cadastrado no sistema')
         } else if (response.status === 400) {
@@ -111,60 +111,86 @@ export default function AddItemGroupGasto({ isOpen, onClose, groups_id, usuarios
       });
   }
 
-  function CheckboxList({ usuariosGrupo }) {
     return (
-      <Stack spacing={2}>
-        {usuariosGrupo && usuariosGrupo.map((user) => (
-          <FormControl>
-            <ChakraProvider>
-              <Grid templateColumns="1fr 1fr" gap={4}>
-                <GridItem>
-                  <Checkbox key={user.id}>{user.nome}</Checkbox>
-                </GridItem>
-                <GridItem>
-                  <Input placeholder="Peso" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-                </GridItem>
-              </Grid>
-            </ChakraProvider>
-          </FormControl>
-        ))}
-      </Stack>
-    );
-  }
+        <div>
+        <Modal
+          initialFocusRef={initialRef}
+          finalFocusRef={finalRef}
+          isOpen={isOpen}
+          onClose={onClose}
+        >
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader 
+              mb={0} 
+              className='modal_header'>
+              {nomeGasto}
+            </ModalHeader>
 
+            <ModalBody>
+              <FormControl mt={4}>
+                <label>Item</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setDescricao(e.target.value)
+                }} />
+              </FormControl>
 
-  return (
-    <div>
-      <FormControl>
-        <Input placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-        {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
-      </FormControl>
-      <br></br>
-      <FormControl>
-        <ChakraProvider>
-          <Grid templateColumns="1fr 1fr" gap={4}>
-            <GridItem>
-              <Input placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-            </GridItem>
-            <GridItem>
-              <Input placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-            </GridItem>
-          </Grid>
-        </ChakraProvider>
-      </FormControl>
-      <br></br>
-      <FormLabel>Participantes e consumo</FormLabel>
-      <div>
-        <CheckboxList usuariosGrupo={usuariosGrupo} />
+              <FormControl mt={4}>
+                <label>Quantidade</label>
+                <br></br>
+                <Input 
+                onChange={(e) => {
+                  setQuantidade(e.target.value)
+                }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Preço Unitário</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setValor(e.target.value)
+                }} />
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Usuários do Gasto</label>
+                <br></br>
+                <Input
+                  defaultValue={usuarios.map(user => user.nome).join(',')}
+                  onChange={(e) => {
+                    const inputUsernames = e.target.value.split(',');
+                    const selectedUsers = usuarios.filter(user => inputUsernames.includes(user.nome));
+                    setUsuarios(selectedUsers);
+                  }}/>
+              </FormControl>
+
+              <FormControl mt={4}>
+                <label>Pesos</label>
+                <br></br>
+                <Input onChange={(e) => {
+                  setPesos(e.target.value)
+                }} />
+              </FormControl>
+            </ModalBody>
+
+            <span className='modal_footer'>
+              <p>Os pesos devem ser colocados referentes à ordem de usuários do gasto</p>
+            </span>
+
+            <ModalFooter>
+              <Button 
+                colorScheme='blue' 
+                mr={3} 
+                onClick={handleSubmit}>
+                Criar
+              </Button>
+              <Button onClick={onClose}>Cancelar</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </div>
-      <br></br>
-      <Flex justifyContent="flex-start">
-        <Button marginRight="0.5rem">Cadastrar Item</Button>
-        <Button marginRight="0.5rem" onClick={onClose}>Excluir</Button>
-      </Flex>
-
-
-    </div>
-  );
-
+  
+    );
+    
 }
