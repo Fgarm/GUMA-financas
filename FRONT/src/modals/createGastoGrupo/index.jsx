@@ -35,12 +35,12 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [mostrarBotao, setMostrarBotao] = useState(true)
   const [mostrarDiv, setMostrarDiv] = useState(false)
 
-  const [itensList, setItensList] = useState({})
+  // const [itensList, setItensList] = useState({})
   const [users, setUsers] = useState([]);
-  
+  const [nomeItem, setNomeItem] = useState('');
   const [nome, setNome] = useState('');
   const [custo, setCusto] = useState(0);
-  const [pesos, setPesos] = useState('');
+  // const [pesos, setPesos] = useState('');
   const [quantidade, setQuantidade] = useState(0);
   const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }]);
 
@@ -133,26 +133,110 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     setMostrarBotao(true);
   }
 
+  // Teste de inputs
+
+  const [itensSelecionados, setItensSelecionados] = useState([]);
+  const [pesos, setPesos] = useState({});
+
+
+  const handleCheckboxChange = (id) => {
+    setItensSelecionados((selecionados) => {
+      if (selecionados.includes(id)) {
+        return selecionados.filter((item) => item !== id);
+      } else {
+        return [...selecionados, id];
+      }
+    });
+  };
+
+
+  const handlePesosChange = (userId, peso) => {
+    setPesos((pesos) => ({
+      ...pesos,
+      [userId]: peso,
+    }));
+  };
+
   function CheckboxList({ usuariosGrupo }) {
     return (
       <Stack spacing={2}>
-        {usuariosGrupo && usuariosGrupo.map((user) => (
-          <FormControl>
-            <ChakraProvider>
-              <Grid templateColumns="1fr 1fr" gap={4}>
-                <GridItem>
-                  <Checkbox key={user.id}>{user.nome}</Checkbox>
-                </GridItem>
-                <GridItem>
-                  <Input placeholder="Peso" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-                </GridItem>
-              </Grid>
-            </ChakraProvider>
-          </FormControl>
-        ))}
+        {usuariosGrupo &&
+          usuariosGrupo.map((user) => (
+            <FormControl key={user.id}>
+              <ChakraProvider>
+                <Grid templateColumns="1fr 1fr" gap={4}>
+                  <GridItem>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange(user.id)}
+                      isChecked={itensSelecionados.includes(user.id)}
+                    >
+                      {user.nome}
+                    </Checkbox>
+                  </GridItem>
+                  <GridItem>
+                    <Input
+                      name="peso"
+                      placeholder="Peso"
+                      _placeholder={{ color: 'inherit' }}
+                      borderColor="black"
+                      focusBorderColor="black"
+                      value={pesos[user.id] || ''}
+                      onChange={(e) => handlePesosChange(user.id, e.target.value)}
+                    />
+                  </GridItem>
+                </Grid>
+              </ChakraProvider>
+            </FormControl>
+          ))}
       </Stack>
     );
   }
+
+  const [itensCadastrados, setItensCadastrados] = useState([]);
+
+  useEffect(() => {
+    console.log(itensCadastrados);
+  }, [itensCadastrados]);
+
+  const handleCadastrarItem = () => {
+    // Acessar os dados selecionados dos checkboxes
+    const itensSelecionadosData = usuariosGrupo.filter((user) =>
+      itensSelecionados.includes(user.id)
+    );
+
+    // Acessar os pesos dos usuários selecionados
+    const usuariosSelecionados = itensSelecionadosData.map((item) => item.nome);
+    const pesosSelecionados = itensSelecionadosData.map((item) => pesos[item.id]);
+
+    // Converter as listas de usuários e pesos em strings
+    const usuariosString = usuariosSelecionados.join(",");
+    const pesosString = pesosSelecionados.join(",");
+
+    // Criar um novo objeto de item cadastrado com os valores atuais
+    const novoItemCadastrado = {
+      descricao: nomeItem,
+      preco_unitario: custo,
+      quantidade: quantidade,
+      usuarios: usuariosString,
+      pesos: pesosString,
+    };
+
+    // Adicionar o novo item à lista de itens cadastrados
+    setItensCadastrados((prevItensCadastrados) => [
+      ...prevItensCadastrados,
+      novoItemCadastrado,
+    ]);
+
+    // Limpar os campos de entrada após o cadastro
+    setNomeItem('');
+    setCusto(0);
+    setQuantidade(0);
+
+    console.log(itensCadastrados)
+    handleButtonClick();
+  };
+
+  // Teste de inputs
 
   return (
 
@@ -200,7 +284,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                     <Input onChange={(e) => {
                       setNomeItem(e.target.value)
                     }}
-                    placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                      placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                     {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                   </FormControl>
                   <br></br>
@@ -210,14 +294,14 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                         <GridItem>
                           <Input onChange={(e) => {
                             setCusto(e.target.value)
-                          }} 
-                          placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                          }}
+                            placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                         </GridItem>
                         <GridItem>
                           <Input onChange={(e) => {
                             setQuantidade(e.target.value)
                           }}
-                          placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                            placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
                         </GridItem>
                       </Grid>
                     </ChakraProvider>
@@ -229,7 +313,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   </div>
                   <br></br>
                   <Flex justifyContent="flex-start">
-                    <Button marginRight="0.5rem">Cadastrar Item</Button>
+                    <Button marginRight="0.5rem" onClick={handleCadastrarItem}>Cadastrar Item</Button>
                     <Button marginRight="0.5rem" onClick={handleButtonClick}>Excluir</Button>
                   </Flex>
 

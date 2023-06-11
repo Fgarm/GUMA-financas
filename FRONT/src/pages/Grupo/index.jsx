@@ -100,8 +100,6 @@ export default function GroupPage() {
                     gasto_id: gastoId,
                 },
             }).then(response => {
-                console.log("ITENS GASTO:")
-                console.log(response.data)
                 setItensGasto(response.data)
             }
             ).catch(error => {

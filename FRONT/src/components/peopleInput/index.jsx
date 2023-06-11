@@ -8,8 +8,8 @@ export default function PeopleInput(props) {
     useEffect(() => {
         props.onUsuariosChange(usuarios);
     }, [usuarios]);
-    console.log("MARCIS")
-    console.log(props.usuarios)
+    
+    // console.log(props.usuarios)
 
     function handleChange(e) {
         const value = e.target.value
