@@ -29,4 +29,13 @@
     border: none;
 }
 
+.icon{
+    align-items: end;
+}
+
+.price-items{
+    align-items: end;
+    /* position: relative; */
+    /* margin-left: 100px; */
+}
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 // import AddItemGroupGasto from '../../modals/addItemGroupGasto';
 import PeopleInput from '../../components/peopleInput';
 import {
@@ -12,6 +12,7 @@ import {
   Flex,
   Grid,
   GridItem,
+  Icon,
   Input,
   Modal,
   ModalOverlay,
@@ -20,6 +21,7 @@ import {
   ModalBody,
   ModalHeader,
   Stack,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react'
 
@@ -32,7 +34,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const grupoId = localStorage.getItem('grupo_id');
   const token = localStorage.getItem('token');
 
-  const [mostrarBotao, setMostrarBotao] = useState(true)
+  const [mostrarItem, setmostrarItem] = useState(true)
   const [mostrarDiv, setMostrarDiv] = useState(false)
 
   // const [itensList, setItensList] = useState({})
@@ -43,15 +45,12 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   // const [pesos, setPesos] = useState('');
   const [quantidade, setQuantidade] = useState(0);
   const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }]);
+  const [usuariosSelecionados, setUsuariosSelecionados] = useState([])
 
   useEffect(() => {
     getUsuarios()
   }, [userClicked])
 
-  // Tenho que verificar o que fazer aqui 
-  function handleItens() {
-    const newTag = { nome, usuariosGrupo, custo, pesos, quantidade }
-  }
 
   function getUsuarios() {
     axios({
@@ -62,16 +61,20 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       },
     }).then(response => {
       setUsuariosGrupo(response.data)
-      console.log(response.data)
+      console.log("AQUI")
+      // console.log(response.data)
     }
     ).catch(error => {
       console.log(error)
     })
   }
 
-  function handleUsuariosChange(usuarios) {
-    setUsers(usuarios)
-    console.log(usuarios)
+  function handleUsuariosChange(username, name) {
+    setUsers(username)
+    setUsuariosSelecionados(name)
+    // console.log(username)
+    // console.log("Itens")
+    console.log(name)
   }
 
   function handleSubmit() {
@@ -124,13 +127,13 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
   function handleButtonClick() {
     setMostrarDiv(!mostrarDiv);
-    setMostrarBotao(!mostrarBotao);
+    setmostrarItem(!mostrarItem);
   }
 
   function handleExitButton() {
     onClose();
     setMostrarDiv(false);
-    setMostrarBotao(true);
+    setmostrarItem(true);
   }
 
   // Teste de inputs
@@ -193,6 +196,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   const [itensCadastrados, setItensCadastrados] = useState([]);
+
+  // const handleDeleteItem = (item) => {
+  //   let itemDelete = itensCadastrados.indexOf(item, 0)
+  // }
 
   useEffect(() => {
     console.log(itensCadastrados);
@@ -270,16 +277,61 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
             </FormControl>
 
             <FormControl mt={4}>
-              <FormLabel>Itens</FormLabel>
 
-              {mostrarBotao && <Button
-                style={{ background: '#6F9951' }}
-                mr={3}
-                onClick={handleButtonClick}
-              > Novo Item </Button>}
+
+              {mostrarItem &&
+                (
+                  <div>
+                    <FormLabel>Itens</FormLabel>
+                    <div style={{ marginTop: 2 }}>
+                      {itensCadastrados.length === 0 ? <p></p> : (
+                        itensCadastrados.map((item, key) => (
+
+
+                          <div>
+                            <Grid templateColumns="1fr 1fr" gap={4}>
+                              <GridItem >
+                                <Text fontSize='lg'>
+                                  {item.descricao}
+                                </Text>
+                              </GridItem>
+                              <GridItem display="flex" justifyContent="flex-end">
+                                <Icon
+                                  as={MdOutlineModeEditOutline}
+                                  color='black'
+                                  w={5}
+                                  h={5}
+                                  mr={2}
+                                />
+                                <Icon
+                                  as={MdDelete}
+                                  color='red.500'
+                                  w={5}
+                                  h={5}
+                                />
+                              </GridItem>
+                            </Grid>
+                            <div>
+                              <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                R$ {item.preco_unitario} X {item.quantidade}  = R$ {parseFloat(parseFloat(item.preco_unitario) * parseFloat(item.quantidade))}
+                              </Text>
+                            </div>
+                          </div>
+
+                        ))
+                      )}
+                    </div>
+                    <Button
+                      style={{ background: '#6F9951' }}
+                      mr={3}
+                      onClick={handleButtonClick}
+                    > Novo Item </Button>
+                  </div>
+                )}
 
               {mostrarDiv && (
                 <div>
+                  <FormLabel>Itens</FormLabel>
                   <FormControl>
                     <Input onChange={(e) => {
                       setNomeItem(e.target.value)
@@ -309,7 +361,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   <br></br>
                   <FormLabel>Participantes e consumo</FormLabel>
                   <div>
-                    <CheckboxList usuariosGrupo={usuariosGrupo} />
+                    <CheckboxList usuariosGrupo={usuariosSelecionados} />
                   </div>
                   <br></br>
                   <Flex justifyContent="flex-start">
@@ -321,6 +373,8 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               )}
 
             </FormControl>
+
+
 
           </ModalBody>
 

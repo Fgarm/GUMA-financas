@@ -3,19 +3,16 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
-import { BiLogOut } from "react-icons/bi";
 
-import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+
+import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
-
-import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
 import formatarData from '../../functions/formatData';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
-import TagsInputSearch from '../../components/tagInputSearch';
 
 import {
   AlertDialog,
@@ -36,7 +33,6 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
-  background,
 } from '@chakra-ui/react'
 
 import axios from 'axios';
