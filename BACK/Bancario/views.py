@@ -3,10 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from Bancario.models import Bancario, Saldos
-from Gastos.models import Gasto
 from rest_framework.response import Response
+from Gastos.models import Gasto
 from rest_framework import status
 import datetime
+
+
 class BancarioView(APIView):
     @api_view(['POST'])
     def add_saldo(request):
@@ -48,33 +50,54 @@ class BancarioView(APIView):
         
         return Response(bancario.saldo_atual, status=status.HTTP_200_OK)
     
-    @api_view(['POST'])
-    def extrato_saldos(request):
-        usuario_id = User.objects.filter(username=request.data["username"]).first().id
-        bancario = Bancario.objects.filter(id_usuario_id=usuario_id).first()
-        saldos_list = Saldos.objects.filter(id_bancario_id=bancario.id)
-
-        saldos_list = list(saldos_list)
-        
-        saldos_list.sort(key=lambda data : data.date, reverse=True) #Complexidade Nlol(n) ta safe 
-        
-        response_saldo = list()
-        for saldo in saldos_list:
-
-            r_dict = {"saldo": saldo.saldo, "data":saldo.date, "valor":saldo.valor}
-
-            response_saldo.append(r_dict)
-
-
-        return Response(response_saldo,status=status.HTTP_200_OK)
-    
-
-    # #vou fazer ainda
     # @api_view(['POST'])
     # def extrato_saldos(request):
-    #     gastos = Gasto.objects.filter(username=request.username)
+    #     usuario_id = User.objects.filter(username=request.data["username"]).first().id
+    #     bancario = Bancario.objects.filter(id_usuario_id=usuario_id).first()
+    #     saldos_list = Saldos.objects.filter(id_bancario_id=bancario.id)
 
-    #     gastos.sort(key=lambda data : data.data, reverse=True)
+    #     saldos_list = list(saldos_list)
+        
+    #     saldos_list.sort(key=lambda data : data.date, reverse=True) #Complexidade Nlol(n) ta safe 
+        
+    #     response_saldo = list()
+    #     for saldo in saldos_list:
 
-    #     for gasto in gastos:
-    #         print(f"{gasto.data} {gasto.nome}")
+    #         r_dict = {"saldo": saldo.saldo, "data":saldo.date, "valor":saldo.valor}
+
+    #         response_saldo.append(r_dict)
+
+
+    #     return Response(response_saldo,status=status.HTTP_200_OK)
+    
+    @api_view(['POST'])
+    def extrato_saldos(request):
+        user_id = User.objects.filter(username=request.data["username"]).first().id
+        gastos_list = Gasto.objects.filter(user_id=request.data["username"])
+        bancario = Bancario.objects.filter(id_usuario_id=user_id).first()
+        saldos_list = Saldos.objects.filter(id_bancario_id=bancario.id)
+
+        match_array = list()
+        for gasto in gastos_list:
+            data = str(gasto.data).split("-")
+            date_time = datetime.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
+            dt_aware = date_time.replace(tzinfo=datetime.timezone.utc)
+
+            gasto_dict = {"nome": gasto.nome, "valor": gasto.valor, "data": dt_aware, "tag": gasto.tag}
+            match_array.append(gasto_dict)
+
+        for saldo in saldos_list:
+            saldo_dict = {"nome": "Entrada", "valor": saldo.saldo, "data": saldo.date, "tag": "Entrada"}
+            match_array.append(saldo_dict)
+
+        match_array.sort(key=lambda x : x["data"])
+
+        for a in match_array:
+            print(a)
+        
+
+        return Response(status=status.HTTP_200_OK)
+    
+
+
+        
