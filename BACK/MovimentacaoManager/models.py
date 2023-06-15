@@ -8,14 +8,11 @@ from Tags.models import Tag
 class MovimentacaoManager(models.Model):
     nome = models.CharField(max_length=255, null=True, blank=True)
     valor = models.FloatField()
-    data = models.DateField()
-    dataSaldo = models.DateTimeField()
+    data = models.DateTimeField()
     pago = models.BooleanField(default=False, null=True, blank=True)
     tag = models.CharField(max_length=255, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, to_field="username", null=True, on_delete=models.SET_NULL)
-    
-    atualizacao = models.DateField() # utlima data que foi atualizado a recorrencia
-    atualizacaoSaldo = models.DateTimeField() # utlima data que foi atualizado o saldo
+    atualizacao= models.DateTimeField() # utlima data que foi atualizado o saldo
     frequencia = models.CharField() #D, S, M, A para dia, semana, mes e ano
     tipo = models.CharField() #G para gastos, S para saldos
 

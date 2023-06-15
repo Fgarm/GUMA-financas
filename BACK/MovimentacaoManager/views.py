@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from django.http import JsonResponse
-from datetime import datetime
+import datetime as dt
 import numpy as np
 from django.contrib.auth.models import User
 from Tags.models import Tag
@@ -64,20 +64,24 @@ class ManagerAPIView(APIView):
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
         if request.data["tipo"] == "gasto":
+            recorrencia["tipo"] = "G"
+            recorrencia["data"] = request.data["data"] # data de criação
+            data = str(request.data["data"]).split("-")
+            date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             recorrencia["nome"] = request.data["nome"] # nome do gasto
             recorrencia["valor"] = request.data["valor"] # valor do gasto
-            recorrencia["data"] = request.data["data"] # data de criação
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
-            recorrencia["tipo"] = "G"
             Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
+            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc)
             recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
         
         else: #Tipo == saldo
             recorrencia["tipo"] = "S"
             recorrencia["valor"] = request.data["valor"] # valor do saldo
-            recorrencia["dataSaldo"] = request.data["data"] # data de criação
+            recorrencia["data"] = request.data["data"] # data de criação
             Bancario.views.BancarioView.add_saldo2(json.dumps(recorrencia))
-            recorrencia["atualizacaoSaldo"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
+            recorrencia["nome"] = request.data["nome"] # nome do gasto
+            recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
 
         # Salvar a recorrencia no BD
         ManagerAPIView.implementar_recorrencia() # passar o id da recorrencia dps de salvar ela e pegar o ID
