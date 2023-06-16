@@ -58,6 +58,7 @@ export default function Home() {
   const [tagsList, setTagsList] = useState({})
 
   const [gastos, setGastos] = useState([])
+  const [gastosEntrada, setGastosEntrada] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
   
@@ -107,8 +108,23 @@ export default function Home() {
     onAddSaldoClose()
   }
 
+  function getGastosEntrada() {
+    axios.post("http://localhost:8000/api/gastos/entrada/", {
+      username: username
+    })
+      .then(response => {
+        setGastosEntrada(response.data)
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+
+
+
   function getSaldos() {
-    axios.post("http://localhost:8000/bancario/obter-saldo/", {
+    axios.post("http://localhost:8000/bancario/saldo-atual/", {
       username: username
     })
       .then(response => {
@@ -286,6 +302,7 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
+    getGastosEntrada();
     getSaldos();
   }, [flag]);
 
@@ -629,7 +646,7 @@ export default function Home() {
         </div>
 
         <div>
-          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} tags={tags}>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username}>
               <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
         </div>
