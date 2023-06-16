@@ -27,36 +27,15 @@ class BancarioView(APIView):
         except:
             return Response(f"Conta nao Cadastrada", status=status.HTTP_417_EXPECTATION_FAILED)
         
-        Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.datetime.today(), saldo=float(bancario.saldo_atual) + request.data["saldo"], valor=request.data["saldo"])
+        if "data" in request.data:
+            Saldos.objects.create(id_bancario_id=bancario.id, date=request.data["data"], saldo=float(bancario.saldo_atual) + request.data["saldo"], valor=request.data["saldo"])
+        else:
+            Saldos.objects.create(id_bancario_id=bancario.id, date=datetime.datetime.today(), saldo=float(bancario.saldo_atual) + request.data["saldo"], valor=request.data["saldo"])
         bancario.saldo_atual = float(bancario.saldo_atual) + request.data["saldo"]
         bancario.save()
 
         return Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
     
-    @api_view(['POST'])
-    def add_saldo2(request):
-        request.data["valor"] = str(request.data["valor"]).replace(",", ".")
-        
-        try:
-            request.data["valor"] = float(request.data["valor"])
-        except ValueError:
-            return Response(f"Nao aceitamos Banana", status=status.HTTP_400_BAD_REQUEST)
-   
-        try:
-            usuario_id = User.objects.filter(username=request.data["user"]).first().id
-        except:
-            return Response(f"Usuaario nao encontrado", status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            bancario = Bancario.objects.filter(id_usuario_id=usuario_id).first()
-        except:
-            return Response(f"Conta nao Cadastrada", status=status.HTTP_417_EXPECTATION_FAILED)
-        
-        Saldos.objects.create(id_bancario_id=bancario.id, date=request.data["dataSaldo"], saldo=float(bancario.saldo_atual) + request.data["valor"], valor=request.data["valor"])
-        bancario.saldo_atual = float(bancario.saldo_atual) + request.data["saldo"]
-        bancario.save()
-
-        return Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
 
     @api_view(['POST'])
     def saldo_atual(request):

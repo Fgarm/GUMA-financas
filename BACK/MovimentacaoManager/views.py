@@ -1,6 +1,8 @@
 from http import HTTPStatus
-from Gastos.models import Gasto
-from Gastos.serializers import GastoSerializer
+from MovimentacaoManager.models import MovimentacaoManager
+from MovimentacaoManager.serializers import MovimentacaoSerializer
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 import Gastos.views
 import Bancario.views
 from Tags.models import Tag
@@ -20,7 +22,6 @@ import json
 
 #json.dumps(dict) talvez funcione para transformar em json o dict e enviar pras outras funções
 
-# pegar recorrencias
 # criar recorrencias
 # atualizar recorrencias (alterar algo delas)
 # atualizar recorrencias de um user (passar vendo se é pra criar novos gastos, e se sim criar)
@@ -29,9 +30,61 @@ import json
 
 class ManagerAPIView(APIView):
 
+    @api_view(['POST'])
+    def get_recorrencias_user(request):
+        try:
+            user = User.objects.get(username=request.data["user"])
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+        except User.MultipleObjectsReturned:
+            return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
+        
+        recorrencias = MovimentacaoManager.objects.filter(user=user.username)
+        serializer = MovimentacaoSerializer(recorrencias, context={'request': request}, many=True)
+
+        return Response(serializer.data)
+
+        pass
+
     @api_view(['POST']) # vai ser necessário chamar essa função toda vez que o usuário checar a home
     def implementar_recorrencia(request):
-        # checar se veio um ID e se sim tentar atualizar ela, se não checa e atualiza todas de um user
+        try:
+            user = User.objects.get(username=request.data["user"])
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+        except User.MultipleObjectsReturned:
+            return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
+        recorrencias = MovimentacaoManager.objects.filter(user=user.username)
+        recorrencias = MovimentacaoSerializer(recorrencias, context={'request': request}, many=True)
+
+        for recorrencia in recorrencias:
+            if recorrencia["tipo"] == "G":
+                #passar pela recorrencia criando os gastos quando é a data certa (criar com a data certa)
+                data_atual = dt.datetime.today()
+                data_atualizacao = recorrencia["atualizacao"]
+                # Add time to the datetime object
+                # dt = dt + timedelta(days=1)
+                # dt = dt + timedelta(weeks=1)
+                # dt = dt + relativedelta(months=1)
+                # dt = dt + relativedelta(years=1)
+                while data_atual > data_atualizacao:  # verificar essa verificação aí:
+                                                      # é preciso que vc atualize no dia certo
+                                                      # não atualize no futuro
+                                                      # mantenha o dia que precisa atualizar
+                                                      
+                    # criar a recorrencia
+                    # atualizar a data na recorrencia
+                    # somar a data de atualização
+                    pass
+
+                pass
+            else: # tipo == "S"
+                pass
+
+
+
+
+        # passar pelas recorrencias chamando uma função que atualiza elas
         pass
 
     @api_view(['POST'])
@@ -63,32 +116,30 @@ class ManagerAPIView(APIView):
                 pass
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
+        recorrencia["data"] = request.data["data"] # data de criação
+        recorrencia["valor"] = request.data["valor"] # valor 
+        recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
         if request.data["tipo"] == "gasto":
             recorrencia["tipo"] = "G"
-            recorrencia["data"] = request.data["data"] # data de criação
             data = str(request.data["data"]).split("-")
             date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             recorrencia["nome"] = request.data["nome"] # nome do gasto
-            recorrencia["valor"] = request.data["valor"] # valor do gasto
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
             Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
-            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc)
-            recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
+            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc) # se der errado silenciosamente esse pode ser um culpado
         
         else: #Tipo == saldo
             recorrencia["tipo"] = "S"
-            recorrencia["valor"] = request.data["valor"] # valor do saldo
-            recorrencia["data"] = request.data["data"] # data de criação
+            if "nome" in request.data:
+                recorrencia["nome"] = request.data["nome"] # nome do saldo
             Bancario.views.BancarioView.add_saldo2(json.dumps(recorrencia))
-            recorrencia["nome"] = request.data["nome"] # nome do gasto
-            recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
 
-        # Salvar a recorrencia no BD
-        ManagerAPIView.implementar_recorrencia() # passar o id da recorrencia dps de salvar ela e pegar o ID
-        
+        serializer = MovimentacaoSerializer(data=data, context={'request': request})
+        if serializer.is_valid():
+                serializer.save()
+        else:    
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response("Por um milagre deu certo", status=HTTPStatus.ACCEPTED)
-        # criar um gasto na data que ele criou a recorrencia
-        # marcar a data de atualização pra essa mesma
-        # rodar a função de atualizar a recorrencia
-        pass
+        ManagerAPIView.implementar_recorrencia(user.username)
+
+        return Response(f"Por um milagre deu certo: {serializer.data}", status=status.HTTP_201_CREATED)
