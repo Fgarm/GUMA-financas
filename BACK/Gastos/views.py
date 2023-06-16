@@ -12,6 +12,7 @@ from datetime import datetime
 import numpy as np
 from django.contrib.auth.models import User
 from Tags.models import Tag
+from Bancario.models import Bancario
 
 
 
@@ -140,7 +141,12 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
-                serializer.save()
+                serializer.save
+                #Retirando valor do saldo
+                if request.data["pago"] == True:
+                    conta = Bancario.objects.filter(id_usuario_id=user.id).first()
+                    conta.saldo_atual = float(conta.saldo_atual) - float(data["valor"])
+                    conta.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
