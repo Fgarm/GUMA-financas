@@ -39,20 +39,6 @@ class BancarioView(APIView):
 
         return Response(f"Saldo Atual: {bancario.saldo_atual}", status=status.HTTP_200_OK)
     
-
-    @api_view(['POST'])
-    def saldo_atual(request):
-        try:
-            usuario_id = User.objects.filter(username=request.data["username"]).first().id
-        except:
-            return Response(f"Usuaario nao encontrado", status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            bancario = Bancario.objects.filter(id_usuario_id=usuario_id).first()
-        except:
-            return Response(f"Conta nao Cadastrada", status=status.HTTP_417_EXPECTATION_FAILED)
-        
-        return Response(bancario.saldo_atual, status=status.HTTP_200_OK)
     
     @api_view(['POST'])
     def extrato_saldos(request):
