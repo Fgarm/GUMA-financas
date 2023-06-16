@@ -7,12 +7,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime
 import numpy as np
 from django.contrib.auth.models import User
 from Tags.models import Tag
+from Bancario.models import Bancario
 
 
 def hex_to_rgba(color):
@@ -144,7 +144,12 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
-                serializer.save()
+                serializer.save
+                #Retirando valor do saldo
+                if request.data["pago"] == True:
+                    conta = Bancario.objects.filter(id_usuario_id=user.id).first()
+                    conta.saldo_atual = float(conta.saldo_atual) - float(data["valor"])
+                    conta.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
