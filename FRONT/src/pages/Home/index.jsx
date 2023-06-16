@@ -108,14 +108,19 @@ export default function Home() {
     onAddSaldoClose()
   }
 
+  function addFlag() {
+    setFlag(flag => flag + 1);
+  }
+
   function getGastosEntrada() {
-    axios.post("http://localhost:8000/api/gastos/entrada/", {
+    axios.post("http://localhost:8000/bancario/extrato-saldo/", {
       username: username
     })
       .then(response => {
         setGastosEntrada(response.data)
       })
       .catch(error => {
+        console.log("user", username)
         console.error('Erro ao enviar dados:', error);
       }
       )
@@ -154,6 +159,8 @@ export default function Home() {
       user: username
 
     };
+
+    console.log(JSON.stringify(dados))
 
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
@@ -646,14 +653,14 @@ export default function Home() {
         </div>
 
         <div>
-          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username}>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
               <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
         </div>
 
         <div className="gasto">
-          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastos
+          {gastosEntrada.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+            gastosEntrada
             // .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
             .map((gasto, key) => (
                 <div key={gasto.id} className="gasto_information">
@@ -661,7 +668,7 @@ export default function Home() {
                     {gasto.nome}
                   </p>
                 <p>
-                  R$ {gasto.valor}
+                  {gasto.valor > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>+R$ {gasto.valor} </p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>-R$ {gasto.valor} </p>}
                 </p>
                 <p>
                   {formatarData(gasto.data)}

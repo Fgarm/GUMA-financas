@@ -15,7 +15,7 @@ import {
 import axios from 'axios'
 
 
-export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user}) {
+export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, addFlag}) {
   
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState('');
@@ -24,7 +24,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user})
 
     let n = parseFloat(valor)
 
-    if(nome === '' || valor === ''|| n < 0){
+    if(valor === ''|| n < 0){
         alert('Preencha todos os campos corretamente')
         return
     }
@@ -40,6 +40,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user})
       .then((response) => {
         console.log(response)
         if(response.status === 200){
+          addFlag()
           onClose()
         }
       }
