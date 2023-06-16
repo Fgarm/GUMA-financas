@@ -15,9 +15,16 @@
 
 .saldo-information{
     border: 1px solid rgb(175, 226, 107);
-    padding: 10px;
+    padding: 7.5px;
     width: 15%;
-    margin-left: 50px;
+}
+
+.add-entrada{
+    margin-left: 10px;
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
 }
 
 p{

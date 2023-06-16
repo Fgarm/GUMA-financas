@@ -16,6 +16,7 @@ import Sidebar from '../../components/sidebar';
 import formatarData from '../../functions/formatData';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
 import TagsInputSearch from '../../components/tagInputSearch';
+import AddSaldo from '../../modals/addSald';
 
 import {
   AlertDialog,
@@ -59,7 +60,7 @@ export default function Home() {
   const [gastos, setGastos] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
-
+  
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
 
@@ -76,6 +77,12 @@ export default function Home() {
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
+  const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
+
+  function handleAddSaldo() {
+    getTags()
+    onAddSaldoOpen()
+  }
 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
@@ -95,6 +102,10 @@ export default function Home() {
   //     localStorage.removeItem("cadastro_user");
   //   }
   // });
+
+  function handleCloseAddSaldo(){
+    onAddSaldoClose()
+  }
 
   function getSaldos() {
     axios.post("http://localhost:8000/bancario/obter-saldo/", {
@@ -128,9 +139,6 @@ export default function Home() {
 
     };
 
-    let saldo = pago;
-    let val = valor * -1;
-
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -139,22 +147,6 @@ export default function Home() {
       .then(response => {
         if (response.status == 201) {
           console.log('Dados enviados com sucesso:', response.data);
-          if(saldo){
-            console.log("saldo")
-            console.log(data)
-              axios.post("http://localhost:8000/bancario/add-saldo/", {
-                username: username,
-                saldo: val
-              })
-              .then(response => {
-                console.log('Saldo adicionado com sucesso:', response.data);
-              }
-              )
-              .catch(error => {
-                console.error('Erro ao enviar dados:', error);
-              }
-              )
-          }
         } else {
           alert('Erro de dados submetidos')
           return
@@ -171,7 +163,6 @@ export default function Home() {
   const handleEdit = () => {
 
     const tag_edit = tagsList;
-
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -187,18 +178,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
-          axios.post("http://localhost:8000/bancario/add-saldo/", {
-                username: username,
-                saldo: valor * -1
-              })
-              .then(response => {
-                console.log('Saldo adicionado com sucesso:', response.data);
-              }
-              )
-              .catch(error => {
-                console.error('Erro ao enviar dados:', error);
-              }
-              )
+          console.log('Gasto atualizado com sucesso');
           onModalEditClose();
           setNome('');
           setValor(0);
@@ -371,6 +351,7 @@ export default function Home() {
                 <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
                 Nova Tag
               </Button>
+
               <Button
                 className='new-tag-and-gasto-button'
                 pr='10px'
@@ -382,9 +363,17 @@ export default function Home() {
           </div>
         </header>
 
+        <div className='add-entrada'>
+
+          <Button onClick={handleAddSaldo}>
+            Adicionar Entrada
+          </Button>
+
         <div className="saldo-information"> 
-          {saldo < 0 ? <p style={{color: 'red'}}>Saldo: R$ -{saldo}</p> : <p>Saldo: R$ {saldo}</p>}
+          {saldo < 0 ? <p style={{color: 'red'}}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
         </div>
+        </div>
+
 
         <div>
           <Modal
@@ -479,8 +468,8 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
-                  <Select
-                  placeholder='Selecione uma opção' 
+                  <Select 
+                    placeholder="Selecione uma opção"
                   onChange={(e) => {
                     if (e.target.value == 'pago') {
                       setPago(true)
@@ -639,12 +628,16 @@ export default function Home() {
           </AlertDialog>
         </div>
 
-        
+        <div>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} tags={tags}>
+              <Button onClick={handleCloseAddSaldo}>Fechar</Button>
+          </AddSaldo>
+        </div>
 
         <div className="gasto">
           {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
             gastos
-            .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
+            // .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
             .map((gasto, key) => (
                 <div key={gasto.id} className="gasto_information">
                   <p>
@@ -658,7 +651,7 @@ export default function Home() {
                 </p>
                 <p>
                 </p>
-                {gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</p>}
+                {gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</p>)}
                 <p>
                 {gasto.tag}
                 </p>
