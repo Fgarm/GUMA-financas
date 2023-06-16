@@ -144,7 +144,7 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
-                serializer.save
+                serializer.save()
                 #Retirando valor do saldo
                 if request.data["pago"] == True:
                     conta = Bancario.objects.filter(id_usuario_id=user.id).first()

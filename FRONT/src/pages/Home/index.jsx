@@ -104,6 +104,11 @@ export default function Home() {
   //   }
   // });
 
+  function extrairData(dataHora) {
+    const data = dataHora.split('T')[0];
+    return formatarData(data);
+  }
+
   function handleCloseAddSaldo(){
     onAddSaldoClose()
   }
@@ -118,6 +123,7 @@ export default function Home() {
     })
       .then(response => {
         setGastosEntrada(response.data)
+        console.log(response.data)
       })
       .catch(error => {
         console.log("user", username)
@@ -184,7 +190,6 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-
     const tag_edit = tagsList;
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
@@ -218,6 +223,7 @@ export default function Home() {
   }
 
   const handleDelete = () => {
+    console.log(id)
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
       headers: {
@@ -294,7 +300,7 @@ export default function Home() {
     tagsList.categoria = data.tag
     setId(data.id);
     setNome(data.nome)
-    setValor(data.valor)
+    setValor(data.valor * -1)
     setSelectedDate(data.data)
     setEditTags(data.tag)
     if (data.pago == true) {
@@ -668,10 +674,10 @@ export default function Home() {
                     {gasto.nome}
                   </p>
                 <p>
-                  {gasto.valor > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>+R$ {gasto.valor} </p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>-R$ {gasto.valor} </p>}
+                  {gasto.valor > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>+R$ {gasto.valor} </p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>-R$ {(gasto.valor * -1)} </p>}
                 </p>
                 <p>
-                  {formatarData(gasto.data)}
+                  {extrairData(gasto.data)}
                 </p>
                 <p>
                 </p>
@@ -680,23 +686,27 @@ export default function Home() {
                 {gasto.tag}
                 </p>
                 <div>
-                    <Icon
-                      className='edit-icon-gasto' 
-                      as={MdOutlineModeEditOutline} 
-                      w={5} 
-                      h={5} 
-                      mr={2} 
-                      onClick={() => handleEditClick(gasto)} 
+                  {gasto.valor < 0 && (
+                    <>
+                      <Icon
+                        className='edit-icon-gasto' 
+                        as={MdOutlineModeEditOutline} 
+                        w={5} 
+                        h={5} 
+                        mr={2} 
+                        onClick={() => handleEditClick(gasto)} 
                       />
-                    <Icon 
-                      className='delete-icon-gasto' 
-                      as={MdDelete} 
-                      color='red.500' 
-                      w={5} 
-                      h={5} 
-                      onClick={() => handleDeleteClick(gasto.id)} 
-                    />
-                  </div>
+                      <Icon 
+                        className='delete-icon-gasto' 
+                        as={MdDelete} 
+                        color='red.500' 
+                        w={5} 
+                        h={5} 
+                        onClick={() => handleDeleteClick(gasto.id)} 
+                      />
+                    </>
+                  )}
+                </div>
 
               </div>
             ))
