@@ -61,7 +61,9 @@ export default function Home() {
   const [gastosEntrada, setGastosEntrada] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
-  
+
+  const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
+
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
 
@@ -113,6 +115,21 @@ export default function Home() {
     onAddSaldoClose()
   }
 
+  function organizarGastosEntradasPorData(params) {
+    let gastosPorData = {};
+    params.forEach(gasto => {
+    const data = extrairData(gasto.data);
+    if (gastosPorData[data]) {
+      gastosPorData[data].push(gasto);
+    } else {
+      gastosPorData[data] = [gasto];
+    }
+    });
+
+    setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
+    console.log(gastosEntradasPorData);
+  }
+
   function addFlag() {
     setFlag(flag => flag + 1);
   }
@@ -123,7 +140,11 @@ export default function Home() {
     })
       .then(response => {
         setGastosEntrada(response.data)
-        console.log(response.data)
+        organizarGastosEntradasPorData(response.data)
+        // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
+        // console.log(gastosEntradasPorData);  
+        // console.log(gastosPorData)
+        // console.log(response.data)        
       })
       .catch(error => {
         console.log("user", username)
@@ -665,54 +686,40 @@ export default function Home() {
         </div>
 
         <div className="gasto">
-          {gastosEntrada.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastosEntrada
-            // .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
-            .map((gasto, key) => (
-                <div key={gasto.id} className="gasto_information">
-                  <p>
-                    {gasto.nome}
-                  </p>
-                <p>
-                  {gasto.valor > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>+R$ {gasto.valor} </p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>-R$ {(gasto.valor * -1)} </p>}
-                </p>
-                <p>
-                  {extrairData(gasto.data)}
-                </p>
-                <p>
-                </p>
-                {gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</p>)}
-                <p>
-                {gasto.tag}
-                </p>
-                <div>
-                  {gasto.valor < 0 && (
-                    <>
-                      <Icon
-                        className='edit-icon-gasto' 
-                        as={MdOutlineModeEditOutline} 
-                        w={5} 
-                        h={5} 
-                        mr={2} 
-                        onClick={() => handleEditClick(gasto)} 
-                      />
-                      <Icon 
-                        className='delete-icon-gasto' 
-                        as={MdDelete} 
-                        color='red.500' 
-                        w={5} 
-                        h={5} 
-                        onClick={() => handleDeleteClick(gasto.id)} 
-                      />
-                    </>
-                  )}
-                </div>
+  {Object.entries(gastosEntradasPorData).length === 0 ? (
+    <p>Não há gastos com os parâmetros especificados</p>
+  ) : (
+    Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
 
-              </div>
-            ))
-
-          )}
-        </div>
+      <div key={data}>
+        <h3 className='dia_gasto'>{data}</h3>
+        {gastos.map((gasto, key) => (
+          <div key={gasto.id} className="gasto_information">
+            <p>{gasto.nome}</p>
+            <p>
+              {gasto.valor > 0 ? (
+                <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
+              ) : (
+                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
+              )}
+            </p>
+            <p>{extrairData(gasto.data)}</p>
+            <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
+            <p>{gasto.tag}</p>
+            <div>
+              {gasto.valor < 0 && (
+                <>
+                  <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
+                  <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    ))
+  )}
+</div>
 
       </div>
       </>
