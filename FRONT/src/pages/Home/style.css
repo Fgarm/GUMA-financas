@@ -115,9 +115,9 @@ span.error-message {
 
 .gasto_information {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* Defina o número de colunas desejado */
+    grid-template-columns: repeat(5, 1fr); /* Defina o número de colunas desejado */
     gap: 10px;
-    background-color: black; /* var(--10-gray) */
+    background-color: #0F1616; /* var(--10-gray) */ /* rgb(151, 226, 148) */
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;

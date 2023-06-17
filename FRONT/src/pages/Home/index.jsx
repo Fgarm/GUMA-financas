@@ -3,9 +3,10 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
-import { BiLogOut } from "react-icons/bi";
+// import { BiLogOut } from "react-icons/bi";
 
-import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+// import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
@@ -13,10 +14,14 @@ import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
-import formatarData from '../../functions/formatData';
-import ToggleSearchStatus from '../../components/toggleSearchStatus';
 import TagsInputSearch from '../../components/tagInputSearch';
+import ToggleSearchStatus from '../../components/toggleSearchStatus';
+
 import AddSaldo from '../../modals/addSald';
+
+import formatarData from '../../functions/formatData';
+import compareDate from '../../functions/compareDate';
+import usaFormat from '../../functions/usaFormat';
 
 import {
   AlertDialog,
@@ -126,8 +131,19 @@ export default function Home() {
     }
     });
 
-    setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-    console.log(gastosEntradasPorData);
+    const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
+
+  // Reconstruir o objeto gastosPorData com as chaves ordenadas
+  const gastosPorDataOrdenado = {};
+  sortedKeys.forEach(key => {
+    gastosPorDataOrdenado[key] = gastosPorData[key];
+  });
+
+  setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
+  console.log(gastosEntradasPorData);
+
+    // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
+    // console.log(gastosEntradasPorData);
   }
 
   function addFlag() {
@@ -212,6 +228,7 @@ export default function Home() {
 
   const handleEdit = () => {
     const tag_edit = tagsList;
+
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -322,7 +339,8 @@ export default function Home() {
     setId(data.id);
     setNome(data.nome)
     setValor(data.valor * -1)
-    setSelectedDate(data.data)
+    setSelectedDate(usaFormat(data.data))
+    console.log("DIA", data)
     setEditTags(data.tag)
     if (data.pago == true) {
       setEditStatus('pago')
@@ -686,39 +704,38 @@ export default function Home() {
         </div>
 
         <div className="gasto">
-  {Object.entries(gastosEntradasPorData).length === 0 ? (
-    <p>Não há gastos com os parâmetros especificados</p>
-  ) : (
-    Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
-
-      <div key={data}>
-        <h3 className='dia_gasto'>{data}</h3>
-        {gastos.map((gasto, key) => (
-          <div key={gasto.id} className="gasto_information">
-            <p>{gasto.nome}</p>
-            <p>
-              {gasto.valor > 0 ? (
-                <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
-              ) : (
-                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
-              )}
-            </p>
-            <p>{extrairData(gasto.data)}</p>
-            <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
-            <p>{gasto.tag}</p>
-            <div>
-              {gasto.valor < 0 && (
-                <>
-                  <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
-                  <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    ))
-  )}
+          {Object.entries(gastosEntradasPorData).length === 0 ? (
+            <p>Não há gastos com os parâmetros especificados</p>
+          ) : (
+                Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+                  <div key={data}>
+                    {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
+                    {gastos.map((gasto, key) => (
+                      <div key={gasto.id} className="gasto_information">
+                        <p>{gasto.nome}</p>
+                        <p>
+                          {gasto.valor > 0 ? (
+                            <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
+                          ) : (
+                                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
+                              )}
+                        </p>
+                        {/* <p>{extrairData(gasto.data)}</p> */}
+                        <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
+                        <p>{gasto.tag}</p>
+                      <div>
+                    {gasto.valor < 0 && (
+                    <>
+                      <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
+                      <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                    </>
+                    )}
+                    </div>
+                  </div>
+                ))}
+         </div>
+      ))
+    )}
 </div>
 
       </div>
