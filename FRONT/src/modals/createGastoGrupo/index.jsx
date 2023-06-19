@@ -95,7 +95,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       usuarios: usuariosGasto,
       itens: itensCadastrados
     }
-
+    
     console.log(JSON.stringify(data))
 
     // axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
