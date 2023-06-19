@@ -3,10 +3,9 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
-// import { BiLogOut } from "react-icons/bi";
+import { BiLogOut } from "react-icons/bi";
 
-// import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
-import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
@@ -14,14 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
-import TagsInputSearch from '../../components/tagInputSearch';
-import ToggleSearchStatus from '../../components/toggleSearchStatus';
-
-import AddSaldo from '../../modals/addSald';
-
 import formatarData from '../../functions/formatData';
-import compareDate from '../../functions/compareDate';
-import usaFormat from '../../functions/usaFormat';
+import ToggleSearchStatus from '../../components/toggleSearchStatus';
+import TagsInputSearch from '../../components/tagInputSearch';
+import AddSaldo from '../../modals/addSald';
 
 import {
   AlertDialog,
@@ -63,12 +58,9 @@ export default function Home() {
   const [tagsList, setTagsList] = useState({})
 
   const [gastos, setGastos] = useState([])
-  const [gastosEntrada, setGastosEntrada] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
-
-  const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
-
+  
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
 
@@ -111,68 +103,12 @@ export default function Home() {
   //   }
   // });
 
-  function extrairData(dataHora) {
-    const data = dataHora.split('T')[0];
-    return formatarData(data);
-  }
-
   function handleCloseAddSaldo(){
     onAddSaldoClose()
   }
 
-  function organizarGastosEntradasPorData(params) {
-    let gastosPorData = {};
-    params.forEach(gasto => {
-    const data = extrairData(gasto.data);
-    if (gastosPorData[data]) {
-      gastosPorData[data].push(gasto);
-    } else {
-      gastosPorData[data] = [gasto];
-    }
-    });
-
-    const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
-
-  // Reconstruir o objeto gastosPorData com as chaves ordenadas
-  const gastosPorDataOrdenado = {};
-  sortedKeys.forEach(key => {
-    gastosPorDataOrdenado[key] = gastosPorData[key];
-  });
-
-  setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
-  console.log(gastosEntradasPorData);
-
-    // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-    // console.log(gastosEntradasPorData);
-  }
-
-  function addFlag() {
-    setFlag(flag => flag + 1);
-  }
-
-  function getGastosEntrada() {
-    axios.post("http://localhost:8000/bancario/extrato-saldo/", {
-      username: username
-    })
-      .then(response => {
-        setGastosEntrada(response.data)
-        organizarGastosEntradasPorData(response.data)
-        // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-        // console.log(gastosEntradasPorData);  
-        // console.log(gastosPorData)
-        // console.log(response.data)        
-      })
-      .catch(error => {
-        console.log("user", username)
-        console.error('Erro ao enviar dados:', error);
-      }
-      )
-  }
-
-
-
   function getSaldos() {
-    axios.post("http://localhost:8000/bancario/saldo-atual/", {
+    axios.post("http://localhost:8000/bancario/obter-saldo/", {
       username: username
     })
       .then(response => {
@@ -203,8 +139,6 @@ export default function Home() {
 
     };
 
-    console.log(JSON.stringify(dados))
-
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -227,8 +161,8 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-    const tag_edit = tagsList;
 
+    const tag_edit = tagsList;
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -261,7 +195,6 @@ export default function Home() {
   }
 
   const handleDelete = () => {
-    console.log(id)
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
       headers: {
@@ -338,9 +271,8 @@ export default function Home() {
     tagsList.categoria = data.tag
     setId(data.id);
     setNome(data.nome)
-    setValor(data.valor * -1)
-    setSelectedDate(usaFormat(data.data))
-    console.log("DIA", data)
+    setValor(data.valor)
+    setSelectedDate(data.data)
     setEditTags(data.tag)
     if (data.pago == true) {
       setEditStatus('pago')
@@ -354,7 +286,6 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
-    getGastosEntrada();
     getSaldos();
   }, [flag]);
 
@@ -698,45 +629,56 @@ export default function Home() {
         </div>
 
         <div>
-          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} tags={tags}>
               <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
         </div>
 
         <div className="gasto">
-          {Object.entries(gastosEntradasPorData).length === 0 ? (
-            <p>Não há gastos com os parâmetros especificados</p>
-          ) : (
-                Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
-                  <div key={data}>
-                    {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
-                    {gastos.map((gasto, key) => (
-                      <div key={gasto.id} className="gasto_information">
-                        <p>{gasto.nome}</p>
-                        <p>
-                          {gasto.valor > 0 ? (
-                            <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
-                          ) : (
-                                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
-                              )}
-                        </p>
-                        {/* <p>{extrairData(gasto.data)}</p> */}
-                        <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
-                        <p>{gasto.tag}</p>
-                      <div>
-                    {gasto.valor < 0 && (
-                    <>
-                      <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
-                      <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                    </>
-                    )}
-                    </div>
+          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
+            gastos
+            // .sort((a, b) => new Date(b.data.replace(/-/g, "/")) - new Date(a.data.replace(/-/g, "/")))
+            .map((gasto, key) => (
+                <div key={gasto.id} className="gasto_information">
+                  <p>
+                    {gasto.nome}
+                  </p>
+                <p>
+                  R$ {gasto.valor}
+                </p>
+                <p>
+                  {formatarData(gasto.data)}
+                </p>
+                <p>
+                </p>
+                {gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</p> : <p style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</p>)}
+                <p>
+                {gasto.tag}
+                </p>
+                <div>
+                    <Icon
+                      className='edit-icon-gasto' 
+                      as={MdOutlineModeEditOutline} 
+                      w={5} 
+                      h={5} 
+                      mr={2} 
+                      onClick={() => handleEditClick(gasto)} 
+                      />
+                    <Icon 
+                      className='delete-icon-gasto' 
+                      as={MdDelete} 
+                      color='red.500' 
+                      w={5} 
+                      h={5} 
+                      onClick={() => handleDeleteClick(gasto.id)} 
+                    />
                   </div>
-                ))}
-         </div>
-      ))
-    )}
-</div>
+
+              </div>
+            ))
+
+          )}
+        </div>
 
       </div>
       </>

@@ -9,7 +9,6 @@ class Bancario(models.Model):
     date = models.DateField()
 
 class Saldos(models.Model):
-    nome = models.CharField(max_length=255, null=True)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     id_bancario = models.ForeignKey(Bancario, on_delete=models.CASCADE, null=True)
     saldo = models.DecimalField(max_digits=20, decimal_places=2)

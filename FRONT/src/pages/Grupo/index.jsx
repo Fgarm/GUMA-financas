@@ -34,7 +34,6 @@ export default function GroupPage() {
     const [usuariosGastos, setUsuariosGastos] = useState([])
 
     const [flag, setFlag] = useState(0);
-    
     const handleCreateSuccess = () => {
         setFlag(flag + 1);
     }

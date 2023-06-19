@@ -54,7 +54,7 @@ export const lineChartOptions = {
       display: true,
       text: 'Total de Gastos dos Meses Anteriores',
       font: {
-        size: 18,
+        size: 20
       }
     },
   },
