@@ -46,7 +46,7 @@ export default function GroupPage() {
         onOpen,
     } = useDisclosure({ defaultIsOpen: false })
 
-    const toast = useToast()
+    const toast = useToast() 
     
 
     useEffect(() => {
@@ -129,18 +129,18 @@ export default function GroupPage() {
     }, [gastoId]);
 
 
-    function handleEditGastoGrupo(gastoGrupo) {
-        setGastoId(gastoGrupo.gasto_id)
-        setGrupoID(gastoGrupo.grupo_id)
-        setNomeGasto(gastoGrupo.nome)
-        getItens()
-        getUsuariosGasto()
-        setClicks(clicks => clicks + 1)
-        setTimeout(() => {
-            setClicks(clicks => clicks + 1)
-            openAddItemGastoGrupo();
-        }, 100);
-    }
+    // function handleEditGastoGrupo(gastoGrupo) {
+    //     setGastoId(gastoGrupo.gasto_id)
+    //     setGrupoID(gastoGrupo.grupo_id)
+    //     setNomeGasto(gastoGrupo.nome)
+    //     getItens()
+    //     getUsuariosGasto()
+    //     setClicks(clicks => clicks + 1)
+    //     setTimeout(() => {
+    //         setClicks(clicks => clicks + 1)
+    //         openAddItemGastoGrupo();
+    //     }, 100);
+    // }
 
     useEffect(() => {
         if (gastoId !== '') {
@@ -228,13 +228,13 @@ export default function GroupPage() {
                                 <div key={key} className="gasto_information">
                                     <h1>{gasto.nome}</h1>
                                     <div>
-                                        <Icon
+                                        {/* <Icon
                                             as={MdAddShoppingCart}
                                             w={5}
                                             h={5}
                                             mr={2}
                                             onClick={() => handleEditGastoGrupo(gasto)}
-                                        />
+                                        /> */}
                                         <Icon
                                             as={GrCircleInformation}
                                             color="black.500"

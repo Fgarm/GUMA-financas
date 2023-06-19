@@ -35,7 +35,8 @@
 
 .price-items{
     align-items: end;
-    /* position: relative; */
-    /* margin-left: 100px; */
 }
 
+.itens{
+    margin: 15px;
+}

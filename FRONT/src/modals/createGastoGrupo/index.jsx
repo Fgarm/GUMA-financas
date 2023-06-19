@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
-// import AddItemGroupGasto from '../../modals/addItemGroupGasto';
-import PeopleInput from '../../components/peopleInput';
+import React, { useState, useEffect } from 'react'
+import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md'
+// import AddItemGroupGasto from '../../modals/addItemGroupGasto'
+import CurrencyInput from 'react-currency-input-field';
+import PeopleInput from '../../components/peopleInput'
 import {
+  Alert,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
   ChakraProvider,
   Checkbox,
@@ -31,21 +39,28 @@ import './style.css'
 
 export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef, groups_id, handleCreateSuccess, userClicked, usuariosGastos }) {
 
-  const grupoId = localStorage.getItem('grupo_id');
-  const token = localStorage.getItem('token');
+  const grupoId = localStorage.getItem('grupo_id')
+  const token = localStorage.getItem('token')
 
   const [mostrarItem, setmostrarItem] = useState(true)
   const [mostrarDiv, setMostrarDiv] = useState(false)
 
-  // const [itensList, setItensList] = useState({})
-  const [users, setUsers] = useState([]);
-  const [nomeItem, setNomeItem] = useState('');
-  const [nome, setNome] = useState('');
-  const [custo, setCusto] = useState(0);
-  // const [pesos, setPesos] = useState('');
-  const [quantidade, setQuantidade] = useState(0);
-  const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }]);
+  const [nomeGasto, setNomeGasto] = useState('')
+  const [custo, setCusto] = useState('')
+  const [usuariosGasto, setUsuariosGasto] = useState([])
+  const [nomeItem, setNomeItem] = useState('')
+  const [quantidade, setQuantidade] = useState(0)
+  const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }])
   const [usuariosSelecionados, setUsuariosSelecionados] = useState([])
+
+  const [pesos, setPesos] = useState({})
+  const [keyItem, setKeyItem] = useState(0)
+  const [itensCadastrados, setItensCadastrados] = useState([])
+  const [itensSelecionados, setItensSelecionados] = useState([])
+
+
+  const cancelRef = React.useRef()
+  const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
 
   useEffect(() => {
     getUsuarios()
@@ -61,8 +76,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       },
     }).then(response => {
       setUsuariosGrupo(response.data)
-      console.log("AQUI")
-      // console.log(response.data)
     }
     ).catch(error => {
       console.log(error)
@@ -70,43 +83,42 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   function handleUsuariosChange(username, name) {
-    setUsers(username)
+    setUsuariosGasto(username)
     setUsuariosSelecionados(name)
-    // console.log(username)
-    // console.log("Itens")
-    console.log(name)
   }
 
   function handleSubmit() {
 
     const data = {
-      nome_gasto: nome,
+      nome_gasto: nomeGasto,
       id_grupo_id: groups_id,
-      usuarios: users
+      usuarios: usuariosGasto,
+      itens: itensCadastrados
     }
 
-    console.log(data)
+    console.log(JSON.stringify(data))
 
-    axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
-
-      .then(response => {
-        if (response.status === 200) {
-          onClose()
-          handleCreateSuccess()
-        } else if (response.status === 409) {
-          alert('Grupo de nome já cadastrado no sistema')
-        } else if (response.status === 400) {
-          alert('Dados de cadastro não estão nos parâmetros aceitos')
-        } else {
-          alert('Erro de solicitação')
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    // axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
+    //   .then(response => {
+    //     if (response.status === 200) {
+    onClose()
+    handleCreateSuccess()
+    handleCloseModal()
+    //     } else if (response.status === 409) {
+    //       alert('Grupo de nome já cadastrado no sistema')
+    //     } else if (response.status === 400) {
+    //       alert('Dados de cadastro não estão nos parâmetros aceitos')
+    //     } else {
+    //       alert('Erro de solicitação')
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //   })
   }
 
   function addGastoGroupUser() {
+
     axios({
       method: "post",
       url: "http://localhost:8000/grupos/associar-user-grupoGastos/",
@@ -115,50 +127,50 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       },
     })
       .then((response) => {
-        setUsers(response.data);
+        setUsuariosGasto(response.data)
         console.log(grupoId)
-        console.log(users)
+        console.log(usuariosGasto)
         setShouldRunEffect(true)
       })
       .catch(error => {
-        console.log(error);
+        console.log(error)
       })
+
   }
 
   function handleButtonClick() {
-    setMostrarDiv(!mostrarDiv);
-    setmostrarItem(!mostrarItem);
-  }
-
-  function handleExitButton() {
-    onClose();
-    setMostrarDiv(false);
-    setmostrarItem(true);
+    setPesos({})
+    setItensSelecionados([])
+    setMostrarDiv(!mostrarDiv)
+    setmostrarItem(!mostrarItem)
   }
 
   // Teste de inputs
 
-  const [itensSelecionados, setItensSelecionados] = useState([]);
-  const [pesos, setPesos] = useState({});
-
-
   const handleCheckboxChange = (id) => {
     setItensSelecionados((selecionados) => {
       if (selecionados.includes(id)) {
-        return selecionados.filter((item) => item !== id);
+        return selecionados.filter((item) => item !== id)
       } else {
-        return [...selecionados, id];
+        return [...selecionados, id]
       }
-    });
-  };
+    })
+  }
 
+  const handlePesosChange = (userId, value) => {
+    // Removendo o símbolo de porcentagem antes de salvar no estado
+    const newValue = value.replace('%', '')
 
-  const handlePesosChange = (userId, peso) => {
-    setPesos((pesos) => ({
-      ...pesos,
-      [userId]: peso,
-    }));
-  };
+    setPesos((prevPesos) => ({
+      ...prevPesos,
+      [userId]: newValue,
+    }))
+  }
+
+  const formatValue = (value) => {
+    // Adicionando o símbolo de porcentagem ao valor formatado
+    return value ? `${value}%` : value
+  }
 
   function CheckboxList({ usuariosGrupo }) {
     return (
@@ -183,7 +195,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                       _placeholder={{ color: 'inherit' }}
                       borderColor="black"
                       focusBorderColor="black"
-                      value={pesos[user.id] || ''}
+                      value={formatValue(pesos[user.id] || '')}
                       onChange={(e) => handlePesosChange(user.id, e.target.value)}
                     />
                   </GridItem>
@@ -192,60 +204,86 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
             </FormControl>
           ))}
       </Stack>
-    );
+    )
   }
 
-  const [itensCadastrados, setItensCadastrados] = useState([]);
-
-  // const handleDeleteItem = (item) => {
-  //   let itemDelete = itensCadastrados.indexOf(item, 0)
-  // }
-
   useEffect(() => {
-    console.log(itensCadastrados);
-  }, [itensCadastrados]);
+    // console.log(itensCadastrados)
+  }, [itensCadastrados])
 
   const handleCadastrarItem = () => {
     // Acessar os dados selecionados dos checkboxes
     const itensSelecionadosData = usuariosGrupo.filter((user) =>
       itensSelecionados.includes(user.id)
-    );
+    )
 
     // Acessar os pesos dos usuários selecionados
-    const usuariosSelecionados = itensSelecionadosData.map((item) => item.nome);
-    const pesosSelecionados = itensSelecionadosData.map((item) => pesos[item.id]);
+    const usuariosSelecionados = itensSelecionadosData.map((item) => item.username)
+    const pesosSelecionados = itensSelecionadosData.map((item) => pesos[item.id])
 
     // Converter as listas de usuários e pesos em strings
-    const usuariosString = usuariosSelecionados.join(",");
-    const pesosString = pesosSelecionados.join(",");
+    const usuariosString = usuariosSelecionados.join(",")
+    const pesosString = pesosSelecionados.join(",")
 
     // Criar um novo objeto de item cadastrado com os valores atuais
     const novoItemCadastrado = {
       descricao: nomeItem,
       preco_unitario: custo,
       quantidade: quantidade,
-      usuarios: usuariosString,
-      pesos: pesosString,
-    };
+      // usuarios: usuariosString,
+      // pesos: pesosString,
+      usuarios: usuariosSelecionados,
+      pesos: pesosSelecionados,
+    }
 
     // Adicionar o novo item à lista de itens cadastrados
     setItensCadastrados((prevItensCadastrados) => [
       ...prevItensCadastrados,
       novoItemCadastrado,
-    ]);
+    ])
 
     // Limpar os campos de entrada após o cadastro
-    setNomeItem('');
-    setCusto(0);
-    setQuantidade(0);
+    handleClearInput()
 
     console.log(itensCadastrados)
-    handleButtonClick();
-  };
+    handleButtonClick()
+  }
+
+  const handleClearInput = () => {
+    // Limpar os campos de entrada após o cadastro
+    setNomeItem('')
+    setCusto(0)
+    setQuantidade(0)
+  }
+
+  const handleDeleteClick = (data) => {
+    setKeyItem(data);
+    onAlertDialogOpen();
+  }
+
+  const handleExcluirItem = () => {
+    setItensCadastrados((prevItensCadastrados) =>
+      prevItensCadastrados.filter((item, i) => i !== keyItem)
+    )
+    onAlertDialogClose()
+  }
+
+  function handleCloseModal() {
+    onClose()
+    setMostrarDiv(false)
+    setmostrarItem(true)
+    setItensCadastrados([]) // Limpa a lista de itens cadastrados
+    setNomeItem('')
+    setCusto(0)
+    setQuantidade(0)
+    setItensSelecionados([])
+    setPesos({})
+  }
 
   // Teste de inputs
 
   return (
+
 
     <div>
 
@@ -267,7 +305,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
             <FormControl mt={4}>
               <FormLabel>Nome</FormLabel>
               <Input onChange={(e) => {
-                setNome(e.target.value)
+                setNomeGasto(e.target.value)
               }} _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
             </FormControl>
 
@@ -277,47 +315,49 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
             </FormControl>
 
             <FormControl mt={4}>
-
-
               {mostrarItem &&
                 (
                   <div>
                     <FormLabel>Itens</FormLabel>
-                    <div style={{ marginTop: 2 }}>
-                      {itensCadastrados.length === 0 ? <p></p> : (
+                    <div className='itens'>
+                      {itensCadastrados.length === 0 ? (
+                        <p></p>
+                      ) : (
                         itensCadastrados.map((item, key) => (
 
-
-                          <div>
-                            <Grid templateColumns="1fr 1fr" gap={4}>
-                              <GridItem >
-                                <Text fontSize='lg'>
-                                  {item.descricao}
-                                </Text>
-                              </GridItem>
-                              <GridItem display="flex" justifyContent="flex-end">
-                                <Icon
-                                  as={MdOutlineModeEditOutline}
-                                  color='black'
-                                  w={5}
-                                  h={5}
-                                  mr={2}
-                                />
-                                <Icon
-                                  as={MdDelete}
-                                  color='red.500'
-                                  w={5}
-                                  h={5}
-                                />
-                              </GridItem>
-                            </Grid>
+                          <div key={key}>
                             <div>
-                              <Text fontSize='lg' display="flex" justifyContent="flex-end">
-                                R$ {item.preco_unitario} X {item.quantidade}  = R$ {parseFloat(parseFloat(item.preco_unitario) * parseFloat(item.quantidade))}
-                              </Text>
+                              <Grid templateColumns="1fr 1fr" gap={4}>
+                                <GridItem display="flex" justifyContent="flex-start">
+                                  <Text as='b' fontSize='lg'>
+                                    {item.descricao}
+                                  </Text>
+                                </GridItem>
+                                <GridItem display="flex" justifyContent="flex-end">
+
+                                  <Icon
+                                    as={MdDelete}
+                                    color='red.500'
+                                    w={5}
+                                    h={5}
+                                    onClick={() => handleDeleteClick(key)}
+                                  />
+                                </GridItem>
+                              </Grid>
+                              <div>
+                                <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                  Total = {parseFloat(item.preco_unitario).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} X {item.quantidade} = {(parseFloat(item.preco_unitario) * parseFloat(item.quantidade)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                </Text>
+                                {item.usuarios.map((usuario, index) => (
+                                  <div key={index}>
+                                    <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                      {usuario} : {item.pesos[index]} % = {(((parseFloat(item.preco_unitario) * parseFloat(item.quantidade)) / 100) * parseFloat(item.pesos[index])).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                    </Text>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
-
                         ))
                       )}
                     </div>
@@ -325,7 +365,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                       style={{ background: '#6F9951' }}
                       mr={3}
                       onClick={handleButtonClick}
-                    > Novo Item </Button>
+                    >
+                      Novo Item
+                    </Button>
+
                   </div>
                 )}
 
@@ -337,7 +380,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                       setNomeItem(e.target.value)
                     }}
                       placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
-                    {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
                   </FormControl>
                   <br></br>
                   <FormControl>
@@ -347,13 +389,21 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                           <Input onChange={(e) => {
                             setCusto(e.target.value)
                           }}
-                            placeholder="Custo" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                            placeholder="Custo"
+                            _placeholder={{ color: 'inherit' }}
+                            borderColor="black"
+                            focusBorderColor="black"
+                          />
                         </GridItem>
                         <GridItem>
                           <Input onChange={(e) => {
                             setQuantidade(e.target.value)
                           }}
-                            placeholder="Quantidade" _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                            placeholder="Quantidade"
+                            _placeholder={{ color: 'inherit' }}
+                            borderColor="black"
+                            focusBorderColor="black"
+                          />
                         </GridItem>
                       </Grid>
                     </ChakraProvider>
@@ -374,8 +424,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
             </FormControl>
 
-
-
           </ModalBody>
 
           <ModalFooter>
@@ -386,11 +434,47 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               onClick={handleSubmit}>
               Criar
             </Button>
-            <Button onClick={handleExitButton}>Cancelar</Button>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+
           </ModalFooter>
+
         </ModalContent>
       </Modal>
+
+      <div>
+        <AlertDialog
+          isOpen={isAlertDialogOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onAlertDialogClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader
+                fontSize='lg'
+                fontWeight='bold'>
+                Deletar Item
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                Deseja realmente deletar esse item?
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onAlertDialogClose}>
+                  Cancelar
+                </Button>
+
+                <Button colorScheme='red' ml={3} onClick={handleExcluirItem}>
+                  Deletar
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+      </div>
+
     </div>
 
-  );
+  )
 }
+

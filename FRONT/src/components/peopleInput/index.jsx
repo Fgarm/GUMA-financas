@@ -38,18 +38,18 @@ export default function PeopleInput(props) {
     function removePerson(index, value) {
         const newPeoples = addedPeople.filter((el, i) => i !== index);
         setAddedPeople(newPeoples);
-
+    
         const nomesArray = usuarios.split(',');
         const novoArray = nomesArray.filter((item) => item.trim() !== value.trim());
         const novaString = novoArray.join(',');
         setUsuarios(novaString);
-
+    
         const removedUser = props.usuarios.find(user => user.username === value);
         if (removedUser) {
-            const newUsuariosItens = usuariosItens.filter(item => item !== removedUser.nome);
+            const newUsuariosItens = usuariosItens.filter(item => item.username !== removedUser.username);
             setUsuariosItens(newUsuariosItens);
         }
-    }
+    }    
 
     return (
         <div>
