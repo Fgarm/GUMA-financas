@@ -3,16 +3,23 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
+// import { BiLogOut } from "react-icons/bi";
 
-
+// import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
-import formatarData from '../../functions/formatData';
+import TagsInputSearch from '../../components/tagInputSearch';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
+
+import AddSaldo from '../../modals/addSald';
+
+import formatarData from '../../functions/formatData';
+import compareDate from '../../functions/compareDate';
+import usaFormat from '../../functions/usaFormat';
 
 import {
   AlertDialog,
@@ -63,11 +70,16 @@ export default function Home() {
 
 
   const [gastos, setGastos] = useState([])
+  const [gastosEntrada, setGastosEntrada] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
 
+  const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
+
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
+
+  const [saldo, setSaldo] = useState(0)
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
@@ -80,6 +92,12 @@ export default function Home() {
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
+  const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
+
+  function handleAddSaldo() {
+    getTags()
+    onAddSaldoOpen()
+  }
 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
@@ -87,6 +105,92 @@ export default function Home() {
 
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
+
+  // window.addEventListener("beforeunload", function (event) {
+  //   const perfTiming = performance.getEntriesByType("navigation")[0];
+  //   if (perfTiming.type === "reload") {
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("cadastro_user", username);
+  //     sessionStorage.setItem("reloading", "true");
+  //   } else {
+  //     localStorage.removeItem("token");
+  //     localStorage.removeItem("cadastro_user");
+  //   }
+  // });
+
+  function extrairData(dataHora) {
+    const data = dataHora.split('T')[0];
+    return formatarData(data);
+  }
+
+  function handleCloseAddSaldo(){
+    onAddSaldoClose()
+  }
+
+  function organizarGastosEntradasPorData(params) {
+    let gastosPorData = {};
+    params.forEach(gasto => {
+    const data = extrairData(gasto.data);
+    if (gastosPorData[data]) {
+      gastosPorData[data].push(gasto);
+    } else {
+      gastosPorData[data] = [gasto];
+    }
+    });
+
+    const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
+
+  // Reconstruir o objeto gastosPorData com as chaves ordenadas
+  const gastosPorDataOrdenado = {};
+  sortedKeys.forEach(key => {
+    gastosPorDataOrdenado[key] = gastosPorData[key];
+  });
+
+  setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
+  console.log(gastosEntradasPorData);
+
+    // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
+    // console.log(gastosEntradasPorData);
+  }
+
+  function addFlag() {
+    setFlag(flag => flag + 1);
+  }
+
+  function getGastosEntrada() {
+    axios.post("http://localhost:8000/bancario/extrato-saldo/", {
+      username: username
+    })
+      .then(response => {
+        setGastosEntrada(response.data)
+        organizarGastosEntradasPorData(response.data)
+        // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
+        // console.log(gastosEntradasPorData);  
+        // console.log(gastosPorData)
+        // console.log(response.data)        
+      })
+      .catch(error => {
+        console.log("user", username)
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+
+
+
+  function getSaldos() {
+    axios.post("http://localhost:8000/bancario/saldo-atual/", {
+      username: username
+    })
+      .then(response => {
+        setSaldo(response.data)
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+      
 
   function handleTagsChange(newTag) {
     setTagsList(newTag);
@@ -105,6 +209,8 @@ export default function Home() {
       user: username
 
     };
+
+    console.log(JSON.stringify(dados))
 
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
@@ -132,7 +238,6 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-
     const tag_edit = tagsList;
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
@@ -150,6 +255,7 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
+          console.log('Gasto atualizado com sucesso');
           onModalEditClose();
           setNome('');
           setValor(0);
@@ -166,6 +272,7 @@ export default function Home() {
   }
 
   const handleDelete = () => {
+    console.log(id)
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
       headers: {
@@ -246,8 +353,9 @@ export default function Home() {
     tagsList.categoria = data.tag
     setId(data.id);
     setNome(data.nome)
-    setValor(data.valor)
-    setSelectedDate(data.data)
+    setValor(data.valor * -1)
+    setSelectedDate(usaFormat(data.data))
+    console.log("DIA", data)
     setEditTags(data.tag)
     if (data.pago == true) {
       setEditStatus('pago')
@@ -261,6 +369,8 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
+    getGastosEntrada();
+    getSaldos();
   }, [flag]);
 
 
@@ -331,6 +441,7 @@ export default function Home() {
                 <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
                 Nova Tag
               </Button>
+
               <Button
                 className='new-tag-and-gasto-button'
                 pr='10px'
@@ -341,6 +452,17 @@ export default function Home() {
             </div>
           </div>
         </header>
+
+        <div className='add-entrada'>
+
+          <Button onClick={handleAddSaldo}>
+            Adicionar Entrada
+          </Button>
+
+        <div className="saldo-information"> 
+          {saldo < 0 ? <p style={{color: 'red'}}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
+        </div>
+        </div>
 
 
         <div>
@@ -512,16 +634,15 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
-                  <Select
-                    placeholder='Selecione uma opção'
-                    onChange={(e) => {
-                      if (e.target.value === 'pago') {
-                        setPago(true);
-                      } else if (e.target.value === 'nao-pago') {
-                        setPago(false);
-                      }
-                    }}
-                  >
+                  <Select 
+                    placeholder="Selecione uma opção"
+                  onChange={(e) => {
+                    if (e.target.value == 'pago') {
+                      setPago(true)
+                    } else if (e.target.value == 'nao-pago') {
+                      setPago(false)
+                    }
+                  }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
@@ -760,53 +881,46 @@ export default function Home() {
           </AlertDialog>
         </div>
 
-
+        <div>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
+              <Button onClick={handleCloseAddSaldo}>Fechar</Button>
+          </AddSaldo>
+        </div>
 
         <div className="gasto">
-          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastos.map((gasto, key) => (
-              <div key={gasto.id} className="gasto_information">
-                <div className='header'>
-                  <h1>
-                    {gasto.nome}
-                  </h1>
-                  <div>
-                    <Icon
-                      className='edit-icon-gasto'
-                      as={MdOutlineModeEditOutline}
-                      w={5}
-                      h={5}
-                      mr={2}
-                      onClick={() => handleEditClick(gasto)}
-                    />
-                    <Icon
-                      className='delete-icon-gasto'
-                      as={MdDelete}
-                      color='red.500'
-                      w={5}
-                      h={5}
-                      onClick={() => handleDeleteClick(gasto.id)}
-                    />
+          {Object.entries(gastosEntradasPorData).length === 0 ? (
+            <p>Não há gastos com os parâmetros especificados</p>
+          ) : (
+                Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+                  <div key={data}>
+                    {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
+                    {gastos.map((gasto, key) => (
+                      <div key={gasto.id} className="gasto_information">
+                        <p>{gasto.nome}</p>
+                        <p>
+                          {gasto.valor > 0 ? (
+                            <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
+                          ) : (
+                                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
+                              )}
+                        </p>
+                        {/* <p>{extrairData(gasto.data)}</p> */}
+                        <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
+                        <p>{gasto.tag}</p>
+                      <div>
+                    {gasto.valor < 0 && (
+                    <>
+                      <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
+                      <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                    </>
+                    )}
+                    </div>
                   </div>
-                </div>
-                <h2>
-                  R$ {gasto.valor}
-                </h2>
-                <h2>
-                  {formatarData(gasto.data)}
-                </h2>
-                <h2>
-                </h2>
-                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</h2> : <h2 style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</h2>}
-                <h2>
-                  {gasto.tag}
-                </h2>
-
-              </div>
-            ))
-
-          )}
-        </div>
+                ))}
+         </div>
+      ))
+    )}
+</div>
 
       </div>
     </>
