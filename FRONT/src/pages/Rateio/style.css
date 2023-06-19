@@ -1,0 +1,83 @@
+.RateioPage {
+    height: 100vh; /* remover em algum momento (talvez) */
+    width: calc(100% - 15%);
+    
+    display: flex;
+    float: right;
+    flex-direction: column;
+  
+    background-color: var(--60-background-dark);
+  }
+  
+  .body-rateio {
+    flex-direction: column!important; /* ver pq n ta funcionando */
+    min-height: calc(100vh - 12vh);
+  }
+  
+  .left-container {
+    width: 100%;
+    height: 50%;
+  
+    margin: 0;
+    padding: 2% 4.5% 1.3% 4.5%;
+    flex-direction: row;
+    position: relative;
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 2.8em;
+    /* flex-wrap: wrap; */
+    
+    /* border: 1px solid red; */
+    background-color: var(--10-gray);
+  }
+  
+  .right-container {
+    width: 100%;
+    height: 50%;
+    
+    margin: 0;
+    padding: 1.5% 1.5% 1.5% 1.5%;
+    flex-direction: row;
+    position: relative;
+  
+    display: flex;
+    justify-content: center;
+    justify-items: space-evenly;
+    gap: 2.8em;
+    /* flex-wrap: wrap; */
+    
+    /* border: 1px solid greenyellow; */
+    background-color: var(--10-gray);
+  }
+
+  .teste {
+    width: 15%;
+    height: 15%;
+    background-color: blue;
+  }
+  
+  @media screen and (max-width: 1000px) {
+    .left-container {
+      height: 100%;
+      padding-top: 5%;
+      flex-direction: column;
+    }
+  
+    .right-container {
+      height: 60%;
+      padding-top: 3%;
+    }
+    
+    .RateioPage {
+      /* height: 200vh; */
+      
+      display: flex;
+      /* flex-direction: column; */
+      /* justify-content: space-around; */
+  
+    }
+  }
+  
+  
