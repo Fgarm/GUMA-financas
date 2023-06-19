@@ -113,7 +113,13 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.data);
+          console.log(response.data);
+          toast({
+            title: 'Gasto criado com sucesso',
+            status: 'success',
+            isClosable: true,
+            duration: 3000,
+          });
           setNome('');
           setValor('');
           setPago(false);
@@ -178,6 +184,7 @@ export default function Home() {
           title: 'Gasto deletado com sucesso',
           status: 'success',
           isClosable: true,
+          duration: 3000,
         });
         onAlertDialogClose();
         setFlag(flag => flag + 1);
@@ -288,7 +295,13 @@ export default function Home() {
       }
     })
       .then(response => {
-        console.log('Dados enviados com sucesso:', response.data);
+        console.log(response.data);
+        toast({
+          title: 'Tag criada com sucesso',
+          status: 'success',
+          isClosable: true,
+          duration: 3000,
+        });
         setNovaTag(novaTag => novaTag + 1);
         setNovaTag('');
         setTagColor('');
@@ -303,6 +316,7 @@ export default function Home() {
           title: 'Tag já existente',
           status: 'error',
           isClosable: true,
+          duration: 3000,
         });
 
         console.log("AQUI")

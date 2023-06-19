@@ -190,6 +190,7 @@ export default function GroupPage() {
                                         title: 'Link Copiado.',
                                         status: 'success',
                                         isClosable: true,
+                                        duration: 3000,
                                     });
                                     handleCopy();
                                 }}
