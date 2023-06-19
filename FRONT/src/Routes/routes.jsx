@@ -2,9 +2,8 @@ import React from "react";
 import LogUp from "../pages/LogUp";
 import LogIn from "../pages/LogIn";
 import Home from "../pages/Home";
-
 import Graficos from "../pages/Graficos";
-
+import RateioPage from "../pages/Rateio";
 import MyPage from "../pages/Groups";
 import GroupPage from "../pages/Grupo";
 import EntrarComLink from "../components/joinGroup";
@@ -84,6 +83,14 @@ const Routering = createBrowserRouter([
         element:
         <React.StrictMode>
             <EntrarComLink />
+        </React.StrictMode>
+    },
+
+    {
+        path: "/rateio",
+        element: 
+        <React.StrictMode>
+            <RateioPage />
         </React.StrictMode>
     },
 
