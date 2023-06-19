@@ -34,6 +34,11 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
       descricao: descricao,
     }
 
+    if (nome === '' || user === '') {
+      alert('Preencha o campo de nome do grupo')
+      return
+    }
+
     axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
       .then(response => {
         if (response.status === 201) {

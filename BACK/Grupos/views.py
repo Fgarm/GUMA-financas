@@ -1,3 +1,4 @@
+
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -84,8 +85,7 @@ class GrupoView(APIView):
                                     preco_total_item=preco_total,
                                     quantidade=request.data["quantidade"]
                                 )
-            
-            
+         
             gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
             gasto_atual = float(gasto_g.valor_total)
             gasto_g.valor_total = gasto_atual + preco_total
@@ -230,7 +230,7 @@ class GrupoView(APIView):
         userg_list = list()
         for ug in user_gastos:
             user = User.objects.filter(id=ug.usuario_id).first()
-            ug_dict = {"id": user.id, "username": user.username, "nome": f"{user.first_name} {user.last_name}", "email": user.email}   
+            ug_dict = {"id": user.id, "username": user.username, "nome": f"{user.first_name} {user.last_name}", "email": user.email}  
             userg_list.append(ug_dict)         
         return Response(userg_list, status=status.HTTP_200_OK)
 

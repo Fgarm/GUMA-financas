@@ -10,7 +10,6 @@ urlpatterns = [
     path('cadastrar-item-associar-user/', GrupoView.cadastrar_item_associar_users, name='cadastrar-item-associar-user'),
     path('user-item-associacao/', GrupoView.associar_item_user, name='associar-item-user'),
     path('associar-user-grupoGastos/', GrupoView.associar_user_grupoGastos, name='associar-user-grupoGastos'),
-
     path('gerar-link/', GrupoView.gerar_link_grupo, name='gerar-link'),
     path('associar-usuario-grupo/', GrupoView.associar_usuario_grupo, name='associar-usuario-grupo'),
 

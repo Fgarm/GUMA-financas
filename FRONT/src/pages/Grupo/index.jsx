@@ -19,12 +19,13 @@ export default function GroupPage() {
     const [textToCopy, setTextToCopy] = useState('');
 
     const grupoId = localStorage.getItem('grupo_id');
+    const username = localStorage.getItem('cadastro_user');
+
     const [gastoId, setGastoId] = useState('')
     const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
     const [itensGasto, setItensGasto] = useState('')
 
-    const username = localStorage.getItem('cadastro_user');
 
     const [clicks, setClicks] = useState(0);
 
@@ -33,6 +34,7 @@ export default function GroupPage() {
     const [usuariosGastos, setUsuariosGastos] = useState([])
 
     const [flag, setFlag] = useState(0);
+    
     const handleCreateSuccess = () => {
         setFlag(flag + 1);
     }
@@ -63,7 +65,6 @@ export default function GroupPage() {
         })
             .then(response => {
                 setGastos(response.data)
-                // console.log(response.data)
             })
             .catch(error => {
                 console.log(error)
@@ -218,7 +219,7 @@ export default function GroupPage() {
                     </div>
                 </header>
 
-                <div className="gasto">
+                <div className="gasto_grupo">
                     {gastos.length === 0 ? (
                         <p>Não há gastos com os parâmetros especificados</p>
                     ) : (
@@ -226,7 +227,7 @@ export default function GroupPage() {
                             const key = gasto.id || index; // Usando gasto.id ou índice como chave
 
                             return (
-                                <div key={key} className="gasto_information">
+                                <div key={key} className="gasto_information_grupo">
                                     <h1>{gasto.nome}</h1>
                                     <div>
                                         {/* <Icon
