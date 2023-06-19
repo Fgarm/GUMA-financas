@@ -141,7 +141,7 @@ class GastoApiView(APIView):
             serializer = GastoSerializer(data=data, context={'request': request})
 
             if serializer.is_valid():
-                serializer.save
+                serializer.save()
                 #Retirando valor do saldo
                 if request.data["pago"] == True:
                     conta = Bancario.objects.filter(id_usuario_id=user.id).first()
@@ -160,6 +160,21 @@ class GastoApiView(APIView):
         except Gasto.DoesNotExist:
             return Response("Não há gasto com esse id", status=status.HTTP_404_NOT_FOUND)
         
+        if gasto.pago == False and request.data["pago"] == True:
+            print("if1")
+            user_id = User.objects.filter(username = gasto.user).first().id
+            conta = Bancario.objects.filter(id_usuario_id = user_id).first()
+            conta.saldo_atual = conta.saldo_atual - request.data["valor"]
+            conta.save()
+        if gasto.pago == True and request.data["pago"] == False:
+            print("if2")
+            print(gasto.user)
+            user_id = User.objects.filter(username = gasto.user).first().id
+            print(user_id)
+            conta = Bancario.objects.filter(id_usuario_id = user_id).first()
+            conta.saldo_atual = conta.saldo_atual + request.data["valor"]
+            conta.save()
+
         data = {}
         data["nome"] = request.data["nome"]
         data["valor"] = request.data["valor"]
