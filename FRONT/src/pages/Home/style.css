@@ -85,26 +85,48 @@ span.error-message {
     justify-content: space-evenly; */
 }
 
-.gasto_information {
-    /* width: 30%;
+.dia_gasto{
+    color: white;
+    font-size: 20px;
+}
+
+/* width: 30%;
     padding: 10px;
     margin-top: 15px;
     border-radius: 5px;
     border: 0.5px solid;
     background-color: var(--10-gray);
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); */
+    /* justify-content: space-between; */
+/* var(--10-gray) */
+
+/* .gasto_information {
     width: 100%;
     gap: 30px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    /* justify-content: space-between; */
-    background-color: black; /* var(--10-gray) */
+    background-color: black; 
     padding: 10px;
     border-radius: 5px;
-}
+    margin-bottom: 10px;
+} */
 
+.gasto_information {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Defina o número de colunas desejado */
+    gap: 10px;
+    background-color: #0F1616; /* var(--10-gray) */ /* rgb(151, 226, 148) */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .gasto_information p {
+    margin: 0; /* Remova a margem padrão dos parágrafos */
+  }
+  
 
 .header {
     display: flex;

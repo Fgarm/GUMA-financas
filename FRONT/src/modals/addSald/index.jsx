@@ -15,52 +15,38 @@ import {
 import axios from 'axios'
 
 
-export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, tags}) {
+export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, addFlag}) {
   
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState('');
-  const [data, setData] = useState('');
-  const [tag, setTag] = useState('');
-
-  console.log(tags)
 
   const handleSubmit = () => {
 
     let n = parseFloat(valor)
 
-    if(nome === '' || valor === ''|| n < 0){
+    if(valor === ''|| n < 0){
         alert('Preencha todos os campos corretamente')
         return
     }
     
     const datas = {
       nome: nome,
-      valor: valor,
-      data: data,
-      pago: true,
-      tag: '',
-      user: user,
+      saldo: valor,
+      username: user,
     }
     
     console.log(JSON.stringify(datas))
-
-    axios.post('http://localhost:8000/api/gastos/criar-gasto/', datas)//{
-      .then(response => {
-        if(response.status === 201){
-          axios.post("http://localhost:8000/bancario/add-saldo/", {
-                username: user,
-                saldo: valor
-              })
-              .then(response => {
-                console.log('Saldo adicionado com sucesso:', response.data);
-              }
-              )
-          onClose();
+    axios.post("http://localhost:8000/bancario/add-saldo/", datas)
+      .then((response) => {
+        console.log(response)
+        if(response.status === 200){
+          addFlag()
+          onClose()
         }
-      })
-      .catch(error => {
-        console.log(error);
-      });
+      }
+    ).catch((error) => {
+      console.log(error)
+    })
   }
 
     return (
@@ -102,7 +88,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
                 />
               </FormControl>
 
-              <FormControl mt={4}>
+              {/* <FormControl mt={4}>
                 <label>Data</label>
                 <br></br>
                 <Input
@@ -111,7 +97,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
                     setData(e.target.value)
                   }}
                 />
-              </FormControl>
+              </FormControl> */}
 
               {/* <FormControl mt={4}>
                   <label >Tags</label>
