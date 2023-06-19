@@ -44,8 +44,6 @@ class ManagerAPIView(APIView):
 
         return Response(serializer.data)
 
-        pass
-
     @api_view(['POST']) # vai ser necessário chamar essa função toda vez que o usuário checar a home
     def implementar_recorrencia(request):
         try:
@@ -56,30 +54,47 @@ class ManagerAPIView(APIView):
             return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
         recorrencias = MovimentacaoManager.objects.filter(user=user.username)
         recorrencias = MovimentacaoSerializer(recorrencias, context={'request': request}, many=True)
-
-        for recorrencia in recorrencias:
-            if recorrencia["tipo"] == "G":
-                #passar pela recorrencia criando os gastos quando é a data certa (criar com a data certa)
+        if recorrencias.is_valid():
+            for recorrencia in recorrencias.data:
+                recorrencia = MovimentacaoManager.objects.get(id=recorrencia['id'])
+                infos = {}
+                muda_o_nome_disso_daqui_dps = {}
                 data_atual = dt.datetime.today()
-                data_atualizacao = recorrencia["atualizacao"]
-                # Add time to the datetime object
-                # dt = dt + timedelta(days=1)
-                # dt = dt + timedelta(weeks=1)
-                # dt = dt + relativedelta(months=1)
-                # dt = dt + relativedelta(years=1)
-                while data_atual > data_atualizacao:  # verificar essa verificação aí:
-                                                      # é preciso que vc atualize no dia certo
-                                                      # não atualize no futuro
-                                                      # mantenha o dia que precisa atualizar
-                                                      
-                    # criar a recorrencia
-                    # atualizar a data na recorrencia
+                data_atualizacao = recorrencia.atualizacao
+                if recorrencia["frequencia"] == "D":
+                    variacao = timedelta(days=1)
+                elif recorrencia["frequencia"] == "S":
+                    variacao = timedelta(weeks=1)
+                elif recorrencia["frequencia"] == "M":
+                    variacao = relativedelta(months=1)
+                elif recorrencia["frequencia"] == "A":
+                    variacao = relativedelta(years=1)
+                while data_atual >= data_atualizacao + variacao:
                     # somar a data de atualização
-                    pass
-
-                pass
-            else: # tipo == "S"
-                pass
+                    data_atualizacao = data_atualizacao + variacao
+                    muda_o_nome_disso_daqui_dps["atualizacao"] = data_atualizacao
+                    infos['nome'] = recorrencia.nome
+                    infos['data'] = data_atualizacao
+                    infos['tag'] = recorrencia.tag
+                    if recorrencia["tipo"] == "G":          
+                        infos['pago'] = recorrencia.pago
+                        infos['user'] = recorrencia.user
+                        infos['valor'] = recorrencia.valor
+                        Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
+                        # criar a o novo gasto com a data_atualizacao
+                        pass
+                    else: # tipo == "S"
+                        infos['username'] = recorrencia.user
+                        infos['saldo'] = recorrencia.valor
+                        Bancario.views.BancarioView.add_saldo(json.dumps(infos))
+                        # criar o novo saldo com a data_atualizacao
+                        pass
+                serializer = MovimentacaoSerializer(recorrencia, data=muda_o_nome_disso_daqui_dps, context={'request': request})
+                # Caso der BUG pode ser o culpado (infos não passando todas as infos pro serializer)
+                # acho que funciona mais sla
+                serializer.save() # salva o serializer pro DB (deve funcionar né)
+                
+                # atualizar a data na recorrencia
 
 
 
@@ -126,13 +141,14 @@ class ManagerAPIView(APIView):
             recorrencia["nome"] = request.data["nome"] # nome do gasto
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
             Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
-            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc) # se der errado silenciosamente esse pode ser um culpado
+            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc)
+            # se der errado(BUG) silenciosamente esse pode ser um culpado
         
         else: #Tipo == saldo
             recorrencia["tipo"] = "S"
             if "nome" in request.data:
                 recorrencia["nome"] = request.data["nome"] # nome do saldo
-            Bancario.views.BancarioView.add_saldo2(json.dumps(recorrencia))
+            Bancario.views.BancarioView.add_saldo(json.dumps(recorrencia))
 
         serializer = MovimentacaoSerializer(data=data, context={'request': request})
         if serializer.is_valid():
