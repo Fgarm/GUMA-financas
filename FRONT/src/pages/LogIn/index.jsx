@@ -23,10 +23,10 @@ export default function LogIn() {
   const createUserFormSchema = z.object(
     {
       username: z.string()
-        .nonempty('Este item é obrigatório'),
+        .nonempty('Este campo é obrigatório'),
 
       password: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
   )

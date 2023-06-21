@@ -31,6 +31,7 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast
 } from '@chakra-ui/react'
 
 import axios from 'axios'
@@ -58,9 +59,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [itensCadastrados, setItensCadastrados] = useState([])
   const [itensSelecionados, setItensSelecionados] = useState([])
 
-
   const cancelRef = React.useRef()
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
+
+  const toast = useToast()
 
   useEffect(() => {
     getUsuarios()
@@ -95,7 +97,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       usuarios: usuariosGasto,
       itens: itensCadastrados
     }
-    
+
     console.log(JSON.stringify(data))
 
     // axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
@@ -168,7 +170,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   const formatValue = (value) => {
-    // Adicionando o símbolo de porcentagem ao valor formatado
     return value ? `${value}%` : value
   }
 
@@ -190,7 +191,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   </GridItem>
                   <GridItem>
                     <Input
-                      name="peso"
                       placeholder="Peso"
                       _placeholder={{ color: 'inherit' }}
                       borderColor="black"
@@ -207,6 +207,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     )
   }
 
+
   useEffect(() => {
     // console.log(itensCadastrados)
   }, [itensCadastrados])
@@ -221,9 +222,30 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     const usuariosSelecionados = itensSelecionadosData.map((item) => item.username)
     const pesosSelecionados = itensSelecionadosData.map((item) => pesos[item.id])
 
+    // Verificar a soma dos pesos
+    const somaPesos = pesosSelecionados.reduce((accumulator, currentValue) => {
+      const parsedValue = parseFloat(currentValue);
+      return isNaN(parsedValue) ? accumulator : accumulator + parsedValue;
+    }, 0);
+
+
+    if (somaPesos > 100) {
+      // Exibir uma mensagem de erro informando que a soma dos pesos é maior que 100
+      // alert('');
+      toast({
+        title: 'A soma dos pesos não pode ser maior que 100.',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      });
+      return;
+    }
+
+
     // Converter as listas de usuários e pesos em strings
     const usuariosString = usuariosSelecionados.join(",")
     const pesosString = pesosSelecionados.join(",")
+
 
     // Criar um novo objeto de item cadastrado com os valores atuais
     const novoItemCadastrado = {
@@ -292,6 +314,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
         finalFocusRef={finalRef}
         isOpen={isOpen}
         onClose={onClose}
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
@@ -345,12 +368,12 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                                 </GridItem>
                               </Grid>
                               <div>
-                                <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
                                   Total = {parseFloat(item.preco_unitario).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} X {item.quantidade} = {(parseFloat(item.preco_unitario) * parseFloat(item.quantidade)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                 </Text>
                                 {item.usuarios.map((usuario, index) => (
                                   <div key={index}>
-                                    <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                    <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
                                       {usuario} : {item.pesos[index]} % = {(((parseFloat(item.preco_unitario) * parseFloat(item.quantidade)) / 100) * parseFloat(item.pesos[index])).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </Text>
                                   </div>

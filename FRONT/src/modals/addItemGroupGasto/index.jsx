@@ -35,14 +35,11 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
   function verificaStringNumerica(string) {
     return /\d/.test(string);
   }
-<<<<<<< HEAD
-=======
 
   // useEffect(() => {
   //     const usuariosString = usuariosGastos.map(usuario => usuario.nome).join(',');
   //     setUsuarios(usuariosString);
   // }, [usuariosGastos]);
->>>>>>> 09a0724794fe7cf722be2b51ac7c4d706d81e50d
 
   useEffect(() => {
 

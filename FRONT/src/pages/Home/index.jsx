@@ -41,6 +41,7 @@ import {
   ModalHeader,
   Select,
   Text,
+  Tooltip,
   useToast
 } from '@chakra-ui/react'
 
@@ -123,31 +124,31 @@ export default function Home() {
     return formatarData(data);
   }
 
-  function handleCloseAddSaldo(){
+  function handleCloseAddSaldo() {
     onAddSaldoClose()
   }
 
   function organizarGastosEntradasPorData(params) {
     let gastosPorData = {};
     params.forEach(gasto => {
-    const data = extrairData(gasto.data);
-    if (gastosPorData[data]) {
-      gastosPorData[data].push(gasto);
-    } else {
-      gastosPorData[data] = [gasto];
-    }
+      const data = extrairData(gasto.data);
+      if (gastosPorData[data]) {
+        gastosPorData[data].push(gasto);
+      } else {
+        gastosPorData[data] = [gasto];
+      }
     });
 
     const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
 
-  // Reconstruir o objeto gastosPorData com as chaves ordenadas
-  const gastosPorDataOrdenado = {};
-  sortedKeys.forEach(key => {
-    gastosPorDataOrdenado[key] = gastosPorData[key];
-  });
+    // Reconstruir o objeto gastosPorData com as chaves ordenadas
+    const gastosPorDataOrdenado = {};
+    sortedKeys.forEach(key => {
+      gastosPorDataOrdenado[key] = gastosPorData[key];
+    });
 
-  setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
-  console.log(gastosEntradasPorData);
+    setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
+    console.log(gastosEntradasPorData);
 
     // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
     // console.log(gastosEntradasPorData);
@@ -190,7 +191,7 @@ export default function Home() {
       }
       )
   }
-      
+
 
   function handleTagsChange(newTag) {
     setTagsList(newTag);
@@ -473,9 +474,9 @@ export default function Home() {
             Adicionar Entrada
           </Button>
 
-        <div className="saldo-information"> 
-          {saldo < 0 ? <p style={{color: 'red'}}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
-        </div>
+          <div className="saldo-information">
+            {saldo < 0 ? <p style={{ color: 'red' }}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
+          </div>
         </div>
 
 
@@ -609,18 +610,23 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Valor</label>
                   <br></br>
-                  <Input
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setValor(value);
-                        setValorError(null);
-                      } else {
-                        setValor(0);
-                        setValorError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
+                  <Tooltip label="Hey, I'm here!"  placement='right-end'>
+
+                    <Input
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value.trim().length > 0) {
+                          setValor(value);
+                          setValorError(null);
+                        } else {
+                          setValor(0);
+                          setValorError('Este campo é obrigatório.');
+                        }
+                      }}
+                    />
+
+                  </Tooltip>
+
                   {valorError && (
                     <Text color="red" fontSize="sm">{valorError}</Text>
                   )}
@@ -648,15 +654,15 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
-                  <Select 
+                  <Select
                     placeholder="Selecione uma opção"
-                  onChange={(e) => {
-                    if (e.target.value == 'pago') {
-                      setPago(true)
-                    } else if (e.target.value == 'nao-pago') {
-                      setPago(false)
-                    }
-                  }}>
+                    onChange={(e) => {
+                      if (e.target.value == 'pago') {
+                        setPago(true)
+                      } else if (e.target.value == 'nao-pago') {
+                        setPago(false)
+                      }
+                    }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
@@ -675,6 +681,7 @@ export default function Home() {
               <ModalFooter>
                 <Button
                   style={{ background: '#6F9951' }}
+                  mr={3}
                   onClick={() => {
                     let hasEmptyFields = false;
 
@@ -897,7 +904,7 @@ export default function Home() {
 
         <div>
           <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
-              <Button onClick={handleCloseAddSaldo}>Fechar</Button>
+            <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
         </div>
 
@@ -905,36 +912,36 @@ export default function Home() {
           {Object.entries(gastosEntradasPorData).length === 0 ? (
             <p>Não há gastos com os parâmetros especificados</p>
           ) : (
-                Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
-                  <div key={data}>
-                    {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
-                    {gastos.map((gasto, key) => (
-                      <div key={gasto.id} className="gasto_information">
-                        <p>{gasto.nome}</p>
-                        <p>
-                          {gasto.valor > 0 ? (
-                            <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
-                          ) : (
-                                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
-                              )}
-                        </p>
-                        {/* <p>{extrairData(gasto.data)}</p> */}
-                        <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
-                        <p>{gasto.tag}</p>
-                      <div>
-                    {gasto.valor < 0 && (
-                    <>
-                      <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
-                      <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                    </>
-                    )}
+            Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+              <div key={data}>
+                {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
+                {gastos.map((gasto, key) => (
+                  <div key={gasto.id} className="gasto_information">
+                    <p>{gasto.nome}</p>
+                    <p>
+                      {gasto.valor > 0 ? (
+                        <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
+                      ) : (
+                        <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
+                      )}
+                    </p>
+                    {/* <p>{extrairData(gasto.data)}</p> */}
+                    <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
+                    <p>{gasto.tag}</p>
+                    <div>
+                      {gasto.valor < 0 && (
+                        <>
+                          <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
+                          <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
-         </div>
-      ))
-    )}
-</div>
+              </div>
+            ))
+          )}
+        </div>
 
       </div>
     </>
