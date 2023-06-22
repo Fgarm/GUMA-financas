@@ -14,7 +14,7 @@ from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpRequest
-from urllib.request import Request
+from urllib.request import Request, urlopen
 import datetime as dt
 import numpy as np
 from django.contrib.auth.models import User
@@ -58,62 +58,77 @@ class ManagerView(APIView):
         except User.MultipleObjectsReturned:
             return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
         recorrencias = MovimentacaoManager.objects.filter(user=user.username)
-        print(recorrencias)
-        recorrencias = MovimentacaoSerializer(data=recorrencias, many=True)
-        if recorrencias.is_valid():
-            for recorrencia in recorrencias.data:
-                recorrencia = MovimentacaoManager.objects.get(id=recorrencia['id'])
-                infos = {}
-                muda_o_nome_disso_daqui_dps = {}
-                data_atual = dt.datetime.today()
-                data_atualizacao = recorrencia.atualizacao
-                if recorrencia["frequencia"] == "D":
-                    variacao = timedelta(days=1)
-                elif recorrencia["frequencia"] == "S":
-                    variacao = timedelta(weeks=1)
-                elif recorrencia["frequencia"] == "M":
-                    variacao = relativedelta(months=1)
-                elif recorrencia["frequencia"] == "A":
-                    variacao = relativedelta(years=1)
-                while data_atual >= data_atualizacao + variacao:
-                    # somar a data de atualização
-                    data_atualizacao = data_atualizacao + variacao
-                    muda_o_nome_disso_daqui_dps["atualizacao"] = data_atualizacao
-                    infos['nome'] = recorrencia.nome
-                    infos['data'] = data_atualizacao
-                    infos['tag'] = recorrencia.tag
-                    if recorrencia["tipo"] == "G":          
-                        infos['pago'] = recorrencia.pago
-                        infos['user'] = recorrencia.user
-                        infos['valor'] = recorrencia.valor
+        #recorrencias = MovimentacaoSerializer(data=recorrencias, many=True)
+        #print(recorrencias.is_valid())
+        #if recorrencias.is_valid():
+            #recorrencias = recorrencias.data
+        print("++++++++++++++++++++++++++++++++")
+        for recorrencia in recorrencias:
+            print(recorrencia.nome)
+            print("---------------------------------")
+            recorrencia = MovimentacaoManager.objects.get(id=recorrencia.id)
+            infos = {}
+            data_atual = dt.datetime.today()
+            data_atual = data_atual.replace(tzinfo=dt.timezone.utc)
+            data_atualizacao = recorrencia.atualizacao
+            if recorrencia.frequencia == "D":
+                variacao = timedelta(days=1)
+            elif recorrencia.frequencia == "S":
+                variacao = timedelta(weeks=1)
+            elif recorrencia.frequencia == "M":
+                variacao = relativedelta(months=1)
+            elif recorrencia.frequencia == "A":
+                variacao = relativedelta(years=1)
+            while data_atual >= data_atualizacao + variacao:
+                # somar a data de atualização
+                data_atualizacao = data_atualizacao + variacao
+                recorrencia.atualizacao = data_atualizacao
+                infos['nome'] = recorrencia.nome
+                infos['data'] = data_atualizacao
+                infos['tag'] = recorrencia.tag
+                if recorrencia.tipo == "G":          
+                    infos['pago'] = recorrencia.pago
+                    infos['user'] = username
+                    infos['valor'] = recorrencia.valor
+                    infos['data'] = str(infos['data'])
+                    print("\n\n")
+                    print(infos)
+                    print("\n\n")
+                    response = urlopen(
                         Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
-                                data=json.dumps(infos),
-                                headers={}, origin_req_host=None,
-                                unverifiable=False, method='POST')
-                        #Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
-                        # criar a o novo gasto com a data_atualizacao
-                        pass
-                    else: # tipo == "S"
-                        infos['username'] = recorrencia.user
-                        infos['saldo'] = recorrencia.valor
-                        # Não funciona
-                        # Bancario.views.BancarioView.add_saldo(json.dumps(infos))
-                        # criar o novo saldo com a data_atualizacao
-                        pass
-                serializer = MovimentacaoSerializer(recorrencia, data=muda_o_nome_disso_daqui_dps)
-                # Caso der BUG pode ser o culpado (infos não passando todas as infos pro serializer)
-                # acho que funciona mais sla
-                serializer.save() # salva o serializer pro DB (deve funcionar né)
-                
-                # atualizar a data na recorrencia
-
-
-
-
+                            data=json.dumps(infos).encode('utf-8'),
+                            headers={}, origin_req_host=None,
+                            unverifiable=False, method='POST')
+                    )
+                    print("\n\n")
+                    print(response)
+                    print("\n\n")
+                    print(f"cadastrou: {infos}")
+                    #Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
+                    # criar a o novo gasto com a data_atualizacao
+                else: # tipo == "S"
+                    infos['username'] = recorrencia.user
+                    infos['saldo'] = recorrencia.valor
+                    # Não funciona (tem que adicionar o envio de saldo que funcione)
+                    # Bancario.views.BancarioView.add_saldo(json.dumps(infos))
+                    # criar o novo saldo com a data_atualizacao
+                    pass
+            #serializer = MovimentacaoSerializer(recorrencia, data=recorrencia)
+            # Caso der BUG pode ser o culpado (infos não passando todas as infos pro serializer)
+            # acho que funciona mais sla
+            
+            recorrencia.save() # salva o serializer pro DB (deve funcionar né)
         return Response("passou I guess",status=status.HTTP_200_OK)
+            # atualizar a data na recorrencia
+
+
+
+
 
     @api_view(['POST'])
     def criar_recorrencia(request):
+        print("\n\n")
+        print("\n\n")
         #recorrencia recebe dados o suficiente pra criar o que for criar
         #e uma variavel de controle que indica se vai criar um saldo ou um gasto de forma recorrente
         recorrencia = {}
@@ -150,19 +165,24 @@ class ManagerView(APIView):
             date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             recorrencia["nome"] = request.data["nome"] # nome do gasto
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
-            print(request.headers)
-            print(Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
-                                data=json.dumps(recorrencia),
-                                headers={}, origin_req_host=None,
-                                unverifiable=False, method='POST'))
+            #print(request.headers)
+            recorrencia["data"] = str(date_time.replace(tzinfo=dt.timezone.utc))
+            print("a primeira vez", recorrencia)
+            response = urlopen(
+                        Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
+                            data=json.dumps(recorrencia).encode('utf-8'),
+                            headers={}, origin_req_host=None,
+                            unverifiable=False, method='POST')
+                    )
             #Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
-            recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc)
             # se der errado(BUG) silenciosamente esse pode ser um culpado
         
         else: #Tipo == saldo
             recorrencia["tipo"] = "S"
             if "nome" in request.data:
                 recorrencia["nome"] = request.data["nome"] # nome do saldo
+            
+            # Não funciona (tem que adicionar o envio de saldo que funcione)
             # Bancario.views.BancarioView.add_saldo(json.dumps(recorrencia))
 
         serializer = MovimentacaoSerializer(data=recorrencia, context={'request': request})
