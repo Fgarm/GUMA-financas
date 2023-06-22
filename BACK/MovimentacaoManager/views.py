@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http import HttpRequest
+from urllib.request import Request
 import datetime as dt
 import numpy as np
 from django.contrib.auth.models import User
@@ -28,7 +30,7 @@ import json
 # deletar recorrencias
 # pegar recorrencias de um user
 
-class ManagerAPIView(APIView):
+class ManagerView(APIView):
 
     @api_view(['POST'])
     def get_recorrencias_user(request):
@@ -45,15 +47,19 @@ class ManagerAPIView(APIView):
         return Response(serializer.data)
 
     @api_view(['POST']) # vai ser necessário chamar essa função toda vez que o usuário checar a home
-    def implementar_recorrencia(request):
+    def implementar_recorrencia(request): 
+        return ManagerView._implementar_recorrencia(request.data["user"])
+        
+    def _implementar_recorrencia(username):
         try:
-            user = User.objects.get(username=request.data["user"])
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
         except User.MultipleObjectsReturned:
             return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
         recorrencias = MovimentacaoManager.objects.filter(user=user.username)
-        recorrencias = MovimentacaoSerializer(recorrencias, context={'request': request}, many=True)
+        print(recorrencias)
+        recorrencias = MovimentacaoSerializer(data=recorrencias, many=True)
         if recorrencias.is_valid():
             for recorrencia in recorrencias.data:
                 recorrencia = MovimentacaoManager.objects.get(id=recorrencia['id'])
@@ -80,16 +86,21 @@ class ManagerAPIView(APIView):
                         infos['pago'] = recorrencia.pago
                         infos['user'] = recorrencia.user
                         infos['valor'] = recorrencia.valor
-                        Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
+                        Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
+                                data=json.dumps(infos),
+                                headers={}, origin_req_host=None,
+                                unverifiable=False, method='POST')
+                        #Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
                         # criar a o novo gasto com a data_atualizacao
                         pass
                     else: # tipo == "S"
                         infos['username'] = recorrencia.user
                         infos['saldo'] = recorrencia.valor
-                        Bancario.views.BancarioView.add_saldo(json.dumps(infos))
+                        # Não funciona
+                        # Bancario.views.BancarioView.add_saldo(json.dumps(infos))
                         # criar o novo saldo com a data_atualizacao
                         pass
-                serializer = MovimentacaoSerializer(recorrencia, data=muda_o_nome_disso_daqui_dps, context={'request': request})
+                serializer = MovimentacaoSerializer(recorrencia, data=muda_o_nome_disso_daqui_dps)
                 # Caso der BUG pode ser o culpado (infos não passando todas as infos pro serializer)
                 # acho que funciona mais sla
                 serializer.save() # salva o serializer pro DB (deve funcionar né)
@@ -99,8 +110,7 @@ class ManagerAPIView(APIView):
 
 
 
-        # passar pelas recorrencias chamando uma função que atualiza elas
-        pass
+        return Response("passou I guess",status=status.HTTP_200_OK)
 
     @api_view(['POST'])
     def criar_recorrencia(request):
@@ -140,7 +150,12 @@ class ManagerAPIView(APIView):
             date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             recorrencia["nome"] = request.data["nome"] # nome do gasto
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
-            Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
+            print(request.headers)
+            print(Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
+                                data=json.dumps(recorrencia),
+                                headers={}, origin_req_host=None,
+                                unverifiable=False, method='POST'))
+            #Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
             recorrencia["data"] = date_time.replace(tzinfo=dt.timezone.utc)
             # se der errado(BUG) silenciosamente esse pode ser um culpado
         
@@ -148,14 +163,14 @@ class ManagerAPIView(APIView):
             recorrencia["tipo"] = "S"
             if "nome" in request.data:
                 recorrencia["nome"] = request.data["nome"] # nome do saldo
-            Bancario.views.BancarioView.add_saldo(json.dumps(recorrencia))
+            # Bancario.views.BancarioView.add_saldo(json.dumps(recorrencia))
 
-        serializer = MovimentacaoSerializer(data=data, context={'request': request})
+        serializer = MovimentacaoSerializer(data=recorrencia, context={'request': request})
         if serializer.is_valid():
                 serializer.save()
         else:    
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        ManagerAPIView.implementar_recorrencia(user.username)
+        ManagerView._implementar_recorrencia(str(user.username))
 
         return Response(f"Por um milagre deu certo: {serializer.data}", status=status.HTTP_201_CREATED)

@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'Usuario',
     'Tags',
     'Grupos',
-    'Bancario'
+    'Bancario',
+    'MovimentacaoManager',
 ]
 
 MIDDLEWARE = [

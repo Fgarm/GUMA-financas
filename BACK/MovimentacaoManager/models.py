@@ -13,8 +13,8 @@ class MovimentacaoManager(models.Model):
     tag = models.CharField(max_length=255, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, to_field="username", null=True, on_delete=models.SET_NULL)
     atualizacao= models.DateTimeField() # utlima data que foi atualizado o saldo
-    frequencia = models.CharField() #D, S, M, A para dia, semana, mes e ano
-    tipo = models.CharField() #G para gastos, S para saldos
+    frequencia = models.CharField(max_length=1) #D, S, M, A para dia, semana, mes e ano
+    tipo = models.CharField(max_length=1) #G para gastos, S para saldos
 
 # Para cadastrar um saldo novo precisa do valor (enviado como "saldo") e precisa do username
 # Para cadastrar um gasto novo precisa de todos os campos acima, ent saldo está enquadrado no gasto
