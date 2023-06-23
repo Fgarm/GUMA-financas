@@ -214,3 +214,14 @@ class ManagerView(APIView):
         ManagerView._implementar_recorrencia(str(user.username))
 
         return Response(f"Por um milagre deu certo: {serializer.data}", status=stat)
+    @api_view(['DELETE'])
+    def apagar_recorrencia(request):
+        try:
+            recorrencia = MovimentacaoManager.objects.get(id=request.data["id"])
+        except MovimentacaoManager.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        if request.method == 'DELETE':
+            recorrencia.delete()
+            return Response("Deletado com sucesso", status=status.HTTP_204_NO_CONTENT)
+      
