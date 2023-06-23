@@ -25,6 +25,7 @@ class Gastos_Grupo(models.Model):
     grupoGasto_id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     valor_total = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     nome_gasto = models.CharField(max_length=255, null=True)
+    provedor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     id_grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE, null=True)
 
