@@ -13,6 +13,7 @@ import {
   useDisclosure,
   ModalHeader,
   Text,
+  useToast
 } from '@chakra-ui/react'
 
 import axios from 'axios'
@@ -26,6 +27,8 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
   const [nomeError, setNomeError] = useState('');
   const [descricaoError, setDescricaoError] = useState('');
 
+  const toast = useToast() 
+  
   const handleSubmit = () => {
 
     const data = {
@@ -45,6 +48,12 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
           setNome('')
           setDescricao('')
           onClose()
+          toast({
+            title: 'Grupo criado com sucesso.',
+            status: 'success',
+            isClosable: true,
+            duration: 3000,
+        });
         } else if (response.status === 409) {
           alert('Grupo de nome já cadastrado no sistema')
         } else if (response.status === 400) {

@@ -22,7 +22,6 @@ export default function GroupPage() {
     const username = localStorage.getItem('cadastro_user');
 
     const [gastoId, setGastoId] = useState('')
-    const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
     const [itensGasto, setItensGasto] = useState('')
 
@@ -111,7 +110,6 @@ export default function GroupPage() {
 
     function handleGetInfoGasto(gastoGrupo) {
         setGastoId(gastoGrupo.gasto_id)
-        setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
         getItens()
         getUsuariosGasto()
@@ -165,7 +163,12 @@ export default function GroupPage() {
     const handleCopy = () => {
         clipboardCopy(`http://localhost:5173/join/?grupo=${grupoId}`)
             .then(() => {
-                console.log('Texto copiado com sucesso!');
+                toast({
+                    title: 'Link Copiado.',
+                    status: 'success',
+                    isClosable: true,
+                    duration: 3000,
+                });
                 onClose();
             })
             .catch((error) => {
@@ -187,12 +190,6 @@ export default function GroupPage() {
                                 className='link-button'
                                 ml="auto" // Adicione esta propriedade
                                 onClick={() => {
-                                    toast({
-                                        title: 'Link Copiado.',
-                                        status: 'success',
-                                        isClosable: true,
-                                        duration: 3000,
-                                    });
                                     handleCopy();
                                 }}
                             >
@@ -251,7 +248,7 @@ export default function GroupPage() {
                     )}
                 </div>
 
-                <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoID} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
+                <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoId} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
                     <Button onClick={handleGetInfoGasto}>Fechar</Button>
                 </ShowInfoGroup>
 
@@ -259,7 +256,7 @@ export default function GroupPage() {
                     <Button onClick={handleClose}>Fechar</Button>
                 </CreateGastoGroup>
 
-                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
+                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoId} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
                     <Button onClick={handleCloseItem}>Fechar</Button>
                 </AddItemGroupGasto>
             </div>

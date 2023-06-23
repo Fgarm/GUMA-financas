@@ -17,18 +17,18 @@ export default function LogUp() {
   const createUserFormSchema = z.object(
     {
       username: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos'),
 
       first_name: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos')
         .transform(name => {
           return name[0].toLocaleUpperCase().concat(name.substring(1))
         }),
 
       last_name: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[^0-9]*$/, 'O nome não pode conter números')
         .transform(last_name => {
           return last_name[0].toLocaleUpperCase().concat(last_name.substring(1))
@@ -36,12 +36,12 @@ export default function LogUp() {
 
 
       email: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .email('Formato de email inválido')
         .toLowerCase(),
 
       password: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
   )

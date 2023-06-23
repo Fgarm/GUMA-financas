@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md'
 // import AddItemGroupGasto from '../../modals/addItemGroupGasto'
-import CurrencyInput from 'react-currency-input-field';
+import CurrencyInput from 'react-currency-input-field'
 import PeopleInput from '../../components/peopleInput'
 import {
   Alert,
@@ -31,6 +31,7 @@ import {
   Stack,
   Text,
   useDisclosure,
+  useToast
 } from '@chakra-ui/react'
 
 import axios from 'axios'
@@ -49,7 +50,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [custo, setCusto] = useState('')
   const [usuariosGasto, setUsuariosGasto] = useState([])
   const [nomeItem, setNomeItem] = useState('')
-  const [quantidade, setQuantidade] = useState(0)
+  const [quantidade, setQuantidade] = useState('')
   const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }])
   const [usuariosSelecionados, setUsuariosSelecionados] = useState([])
 
@@ -58,9 +59,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [itensCadastrados, setItensCadastrados] = useState([])
   const [itensSelecionados, setItensSelecionados] = useState([])
 
-
   const cancelRef = React.useRef()
-  const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
+  const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure()
+
+  const toast = useToast()
 
   useEffect(() => {
     getUsuarios()
@@ -95,7 +97,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       usuarios: usuariosGasto,
       itens: itensCadastrados
     }
-    
+
     console.log(JSON.stringify(data))
 
     // axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
@@ -168,7 +170,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   const formatValue = (value) => {
-    // Adicionando o símbolo de porcentagem ao valor formatado
     return value ? `${value}%` : value
   }
 
@@ -190,7 +191,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   </GridItem>
                   <GridItem>
                     <Input
-                      name="peso"
                       placeholder="Peso"
                       _placeholder={{ color: 'inherit' }}
                       borderColor="black"
@@ -212,6 +212,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }, [itensCadastrados])
 
   const handleCadastrarItem = () => {
+    
     // Acessar os dados selecionados dos checkboxes
     const itensSelecionadosData = usuariosGrupo.filter((user) =>
       itensSelecionados.includes(user.id)
@@ -221,15 +222,56 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     const usuariosSelecionados = itensSelecionadosData.map((item) => item.username)
     const pesosSelecionados = itensSelecionadosData.map((item) => pesos[item.id])
 
+    const hasNaNPesos = pesosSelecionados.some((pesos) => isNaN(parseFloat(pesos)))
+
+    if (hasNaNPesos) {
+      toast({
+        title: 'Existem pesos inválidos',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+      return
+    }
+
+    // Verificar a soma dos pesos
+    const somaPesos = pesosSelecionados.reduce((accumulator, currentValue) => {
+      const parsedValue = parseFloat(currentValue)
+      if (isNaN(parsedValue) || parsedValue < 0) {
+        toast({
+          title: 'Pesos não podem ter valor negativo',
+          status: 'error',
+          isClosable: true,
+          duration: 3000,
+        })
+        return
+      }
+      return accumulator + parsedValue
+    }, 0)
+
+
+    console.log(`PESOS: ${somaPesos}`)
+    if (somaPesos != 100) {
+      toast({
+        title: 'A soma dos pesos deve ser igual 100',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+      return
+    }
+
+
     // Converter as listas de usuários e pesos em strings
     const usuariosString = usuariosSelecionados.join(",")
     const pesosString = pesosSelecionados.join(",")
 
+
     // Criar um novo objeto de item cadastrado com os valores atuais
     const novoItemCadastrado = {
       descricao: nomeItem,
-      preco_unitario: custo,
-      quantidade: quantidade,
+      preco_unitario: parseFloat(custo),
+      quantidade: parseFloat(quantidade),
       // usuarios: usuariosString,
       // pesos: pesosString,
       usuarios: usuariosSelecionados,
@@ -250,15 +292,14 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   const handleClearInput = () => {
-    // Limpar os campos de entrada após o cadastro
     setNomeItem('')
-    setCusto(0)
-    setQuantidade(0)
+    setCusto('')
+    setQuantidade('')
   }
 
   const handleDeleteClick = (data) => {
-    setKeyItem(data);
-    onAlertDialogOpen();
+    setKeyItem(data)
+    onAlertDialogOpen()
   }
 
   const handleExcluirItem = () => {
@@ -268,14 +309,30 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     onAlertDialogClose()
   }
 
+  // const handleDeleteClick = (data) => {
+  //   setKeyItem(data)
+  //   onAlertDialogOpen()
+  // }
+
+  const handleEditarClick = (data) => {
+    const itemEncontrado = itensCadastrados.find((item, i) => i === data);
+
+    setNomeItem(itemEncontrado.descricao)
+    setCusto(itemEncontrado.preco_unitario)
+    setQuantidade(itemEncontrado.quantidade)
+
+    setKeyItem(data)
+
+    handleButtonClick()
+    handleExcluirItem()
+  }
+
   function handleCloseModal() {
     onClose()
     setMostrarDiv(false)
     setmostrarItem(true)
     setItensCadastrados([]) // Limpa a lista de itens cadastrados
-    setNomeItem('')
-    setCusto(0)
-    setQuantidade(0)
+    handleClearInput()
     setItensSelecionados([])
     setPesos({})
   }
@@ -292,6 +349,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
         finalFocusRef={finalRef}
         isOpen={isOpen}
         onClose={onClose}
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
@@ -318,14 +376,14 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
               {mostrarItem &&
                 (
                   <div>
-                    <FormLabel>Itens</FormLabel>
+                    <FormLabel as='b' fontSize='lg'>Itens</FormLabel>
                     <div className='itens'>
                       {itensCadastrados.length === 0 ? (
                         <p></p>
                       ) : (
                         itensCadastrados.map((item, key) => (
 
-                          <div key={key}>
+                          <div key={key} style={{ marginTop: '30px' }}>
                             <div>
                               <Grid templateColumns="1fr 1fr" gap={4}>
                                 <GridItem display="flex" justifyContent="flex-start">
@@ -334,6 +392,13 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                                   </Text>
                                 </GridItem>
                                 <GridItem display="flex" justifyContent="flex-end">
+
+                                  <Icon
+                                    as={MdOutlineModeEditOutline}
+                                    w={5}
+                                    h={5}
+                                    onClick={() => handleEditarClick(key)}
+                                  />
 
                                   <Icon
                                     as={MdDelete}
@@ -345,12 +410,12 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                                 </GridItem>
                               </Grid>
                               <div>
-                                <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
                                   Total = {parseFloat(item.preco_unitario).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} X {item.quantidade} = {(parseFloat(item.preco_unitario) * parseFloat(item.quantidade)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                 </Text>
                                 {item.usuarios.map((usuario, index) => (
                                   <div key={index}>
-                                    <Text fontSize='lg' display="flex" justifyContent="flex-end">
+                                    <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
                                       {usuario} : {item.pesos[index]} % = {(((parseFloat(item.preco_unitario) * parseFloat(item.quantidade)) / 100) * parseFloat(item.pesos[index])).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                     </Text>
                                   </div>
@@ -376,33 +441,42 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                 <div>
                   <FormLabel>Itens</FormLabel>
                   <FormControl>
-                    <Input onChange={(e) => {
-                      setNomeItem(e.target.value)
-                    }}
-                      placeholder='Nome do item' _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+                    <Input
+                      defaultValue={nomeItem}
+                      onChange={(e) => {
+                        setNomeItem(e.target.value)
+                      }}
+                      placeholder='Nome do item'
+                      _placeholder={{ color: 'inherit' }}
+                      borderColor="black"
+                      focusBorderColor="black" />
                   </FormControl>
                   <br></br>
                   <FormControl>
                     <ChakraProvider>
                       <Grid templateColumns="1fr 1fr" gap={4}>
                         <GridItem>
-                          <Input onChange={(e) => {
+                          <Input 
+                          defaultValue={custo}
+                          onChange={(e) => {
                             setCusto(e.target.value)
                           }}
-                            placeholder="Custo"
-                            _placeholder={{ color: 'inherit' }}
-                            borderColor="black"
-                            focusBorderColor="black"
+                          placeholder="Custo"
+                          _placeholder={{ color: 'inherit' }}
+                          borderColor="black"
+                          focusBorderColor="black"
                           />
                         </GridItem>
                         <GridItem>
-                          <Input onChange={(e) => {
+                          <Input 
+                          defaultValue={quantidade}
+                          onChange={(e) => {
                             setQuantidade(e.target.value)
                           }}
-                            placeholder="Quantidade"
-                            _placeholder={{ color: 'inherit' }}
-                            borderColor="black"
-                            focusBorderColor="black"
+                          placeholder="Quantidade"
+                          _placeholder={{ color: 'inherit' }}
+                          borderColor="black"
+                          focusBorderColor="black"
                           />
                         </GridItem>
                       </Grid>
