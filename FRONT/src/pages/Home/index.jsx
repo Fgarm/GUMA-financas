@@ -107,17 +107,18 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  // window.addEventListener("beforeunload", function (event) {
-  //   const perfTiming = performance.getEntriesByType("navigation")[0];
-  //   if (perfTiming.type === "reload") {
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("cadastro_user", username);
-  //     sessionStorage.setItem("reloading", "true");
-  //   } else {
-  //     localStorage.removeItem("token");
-  //     localStorage.removeItem("cadastro_user");
-  //   }
-  // });
+  function handleClearInput() {
+    setNome('');
+    setValor(0);
+    setPago(false);
+    setSelectedDate('');
+  }
+
+  function handleClearErros() {
+    setNomeError('');
+    setValorError('');
+    setDataError('');
+  }
 
   function extrairData(dataHora) {
     const data = dataHora.split('T')[0];
@@ -227,10 +228,8 @@ export default function Home() {
             isClosable: true,
             duration: 3000,
           });
-          setNome('');
-          setValor('');
-          setPago(false);
-          setSelectedDate('');
+
+          handleClearInput()
         } else {
           alert('Erro de dados submetidos')
           return
@@ -264,10 +263,7 @@ export default function Home() {
         if (response.status == 204) {
           console.log('Gasto atualizado com sucesso');
           onModalEditClose();
-          setNome('');
-          setValor(0);
-          setSelectedDate('');
-          setPago();
+          handleClearInput()
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
@@ -500,7 +496,7 @@ export default function Home() {
                       const value = e.target.value;
                       if (value.trim().length > 0) {
                         setCreatedTag(value);
-                        setInputError(null);
+                        setInputError('');
                       } else {
                         setCreatedTag('');
                         setInputError('Este campo é obrigatório.');
@@ -520,7 +516,7 @@ export default function Home() {
                       const value = e.target.value;
                       if (value.trim().length > 0) {
                         setTagColor(value);
-                        setCorError(null);
+                        setCorError('');
                       } else {
                         setTagColor('');
                         setCorError('Este campo é obrigatório.');
@@ -544,14 +540,14 @@ export default function Home() {
                       setInputError('Este campo é obrigatório.');
                       hasEmptyFields = true;
                     } else {
-                      setInputError(null);
+                      setInputError('');
                     }
 
                     if (tagColor.trim().length === 0) {
                       setCorError('Este campo é obrigatório.');
                       hasEmptyFields = true;
                     } else {
-                      setCorError(null);
+                      setCorError('');
                     }
 
                     if (!hasEmptyFields) {
@@ -563,8 +559,8 @@ export default function Home() {
                 </Button>
                 <Button onClick={() => {
                   onModalTagClose();
-                  setInputError(null);
-                  setCorError(null);
+                  setInputError('');
+                  setCorError('');
                 }}>
                   Cancelar
                 </Button>
@@ -596,7 +592,7 @@ export default function Home() {
                       const value = e.target.value;
                       if (value.trim().length > 0) {
                         setNome(value);
-                        setNomeError(null);
+                        setNomeError('');
                       } else {
                         setNome('');
                         setNomeError('Este campo é obrigatório.');
@@ -610,22 +606,25 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Valor</label>
                   <br></br>
-                  <Tooltip label="Hey, I'm here!"  placement='right-end'>
 
-                    <Input
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value.trim().length > 0) {
-                          setValor(value);
-                          setValorError(null);
-                        } else {
-                          setValor(0);
-                          setValorError('Este campo é obrigatório.');
-                        }
-                      }}
-                    />
+                  <Input
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
 
-                  </Tooltip>
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
 
                   {valorError && (
                     <Text color="red" fontSize="sm">{valorError}</Text>
@@ -640,7 +639,7 @@ export default function Home() {
                       const value = e.target.value;
                       if (value.trim().length > 0) {
                         setSelectedDate(value);
-                        setDataError(null);
+                        setDataError('');
                       } else {
                         setSelectedDate('');
                         setDataError('Este campo é obrigatório.');
@@ -689,21 +688,21 @@ export default function Home() {
                       setNomeError('Este campo é obrigatório.');
                       hasEmptyFields = true;
                     } else {
-                      setNomeError(null);
+                      setNomeError('');
                     }
 
                     if (valor == 0) {
                       setValorError('Este campo é obrigatório.');
                       hasEmptyFields = true;
                     } else {
-                      setValorError(null);
+                      setValorError('');
                     }
 
                     if (data.trim().length === 0) {
                       setDataError('Este campo é obrigatório.');
                       hasEmptyFields = true;
                     } else {
-                      setDataError(null);
+                      setDataError('');
                     }
 
                     if (!hasEmptyFields) {
@@ -716,10 +715,8 @@ export default function Home() {
 
                 <Button
                   onClick={() => {
-                    onModalCreateClose();
-                    setNomeError(null);
-                    setValorError(null);
-                    setDataError(null);
+                    handleClearErros()
+                    onModalCreateClose()
                   }}
                 >
                   Cancelar
@@ -762,23 +759,35 @@ export default function Home() {
                         setNomeError('Este campo é obrigatório.');
                       }
                     }} />
+                  {nomeError && (
+                    <Text color="red" fontSize="sm">{nomeError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
                   <label >Valor</label>
                   <br></br>
                   <Input
-                    defaultValue={valor}
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
                     onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setValor(value);
-                        setValorError(null);
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
                       } else {
-                        setValor(0);
+                        setValor(0)
                         setValorError('Este campo é obrigatório.');
                       }
-                    }} />
+                    }}
+                  />
+                  {valorError && (
+                    <Text color="red" fontSize="sm">{valorError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
@@ -797,6 +806,9 @@ export default function Home() {
                         setDataError('Este campo é obrigatório.');
                       }
                     }} />
+                  {dataError && (
+                    <Text color="red" fontSize="sm">{dataError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
@@ -864,7 +876,10 @@ export default function Home() {
                 >
                   Salvar
                 </Button>
-                <Button onClick={onModalEditClose}>Cancelar</Button>
+                <Button onClick={() => {
+                  handleClearErros()
+                  onModalEditClose()
+                }}>Cancelar</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>

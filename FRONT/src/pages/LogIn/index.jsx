@@ -59,7 +59,7 @@ export default function LogIn() {
           navigate('/home', { replace: true })
         } else {
           toast({
-            title: 'Usuário ou email incorretos',
+            title: 'Usuário ou senha incorretos',
             status: 'error',
             isClosable: true,
             duration: 3000,

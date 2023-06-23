@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md'
-// import AddItemGroupGasto from '../../modals/addItemGroupGasto'
-import CurrencyInput from 'react-currency-input-field'
+
 import PeopleInput from '../../components/peopleInput'
 import {
   Alert,
@@ -16,7 +15,6 @@ import {
   Checkbox,
   FormLabel,
   FormControl,
-  FormHelperText,
   Flex,
   Grid,
   GridItem,
@@ -47,10 +45,17 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [mostrarDiv, setMostrarDiv] = useState(false)
 
   const [nomeGasto, setNomeGasto] = useState('')
-  const [custo, setCusto] = useState('')
   const [usuariosGasto, setUsuariosGasto] = useState([])
+  const [custo, setCusto] = useState(0)
   const [nomeItem, setNomeItem] = useState('')
   const [quantidade, setQuantidade] = useState('')
+
+  const [nomeGastoError, setNomeGastoError] = useState('')
+  const [usuariosGastoError, setUsuariosGastoError] = useState('')
+  const [custoError, setCustoError] = useState('')
+  const [nomeItemError, setNomeItemError] = useState('')
+  const [quantidadeError, setQuantidadeError] = useState('')
+
   const [usuariosGrupo, setUsuariosGrupo] = useState([{ username: 'teste' }])
   const [usuariosSelecionados, setUsuariosSelecionados] = useState([])
 
@@ -58,6 +63,9 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const [keyItem, setKeyItem] = useState(0)
   const [itensCadastrados, setItensCadastrados] = useState([])
   const [itensSelecionados, setItensSelecionados] = useState([])
+
+  // const [pesosDefault, setPesosDefault] = useState([])
+  // const [usuariosDefault, setUsuariosDefault] = useState([])
 
   const cancelRef = React.useRef()
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure()
@@ -91,6 +99,16 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
   function handleSubmit() {
 
+    if (usuariosGasto.length == '') {
+      toast({
+        title: 'Selecione os usuários do gasto',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+      return
+    }
+
     const data = {
       nome_gasto: nomeGasto,
       id_grupo_id: groups_id,
@@ -100,44 +118,50 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
     console.log(JSON.stringify(data))
 
-    // axios.post('http://localhost:8000/grupos/cadastrar-gasto-grupo/', data)
-    //   .then(response => {
-    //     if (response.status === 200) {
-    onClose()
-    handleCreateSuccess()
-    handleCloseModal()
-    //     } else if (response.status === 409) {
-    //       alert('Grupo de nome já cadastrado no sistema')
-    //     } else if (response.status === 400) {
-    //       alert('Dados de cadastro não estão nos parâmetros aceitos')
-    //     } else {
-    //       alert('Erro de solicitação')
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //   })
-  }
+    axios.post('http://localhost:8000/grupos/cadastrar-gastos-itens/', data)
+      .then(response => {
+        if (response.status === 201) {
+          toast({
+            title: 'Gasto do grupo criado com sucesso',
+            status: 'success',
+            isClosable: true,
+            duration: 3000,
+          })
+        }
 
-  function addGastoGroupUser() {
+        // if (response.status === 409) {
+        //   toast({
+        //     title: 'Grupo de nome já cadastrado no sistema',
+        //     status: 'error',
+        //     isClosable: true,
+        //     duration: 3000,
+        //   })
+        // } else if (response.status === 400) {
+        //   toast({
+        //     title: 'Dados de cadastro não estão nos parâmetros aceitos',
+        //     status: 'error',
+        //     isClosable: true,
+        //     duration: 3000,
+        //   })
 
-    axios({
-      method: "post",
-      url: "http://localhost:8000/grupos/associar-user-grupoGastos/",
-      data: {
-        grupo_id: grupoId
-      },
-    })
-      .then((response) => {
-        setUsuariosGasto(response.data)
-        console.log(grupoId)
-        console.log(usuariosGasto)
-        setShouldRunEffect(true)
+        // } else {
+        //   toast({
+        //     title: 'Erro de solicitação',
+        //     status: 'error',
+        //     isClosable: true,
+        //     duration: 3000,
+        //   })
+        // }
+
       })
       .catch(error => {
         console.log(error)
       })
 
+
+    onClose()
+    handleCreateSuccess()
+    handleCloseModal()
   }
 
   function handleButtonClick() {
@@ -147,9 +171,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     setmostrarItem(!mostrarItem)
   }
 
-  // Teste de inputs
-
-  const handleCheckboxChange = (id) => {
+  function handleCheckboxChange(id) {
     setItensSelecionados((selecionados) => {
       if (selecionados.includes(id)) {
         return selecionados.filter((item) => item !== id)
@@ -159,21 +181,19 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     })
   }
 
-  const handlePesosChange = (userId, value) => {
-    // Removendo o símbolo de porcentagem antes de salvar no estado
-    const newValue = value.replace('%', '')
-
-    setPesos((prevPesos) => ({
-      ...prevPesos,
-      [userId]: newValue,
-    }))
-  }
-
   const formatValue = (value) => {
     return value ? `${value}%` : value
   }
 
   function CheckboxList({ usuariosGrupo }) {
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [usuariosGrupo]);
+
     return (
       <Stack spacing={2}>
         {usuariosGrupo &&
@@ -191,12 +211,21 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   </GridItem>
                   <GridItem>
                     <Input
+
+                      ref={inputRef}
                       placeholder="Peso"
                       _placeholder={{ color: 'inherit' }}
                       borderColor="black"
                       focusBorderColor="black"
                       value={formatValue(pesos[user.id] || '')}
-                      onChange={(e) => handlePesosChange(user.id, e.target.value)}
+                      onChange={(e) => {
+                        const newValue = e.target.value.replace('%', '')
+
+                        setPesos((prevPesos) => ({
+                          ...prevPesos,
+                          [user.id]: newValue,
+                        }))
+                      }}
                     />
                   </GridItem>
                 </Grid>
@@ -208,11 +237,10 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   }
 
   useEffect(() => {
-    // console.log(itensCadastrados)
   }, [itensCadastrados])
 
-  const handleCadastrarItem = () => {
-    
+  function handleCadastrarItem() {
+
     // Acessar os dados selecionados dos checkboxes
     const itensSelecionadosData = usuariosGrupo.filter((user) =>
       itensSelecionados.includes(user.id)
@@ -291,40 +319,46 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     handleButtonClick()
   }
 
-  const handleClearInput = () => {
+  function handleClearInput() {
     setNomeItem('')
     setCusto('')
     setQuantidade('')
   }
 
-  const handleDeleteClick = (data) => {
+  function handleDeleteClick(data) {
     setKeyItem(data)
     onAlertDialogOpen()
   }
 
-  const handleExcluirItem = () => {
+  function handleExcluirItem() {
     setItensCadastrados((prevItensCadastrados) =>
       prevItensCadastrados.filter((item, i) => i !== keyItem)
     )
     onAlertDialogClose()
   }
 
-  // const handleDeleteClick = (data) => {
-  //   setKeyItem(data)
-  //   onAlertDialogOpen()
-  // }
-
-  const handleEditarClick = (data) => {
-    const itemEncontrado = itensCadastrados.find((item, i) => i === data);
+  function handleEditarClick(data) {
+    const itemEncontrado = itensCadastrados.find((item, i) => i === data)
 
     setNomeItem(itemEncontrado.descricao)
     setCusto(itemEncontrado.preco_unitario)
     setQuantidade(itemEncontrado.quantidade)
 
-    setKeyItem(data)
+    const { usuarios, pesos } = itemEncontrado
+
+    const novoItensCadastrados = itensCadastrados.filter((item, index) => index !== data)
+
+    console.log("itensCadastrados atualizados:", novoItensCadastrados)
+    console.log("Usuários:", usuarios)
+    console.log("Pesos:", pesos)
+
+    setItensCadastrados((prevItensCadastrados) =>
+      prevItensCadastrados.filter((item) => item !== itemEncontrado)
+    )
+
+    console.log("itensCadastrados atualizados:", itensCadastrados)
 
     handleButtonClick()
-    handleExcluirItem()
   }
 
   function handleCloseModal() {
@@ -336,8 +370,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     setItensSelecionados([])
     setPesos({})
   }
-
-  // Teste de inputs
 
   return (
 
@@ -362,9 +394,24 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
           <ModalBody>
             <FormControl mt={4}>
               <FormLabel>Nome</FormLabel>
-              <Input onChange={(e) => {
-                setNomeGasto(e.target.value)
-              }} _placeholder={{ color: 'inherit' }} borderColor="black" focusBorderColor="black" />
+              <Input
+                _placeholder={{ color: 'inherit' }}
+                borderColor="black"
+                focusBorderColor="black"
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (value.trim().length > 0) {
+                    setNomeGasto(value)
+                    setNomeGastoError('')
+                  } else {
+                    setNomeGasto('')
+                    setNomeGastoError('Este campo é obrigatório.')
+                  }
+                }} />
+              {nomeGastoError && (
+                <Text color="red" fontSize="sm">{nomeGastoError}</Text>
+              )}
+
             </FormControl>
 
             <FormControl mt={4}>
@@ -393,12 +440,12 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                                 </GridItem>
                                 <GridItem display="flex" justifyContent="flex-end">
 
-                                  <Icon
+                                  {/* <Icon
                                     as={MdOutlineModeEditOutline}
                                     w={5}
                                     h={5}
                                     onClick={() => handleEditarClick(key)}
-                                  />
+                                  /> */}
 
                                   <Icon
                                     as={MdDelete}
@@ -442,42 +489,77 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   <FormLabel>Itens</FormLabel>
                   <FormControl>
                     <Input
-                      defaultValue={nomeItem}
-                      onChange={(e) => {
-                        setNomeItem(e.target.value)
-                      }}
                       placeholder='Nome do item'
                       _placeholder={{ color: 'inherit' }}
                       borderColor="black"
-                      focusBorderColor="black" />
+                      focusBorderColor="black"
+                      defaultValue={nomeItem}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        if (value.trim().length > 0) {
+                          setNomeItem(value)
+                          setNomeItemError('')
+                        } else {
+                          setNomeItem('')
+                          setNomeItemError('Este campo é obrigatório.')
+                        }
+                      }} />
+                    {nomeItemError && (
+                      <Text color="red" fontSize="sm">{nomeItemError}</Text>
+                    )}
                   </FormControl>
                   <br></br>
                   <FormControl>
                     <ChakraProvider>
                       <Grid templateColumns="1fr 1fr" gap={4}>
                         <GridItem>
-                          <Input 
-                          defaultValue={custo}
-                          onChange={(e) => {
-                            setCusto(e.target.value)
-                          }}
-                          placeholder="Custo"
-                          _placeholder={{ color: 'inherit' }}
-                          borderColor="black"
-                          focusBorderColor="black"
+                          <Input
+                            placeholder="Custo"
+                            _placeholder={{ color: 'inherit' }}
+                            borderColor="black"
+                            focusBorderColor="black"
+                            value={`R$ ${custo.toLocaleString('pt-BR', {
+                              maximumFractionDigits: 2,
+                              minimumFractionDigits: 2,
+                            }) || ''}`}
+                            onChange={(e) => {
+                              const rawValue = e.target.value.replace(/\D/g, '');
+                              const floatValue = parseFloat(rawValue) / 100;
+
+                              if (rawValue.length > 0) {
+                                setCusto(floatValue);
+                                setCustoError('');
+                              } else {
+                                setCusto(0)
+                                setCustoError('Este campo é obrigatório.');
+                              }
+                            }}
                           />
+
+                          {custoError && (
+                            <Text color="red" fontSize="sm">{custoError}</Text>
+                          )}
                         </GridItem>
                         <GridItem>
-                          <Input 
-                          defaultValue={quantidade}
-                          onChange={(e) => {
-                            setQuantidade(e.target.value)
-                          }}
-                          placeholder="Quantidade"
-                          _placeholder={{ color: 'inherit' }}
-                          borderColor="black"
-                          focusBorderColor="black"
-                          />
+                          <Input
+                            placeholder="Quantidade"
+                            _placeholder={{ color: 'inherit' }}
+                            borderColor="black"
+                            focusBorderColor="black"
+                            defaultValue={quantidade}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              if (value.trim().length > 0) {
+                                setQuantidade(value)
+                                setQuantidadeError('')
+                              } else {
+                                setQuantidade('')
+                                setQuantidadeError('Este campo é obrigatório.')
+                              }
+                            }} />
+                          {quantidadeError && (
+                            <Text color="red" fontSize="sm">{quantidadeError}</Text>
+                          )}
                         </GridItem>
                       </Grid>
                     </ChakraProvider>
@@ -489,8 +571,46 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   </div>
                   <br></br>
                   <Flex justifyContent="flex-start">
-                    <Button marginRight="0.5rem" onClick={handleCadastrarItem}>Cadastrar Item</Button>
-                    <Button marginRight="0.5rem" onClick={handleButtonClick}>Excluir</Button>
+                    <Button marginRight="0.5rem"
+                      onClick={() => {
+                        let hasEmptyFields = false
+
+                        if (nomeItem.trim().length === 0) {
+                          setNomeItemError('Este campo é obrigatório.')
+                          hasEmptyFields = true
+                        } else {
+                          setNomeItemError('')
+                        }
+
+                        if (custo.length === 0 || custo == '') {
+                          setCustoError('Este campo é obrigatório.')
+                          hasEmptyFields = true
+                        } else {
+                          setCustoError('')
+                        }
+
+                        if (quantidade.trim().length === 0) {
+                          setQuantidadeError('Este campo é obrigatório.')
+                          hasEmptyFields = true
+                        } else {
+                          setQuantidadeError('')
+                        }
+
+                        if (!hasEmptyFields) {
+                          handleCadastrarItem()
+                        }
+                      }}
+
+
+                    >Cadastrar Item</Button>
+                    <Button
+                      marginRight="0.5rem"
+                      onClick={() => {
+                        setNomeItemError('')
+                        setCustoError('')
+                        setQuantidadeError('')
+                        handleButtonClick()
+                      }}>Cancelar</Button>
                   </Flex>
 
                 </div>
@@ -505,10 +625,30 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
             <Button
               style={{ background: '#6F9951' }}
               mr={3}
-              onClick={handleSubmit}>
+              onClick={() => {
+                let hasEmptyFields = false
+
+                if (nomeGasto.trim().length === 0) {
+                  setNomeGastoError('Este campo é obrigatório.')
+                  hasEmptyFields = true
+                } else {
+                  setNomeGastoError('')
+                }
+
+                if (!hasEmptyFields) {
+                  handleSubmit()
+                }
+              }}>
               Criar
             </Button>
-            <Button onClick={handleCloseModal}>Cancelar</Button>
+            <Button onClick={() => {
+              setNomeGastoError('')
+              setNomeItemError('')
+              setCustoError('')
+              setQuantidadeError('')
+              handleCloseModal()
+            }
+            }>Cancelar</Button>
 
           </ModalFooter>
 
@@ -551,4 +691,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
   )
 }
+
+
+
 
