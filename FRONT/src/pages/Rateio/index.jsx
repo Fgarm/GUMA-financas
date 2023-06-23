@@ -37,17 +37,15 @@ export default function RateioPage() {
           <div className='body-rateio'>
             
             <div className='left-container'>
-                <div className='teste'></div>
-                <div className='teste'></div>
-                <div className='teste'></div>
                 
+                <div className='container-devendo'></div>
+                <div className='container-receber'></div>
                 {/* <LineChartComponent/>
                 <DoughnutChartComponent/> */}
             </div>
 
             <div className='right-container'>
-                <div className='teste'></div>
-                <div className='teste'></div>
+                <div className='container-resumo-total'></div>
               
                 {/* <BarChartComponent/> */}
             </div>
