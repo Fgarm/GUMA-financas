@@ -68,6 +68,7 @@ export default function Home() {
   const [editTags, setEditTags] = useState('')
 
   const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
+  const [gastosPorDataFiltrados, setGastosPorDataFiltrados] = useState({});
 
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
@@ -78,6 +79,7 @@ export default function Home() {
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
+  const [isFilterOn, setIsFilterOn] = useState(false)
 
   const [novaTag, setNovaTag] = useState(0)
 
@@ -120,6 +122,30 @@ export default function Home() {
     onAddSaldoClose()
   }
 
+  function organizarGastosPorData(params) {
+    let gastosData = {};
+    params.forEach(gasto => {
+    const data = extrairData(gasto.data);
+    if (gastosData[data]) {
+      gastosData[data].push(gasto);
+    } else {
+      gastosData[data] = [gasto];
+    }
+    });
+
+    const sortedKeys = Object.keys(gastosData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
+
+    const gastosOrdenado = {};
+    sortedKeys.forEach(key => {
+      gastosOrdenado[key] = gastosData[key];
+    });
+
+    setGastosPorDataFiltrados(gastosOrdenado); // Atualize o estado aqui
+    console.log(gastosPorDataFiltrados);
+
+  }
+
+
   function organizarGastosEntradasPorData(params) {
     let gastosPorData = {};
     params.forEach(gasto => {
@@ -133,17 +159,14 @@ export default function Home() {
 
     const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
 
-  // Reconstruir o objeto gastosPorData com as chaves ordenadas
-  const gastosPorDataOrdenado = {};
-  sortedKeys.forEach(key => {
-    gastosPorDataOrdenado[key] = gastosPorData[key];
-  });
+    const gastosPorDataOrdenado = {};
+    sortedKeys.forEach(key => {
+      gastosPorDataOrdenado[key] = gastosPorData[key];
+    });
 
-  setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
-  console.log(gastosEntradasPorData);
+    setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
+    console.log(gastosEntradasPorData);
 
-    // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-    // console.log(gastosEntradasPorData);
   }
 
   function addFlag() {
@@ -157,10 +180,6 @@ export default function Home() {
       .then(response => {
         setGastosEntrada(response.data)
         organizarGastosEntradasPorData(response.data)
-        // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-        // console.log(gastosEntradasPorData);  
-        // console.log(gastosPorData)
-        // console.log(response.data)        
       })
       .catch(error => {
         console.log("user", username)
@@ -229,6 +248,10 @@ export default function Home() {
   const handleEdit = () => {
     const tag_edit = tagsList;
 
+    if(valor < 0){
+      setValor(valor * -1)
+    }
+
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
       id: id,
@@ -290,6 +313,7 @@ export default function Home() {
       .then((response) => {
         const data = response.data;
         setGastos(data);
+        organizarGastosPorData(data);
         setShouldRunEffect(true)
         console.log(response.data)
       })
@@ -358,6 +382,10 @@ export default function Home() {
     getSaldos();
   }, [flag]);
 
+  useEffect(() => {
+    organizarGastosPorData(gastos);
+  }, [gastos]);
+
 
   function handleSearchType(type) {
     console.log(type)
@@ -411,6 +439,7 @@ export default function Home() {
               novaTag={novaTag}
               user={username}
               onGastosChange={setGastos}
+              filterOn={setIsFilterOn}
             />
             <div className='new-tag-and-gasto-button-container'>
               <Button
@@ -704,39 +733,135 @@ export default function Home() {
         </div>
 
         <div className="gasto">
-          {Object.entries(gastosEntradasPorData).length === 0 ? (
-            <p>Não há gastos com os parâmetros especificados</p>
+  {isFilterOn == false ? (
+    Object.entries(gastosEntradasPorData).length === 0 ? (
+      <p>Não há gastos com os parâmetros especificados</p>
+    ) : (
+      Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+        <div key={data}>
+          {compareDate(data) === true ? (
+            <h3 className="dia_gasto">Hoje</h3>
           ) : (
-                Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
-                  <div key={data}>
-                    {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
-                    {gastos.map((gasto, key) => (
-                      <div key={gasto.id} className="gasto_information">
-                        <p>{gasto.nome}</p>
-                        <p>
-                          {gasto.valor > 0 ? (
-                            <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
-                          ) : (
-                                <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
-                              )}
-                        </p>
-                        {/* <p>{extrairData(gasto.data)}</p> */}
-                        <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
-                        <p>{gasto.tag}</p>
-                      <div>
-                    {gasto.valor < 0 && (
-                    <>
-                      <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
-                      <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                    </>
-                    )}
-                    </div>
-                  </div>
-                ))}
-         </div>
+            <h3 className="dia_gasto">{data}</h3>
+          )}
+          {gastos.map((gasto, key) => (
+            <div key={gasto.id} className="gasto_information">
+              <p>{gasto.nome}</p>
+              <p>
+                {gasto.valor > 0 ? (
+                  <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                    +R$ {gasto.valor}{' '}
+                  </p>
+                ) : (
+                  <p style={{ color: 'red', fontWeight: 'bold' }}>
+                    -R$ {gasto.valor * -1}{' '}
+                  </p>
+                )}
+              </p>
+              <p>
+                {gasto.pago == null ? (
+                  ''
+                ) : gasto.pago > 0 ? (
+                  <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                    Pago
+                  </p>
+                ) : (
+                  <p style={{ color: 'red', fontWeight: 'bold' }}>
+                    Não Pago
+                  </p>
+                )}
+              </p>
+              <p>{gasto.tag}</p>
+              <div>
+                {gasto.valor < 0 && (
+                  <>
+                    <Icon
+                      className="edit-icon-gasto"
+                      as={MdOutlineModeEditOutline}
+                      w={5}
+                      h={5}
+                      mr={2}
+                      onClick={() => handleEditClick(gasto)}
+                    />
+                    <Icon
+                      className="delete-icon-gasto"
+                      as={MdDelete}
+                      color="red.500"
+                      w={5}
+                      h={5}
+                      onClick={() => handleDeleteClick(gasto.id)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       ))
-    )}
+    )
+  ) : (
+    Object.entries(gastosPorDataFiltrados).length === 0 ? (
+      <p>Não há gastos com os parâmetros especificados</p>
+    ) : (
+      Object.entries(gastosPorDataFiltrados).map(([data, gastos]) => (
+        <div key={data}>
+          {compareDate(data) === true ? (
+            <h3 className="dia_gasto">Hoje</h3>
+          ) : (
+            <h3 className="dia_gasto">{data}</h3>
+          )}
+          {gastos.map((gasto, key) => (
+            <div key={gasto.id} className="gasto_information">
+              <p>{gasto.nome}</p>
+                  
+              <p style={{ color: 'red', fontWeight: 'bold' }}>
+                -R$ {gasto.valor}
+              </p>
+              
+              <p>
+                {gasto.pago == null ? (
+                  ''
+                ) : gasto.pago > 0 ? (
+                  <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                    Pago
+                  </p>
+                ) : (
+                  <p style={{ color: 'red', fontWeight: 'bold' }}>
+                    Não Pago
+                  </p>
+                )}
+              </p>
+              <p>{gasto.tag}</p>
+              <div>
+                {gasto.valor < 0 && (
+                  <>
+                    <Icon
+                      className="edit-icon-gasto"
+                      as={MdOutlineModeEditOutline}
+                      w={5}
+                      h={5}
+                      mr={2}
+                      onClick={() => handleEditClick(gasto)}
+                    />
+                    <Icon
+                      className="delete-icon-gasto"
+                      as={MdDelete}
+                      color="red.500"
+                      w={5}
+                      h={5}
+                      onClick={() => handleDeleteClick(gasto.id)}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    )
+  )}
 </div>
+
 
       </div>
       </>
