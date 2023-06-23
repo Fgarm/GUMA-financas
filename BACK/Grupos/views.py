@@ -21,7 +21,9 @@ class AuxGroup:
                 users_id.append(user_id)
 
             for id in users_id:
-                GrupoGasto_User.objects.create(usuario_id=id, conta_id=gasto.grupoGasto_id, pago=False)    
+                GrupoGasto_User.objects.create(usuario_id=id, conta_id=gasto.grupoGasto_id, pago=False) 
+
+            return gasto.grupoGasto_id   
         except:
             gasto.delete()
             return Response(f"erro ao cadastrar os usuarios {users}",status=status.HTTP_400_BAD_REQUEST)
@@ -29,32 +31,31 @@ class AuxGroup:
     @staticmethod
     def cadastrar_item_associar_users(request : list, id_grupo_id): 
         for item in request:
-            preco_uni = item.preco_unitario
-            quantidade = item.quantidade
+            preco_uni = item["preco_unitario"]
+            quantidade = item["quantidade"]
             preco_total = float(preco_uni * quantidade)
 
-            item = Itens.objects.create(descricao=item.descricao,
+            item_obj = Itens.objects.create(descricao=item["descricao"],
                                     id_GastosGrupo_id=id_grupo_id,
-                                    preco_unitario=request.data["preco_unitario"],
+                                    preco_unitario=item["preco_unitario"],
                                     preco_total_item=preco_total,
-                                    quantidade=request.data["quantidade"]
+                                    quantidade=item["quantidade"]
                                 )
             
-            users = request.data["usuarios"].split(",")
-            pesos = request.data["pesos"].split(",")
+            users = item["usuarios"]
+            pesos = item["pesos"]
             users_id = list()
             for user in users:
                 user_id = User.objects.filter(username=user).first().id
-                users_id.append(user_id)
+                users_id.append(user_id)                                        
             for i, id in enumerate(users_id):
-                Iten_User.objects.create(peso=pesos[i], item_id=item.item_id, usuario_id=id)
+                Iten_User.objects.create(peso=pesos[i], item_id=item_obj.item_id, usuario_id=id)
             
-            gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=request.data["id_GastosGrupo_id"]).first()
+            gasto_g = Gastos_Grupo.objects.filter(grupoGasto_id=id_grupo_id).first()
             gasto_atual = float(gasto_g.valor_total)
             gasto_g.valor_total = gasto_atual + preco_total
             gasto_g.save()
-
-        return Response(item.item_id,status=status.HTTP_200_OK)
+        
 
     
 class GrupoView(APIView, AuxGroup):
@@ -72,13 +73,13 @@ class GrupoView(APIView, AuxGroup):
     
     @api_view(['POST'])
     def Cadastrar_gastos_itens(request):
-        AuxGroup.cadastrar_gasto_grupo(request)
+        grupo_gasto_id = AuxGroup.cadastrar_gasto_grupo(request)
 
         itens = request.data["itens"]
         id_grupo = request.data["id_grupo_id"]
-        AuxGroup.cadastrar_item_associar_users(itens, id_grupo)
+        AuxGroup.cadastrar_item_associar_users(itens, grupo_gasto_id)
 
-        pass
+        return Response("ITEM CADASTRADO", status=status.HTTP_201_CREATED)
 
     @api_view(['POST'])
     def cadastrar_item(request):  
