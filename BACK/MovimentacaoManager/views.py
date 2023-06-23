@@ -62,10 +62,11 @@ class ManagerView(APIView):
         #print(recorrencias.is_valid())
         #if recorrencias.is_valid():
             #recorrencias = recorrencias.data
-        print("++++++++++++++++++++++++++++++++")
+        #print("++++++++++++++++++++++++++++++++")
+        stat = status.HTTP_400_BAD_REQUEST
         for recorrencia in recorrencias:
-            print(recorrencia.nome)
-            print("---------------------------------")
+            #print(recorrencia.nome)
+            #print("---------------------------------")
             recorrencia = MovimentacaoManager.objects.get(id=recorrencia.id)
             infos = {}
             data_atual = dt.datetime.today()
@@ -91,34 +92,44 @@ class ManagerView(APIView):
                     infos['user'] = username
                     infos['valor'] = recorrencia.valor
                     infos['data'] = str(infos['data'])
-                    print("\n\n")
-                    print(infos)
-                    print("\n\n")
+
+                    #print("\n\n")
+                    #print(infos)
+                    #print("\n\n")
+                    # print("heloo")
                     response = urlopen(
                         Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
                             data=json.dumps(infos).encode('utf-8'),
                             headers={}, origin_req_host=None,
                             unverifiable=False, method='POST')
                     )
-                    print("\n\n")
-                    print(response)
-                    print("\n\n")
-                    print(f"cadastrou: {infos}")
+                    stat = response.status
+                    
+
+                    #print("\n\n")
+                    #print(response)
+                    #print("\n\n")
+                    #print(f"cadastrou: {infos}")
                     #Gastos.views.GastoApiView.post_gastos(json.dumps(infos))
                     # criar a o novo gasto com a data_atualizacao
                 else: # tipo == "S"
-                    infos['username'] = recorrencia.user
+                    infos['user'] = username
                     infos['saldo'] = recorrencia.valor
+                    infos['data'] = str(infos['data'])
+                    response = urlopen(
+                        Request("http://127.0.0.1:8000/bancario/add-saldo/",
+                            data=json.dumps(infos).encode('utf-8'),
+                            headers={}, origin_req_host=None,
+                            unverifiable=False, method='POST')
+                    )
+                    stat = response.status
                     # Não funciona (tem que adicionar o envio de saldo que funcione)
                     # Bancario.views.BancarioView.add_saldo(json.dumps(infos))
                     # criar o novo saldo com a data_atualizacao
                     pass
-            #serializer = MovimentacaoSerializer(recorrencia, data=recorrencia)
-            # Caso der BUG pode ser o culpado (infos não passando todas as infos pro serializer)
-            # acho que funciona mais sla
             
             recorrencia.save() # salva o serializer pro DB (deve funcionar né)
-        return Response("passou I guess",status=status.HTTP_200_OK)
+        return Response("passou I guess",status=stat)
             # atualizar a data na recorrencia
 
 
@@ -127,12 +138,13 @@ class ManagerView(APIView):
 
     @api_view(['POST'])
     def criar_recorrencia(request):
-        print("\n\n")
-        print("\n\n")
+        #print("\n\n")
+        #print("\n\n")
         #recorrencia recebe dados o suficiente pra criar o que for criar
         #e uma variavel de controle que indica se vai criar um saldo ou um gasto de forma recorrente
         recorrencia = {}
         frequencia = request.data["frequencia"] # a frequencia da recorrencia
+        stat = None
         if frequencia == "Diario":
             recorrencia["frequencia"] = "D"
         elif frequencia == "Semanal":
@@ -159,21 +171,22 @@ class ManagerView(APIView):
         recorrencia["data"] = request.data["data"] # data de criação
         recorrencia["valor"] = request.data["valor"] # valor 
         recorrencia["atualizacao"] = request.data["data"] # a ultima atualização foi a data que o ultimo foi criado
+        data = str(request.data["data"]).split("-")
+        date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
+        recorrencia["data"] = str(date_time.replace(tzinfo=dt.timezone.utc))
         if request.data["tipo"] == "gasto":
             recorrencia["tipo"] = "G"
-            data = str(request.data["data"]).split("-")
-            date_time = dt.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             recorrencia["nome"] = request.data["nome"] # nome do gasto
             recorrencia["pago"] = request.data["pago"] # se é pago ou não
             #print(request.headers)
-            recorrencia["data"] = str(date_time.replace(tzinfo=dt.timezone.utc))
-            print("a primeira vez", recorrencia)
+            #print("a primeira vez", recorrencia)
             response = urlopen(
                         Request("http://127.0.0.1:8000/api/gastos/criar-gasto/",
                             data=json.dumps(recorrencia).encode('utf-8'),
                             headers={}, origin_req_host=None,
                             unverifiable=False, method='POST')
                     )
+            stat = response.status
             #Gastos.views.GastoApiView.post_gastos(json.dumps(recorrencia))
             # se der errado(BUG) silenciosamente esse pode ser um culpado
         
@@ -181,7 +194,13 @@ class ManagerView(APIView):
             recorrencia["tipo"] = "S"
             if "nome" in request.data:
                 recorrencia["nome"] = request.data["nome"] # nome do saldo
-            
+            response = urlopen(
+                        Request("http://127.0.0.1:8000/bancario/add-saldo/",
+                            data=json.dumps(recorrencia).encode('utf-8'),
+                            headers={}, origin_req_host=None,
+                            unverifiable=False, method='POST')
+                    )
+            stat = response.status
             # Não funciona (tem que adicionar o envio de saldo que funcione)
             # Bancario.views.BancarioView.add_saldo(json.dumps(recorrencia))
 
@@ -193,4 +212,4 @@ class ManagerView(APIView):
 
         ManagerView._implementar_recorrencia(str(user.username))
 
-        return Response(f"Por um milagre deu certo: {serializer.data}", status=status.HTTP_201_CREATED)
+        return Response(f"Por um milagre deu certo: {serializer.data}", status=stat)

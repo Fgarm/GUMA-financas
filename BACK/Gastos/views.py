@@ -114,7 +114,7 @@ class GastoApiView(APIView):
         dados = {}
         if isinstance(request.data, QueryDict):
             dados = json.loads(list(request.data.keys())[0])
-            print("nos gastos:", json.loads(list(request.data.keys())[0]))
+            #print("nos gastos:", json.loads(list(request.data.keys())[0]))
             dados["data"] = str(dados["data"]).split()[0]
         else:
             dados = request.data
