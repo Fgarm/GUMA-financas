@@ -86,7 +86,8 @@ class ManagerView(APIView):
                 recorrencia.atualizacao = data_atualizacao
                 infos['nome'] = recorrencia.nome
                 infos['data'] = data_atualizacao
-                infos['tag'] = recorrencia.tag
+                if recorrencia.tag:
+                    infos['tag'] = recorrencia.tag
                 if recorrencia.tipo == "G":          
                     infos['pago'] = recorrencia.pago
                     infos['user'] = username

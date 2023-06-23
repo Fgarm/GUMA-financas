@@ -185,6 +185,22 @@ export default function Home() {
       });
   }
 
+  const implementarRecorr = () => {
+    axios({
+      method: "post",
+      url: "http://127.0.0.1:8000/recorrencia/implementar-recorrencias/",
+      data: {
+        user: username
+      },
+    })
+      .then((response) => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
   const getGastos = () => {
     axios({
       method: "post",
@@ -258,6 +274,7 @@ export default function Home() {
   }
 
   useEffect(() => {
+    implementarRecorr();
     getGastos();
   }, [flag]);
 

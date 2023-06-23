@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from django.http import HttpResponse
 from django.http import JsonResponse
 from datetime import datetime
 import numpy as np
@@ -15,6 +14,11 @@ from django.contrib.auth.models import User
 from Tags.models import Tag
 from django.http import QueryDict
 import json
+from Bancario.models import Bancario
+
+
+def hex_to_rgba(color):
+    return "rgba({}, {}, {}, 0.5)".format(int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16))
 
 
 class GastoApiView(APIView):
@@ -140,8 +144,8 @@ class GastoApiView(APIView):
                     tag = Tag.objects.get(categoria=dados["tag"], user=user.username)
                     data["tag"] = tag.categoria
                 except Tag.DoesNotExist:
-                    #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
-                    # ToDo: descomentar esse code depois da apresentação do Hubner
+                    if dados["tag"]:
+                        return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
                     pass
                 except Tag.MultipleObjectsReturned:
                     return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
@@ -150,6 +154,12 @@ class GastoApiView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
+                #Retirando valor do saldo
+                if dados["pago"] == True:
+                    conta = Bancario.objects.filter(id_usuario_id=user.id).first()
+                    conta.saldo_atual = float(conta.saldo_atual) - float(data["valor"])
+                    conta.save()
+                print("foi")
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -193,8 +203,8 @@ class GastoApiView(APIView):
                     data["tag"] = tag.categoria
 
             except Tag.DoesNotExist:
-                #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
-                #TODO: descomentar esse code depois da apresentação do Hubner
+                if request.data["tag"]:
+                    return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
                 pass
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
@@ -336,6 +346,7 @@ class GastoApiView(APIView):
         gastos_por_categoria['outros'] = 0
         cor_por_categoria = {}
         cor_por_categoria['outros'] = 'dad8d8'
+
         for tag in tags:
             gastos_por_categoria[tag.categoria] = 0
             cor_por_categoria[tag.categoria] = tag.cor
@@ -392,3 +403,75 @@ class GastoApiView(APIView):
             # apenas devolve os arrays caso o tamanho seja exatamente 5
             json_response = {'data': data, 'labels': labels, 'colors': colors}
             return JsonResponse(json_response)
+
+
+    @api_view(['GET', 'POST'])
+    def get_media_mensal_por_tag_em_periodo(request):
+        
+        # obtendo as tags do user selecionado
+        try:
+            tags = Tag.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe ou se tem alguma tag criada
+        except Tag.DoesNotExist:
+            return Response("Nome de usuário incorreto ou inexistente ou o usuário não tem nenhuma tag", status=status.HTTP_404_NOT_FOUND)
+        
+        # obtendo os gastos do user selecionado
+        try:
+            gastos = Gasto.objects.filter(user=request.data["user"])
+            
+        # verificando se o user selecionado existe ou se tem algum gasto/saída cadastrado
+        except Gasto.DoesNotExist:
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
+
+
+        datasets = []
+        labels = f'Últimos {request.data["periodo"]} meses'
+        totalGastosPorTagPorMes = []
+        media = []
+
+        # obtendo o mês e o ano atuais
+        mesAtual = datetime.now().month + 1
+        anoAtual = datetime.now().year
+
+
+        # obtendo a média mensal por tag no período especificado
+        for tag in tags:
+            
+            # obtendo os X meses anteriores do período especificado
+            for i in range(int(request.data["periodo"])): # aqui eram os últimos 12 meses - agora é a quantidade de meses que vier na requisição
+
+                mesAtual -= 1
+                if mesAtual == 0:
+                    mesAtual = 12
+                    anoAtual -= 1
+
+                # soma todos os gastos do mês/ano que estão pagos e têm a tag da iteração
+                somaGastosPorMesDeUmaTag = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True and gasto.tag == tag.categoria])
+
+                # total de gastos por tag de cada mes do período especificado
+                totalGastosPorTagPorMes.append(somaGastosPorMesDeUmaTag)
+
+            mesAtual = datetime.now().month + 1
+            anoAtual = datetime.now().year
+            
+            # calculando a média de gastos mensal daquela tag no período especificado e truncando para 2 casas decimais
+            media.append(round((np.sum(totalGastosPorTagPorMes)) / float(request.data["periodo"]), 2))
+
+            # se existir alguma média não nula, essa tag será exibida no gráfico
+            if media[0] != 0:
+                # adiciona todos os elementos com sua chave e valor dentro de um objeto. E esse objeto será inserido no array datasets
+                datasets.append({
+                    'label': tag.categoria,
+                    'data': media.copy(),
+                    'backgroundColor': hex_to_rgba(tag.cor)
+                })
+
+            # limpando os arrays para nova iteração
+            totalGastosPorTagPorMes.clear()
+            media.clear()
+
+
+        json_response = { 'datasets': datasets, 'labels': labels}
+
+        return JsonResponse(json_response)
