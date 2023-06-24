@@ -1,0 +1,39 @@
+[33m2525b09[m[33m ([m[1;36mHEAD -> [m[1;32mH10-extrato_gasto_saidas[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33mfd88801[m HEAD@{1}: merge origin/H10-Entradas_saidas: Merge made by the 'ort' strategy.
+[33m2525b09[m[33m ([m[1;36mHEAD -> [m[1;32mH10-extrato_gasto_saidas[m[33m)[m HEAD@{2}: commit: new changes
+[33m7a29105[m[33m ([m[1;31morigin/H10-extrato_gasto_saidas[m[33m)[m HEAD@{3}: checkout: moving from front to H10-extrato_gasto_saidas
+[33m09a0724[m[33m ([m[1;32mfront[m[33m)[m HEAD@{4}: pull: Fast-forward
+[33mfeb4f30[m HEAD@{5}: checkout: moving from H10-extrato_gasto_saidas to front
+[33m7a29105[m[33m ([m[1;31morigin/H10-extrato_gasto_saidas[m[33m)[m HEAD@{6}: commit: done: order by data and show informations
+[33ma9482e0[m HEAD@{7}: commit: almost done: show 'gastos' and 'entradas' separated by data
+[33m33fc718[m HEAD@{8}: commit: format data and receiving gastos e entradas juntos
+[33m5567e88[m HEAD@{9}: checkout: moving from front to H10-extrato_gasto_saidas
+[33mfeb4f30[m HEAD@{10}: checkout: moving from H10-extrato_gasto_saidas to front
+[33m5567e88[m HEAD@{11}: commit: update
+[33mc496b7c[m HEAD@{12}: merge dev: Merge made by the 'ort' strategy.
+[33m3ac6210[m HEAD@{13}: checkout: moving from dev to H10-extrato_gasto_saidas
+[33m3be7556[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{14}: pull: Fast-forward
+[33ma2656ea[m HEAD@{15}: checkout: moving from H10-extrato_gasto_saidas to dev
+[33m3ac6210[m HEAD@{16}: commit: preparing for new bancario functions
+[33mfeb4f30[m HEAD@{17}: checkout: moving from front to H10-extrato_gasto_saidas
+[33mfeb4f30[m HEAD@{18}: commit: refactoring code to use changes of 'entrada' and 'gasto'
+[33mdc58505[m HEAD@{19}: pull: Merge made by the 'ort' strategy.
+[33m801b72f[m HEAD@{20}: commit (amend): done: connection gasto <-> saldo and change of classes names to not interfere in different files
+[33mdb36140[m HEAD@{21}: commit: done: connection gasto <-> saldo
+[33ma4ab442[m HEAD@{22}: commit: add sort 'gastos' by data
+[33mfed572b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{23}: merge main: Fast-forward
+[33m2c8c76c[m HEAD@{24}: checkout: moving from main to front
+[33mfed572b[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{25}: commit: improve verifications
+[33mc340d9a[m[33m ([m[1;33mtag: release_2[m[33m)[m HEAD@{26}: commit: Fixed migrations dependency not correctly updated
+[33m988859d[m HEAD@{27}: pull: Fast-forward
+[33ma752387[m HEAD@{28}: checkout: moving from main to main
+[33ma752387[m HEAD@{29}: checkout: moving from front to main
+[33m2c8c76c[m HEAD@{30}: pull: Fast-forward
+[33m070bcfa[m HEAD@{31}: commit (merge): resolving conflicts and prepare to PR
+[33m63539f9[m HEAD@{32}: reset: moving to HEAD
+[33m63539f9[m HEAD@{33}: checkout: moving from dev to front
+[33ma2656ea[m HEAD@{34}: pull: Fast-forward
+[33mfc88851[m HEAD@{35}: checkout: moving from front to dev
+[33m63539f9[m HEAD@{36}: pull: Fast-forward
+[33mf75ecf9[m HEAD@{37}: checkout: moving from main to front
+[33ma752387[m HEAD@{38}: clone: from https://github.com/Fgarm/GUMA-investimentos.git
