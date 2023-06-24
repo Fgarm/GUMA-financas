@@ -40,6 +40,7 @@ import {
   ModalHeader,
   Select,
   Text,
+  Tooltip,
   useToast
 } from '@chakra-ui/react'
 
@@ -146,9 +147,7 @@ export default function Home() {
     });
 
     setGastosEntradasPorData(gastosPorDataOrdenado); 
-    console.log(gastosEntradasPorData);
-
-    // setGastosEntradasPorData(gastosPorData); 
+    // console.log(gastosEntradasPorData);
   }
 
   function addFlag() {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md'
-
 import PeopleInput from '../../components/peopleInput'
 import {
   AlertDialog,
@@ -389,6 +388,13 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                                     h={5}
                                     onClick={() => handleEditarClick(key)}
                                   /> */}
+
+                                  <Icon
+                                    as={MdOutlineModeEditOutline}
+                                    w={5}
+                                    h={5}
+                                    onClick={() => handleEditarClick(key)}
+                                  />
 
                                   <Icon
                                     as={MdDelete}
