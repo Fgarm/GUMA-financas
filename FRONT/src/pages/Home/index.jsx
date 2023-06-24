@@ -43,6 +43,8 @@ import {
   ModalHeader,
   Select,
   background,
+  Checkbox,
+  CheckboxGroup
 } from '@chakra-ui/react'
 
 import axios from 'axios';
@@ -59,6 +61,9 @@ export default function Home() {
   const [data, setSelectedDate] = useState('');
   const [pago, setPago] = useState(false)
   const [tags, setTags] = useState([]);
+
+  const [hasPeridiocity, setHasPeridiocity] = useState(false)
+  const [periodicity, setPeriodicity] = useState('')
 
   const [tagsList, setTagsList] = useState({})
 
@@ -112,6 +117,22 @@ export default function Home() {
   //     localStorage.removeItem("cadastro_user");
   //   }
   // });
+
+  function implementRecurrency() {
+    console.log('implementando recorrencias')
+    
+    const dado = {
+      user: username
+    }
+
+    axios.post('http://127.0.0.1:8000/recorrencia/implementar-recorrencias/', dado)
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
 
   function extrairData(dataHora) {
     const data = dataHora.split('T')[0];
@@ -219,12 +240,25 @@ export default function Home() {
       pago,
       tag: tag_submit.categoria,
       user: username
-
     };
+
+    const dados_periodicos = {
+      frequencia: periodicity,
+      user: username,
+      data,
+      nome,
+      tipo: 'gasto',
+      pago,
+      valor,
+      tag: tag_submit.categoria,
+    };
+
+    
 
     console.log(JSON.stringify(dados))
 
-    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
+    if(hasPeridiocity == false){
+      axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -242,6 +276,21 @@ export default function Home() {
       .catch(error => {
         console.error('Erro ao enviar dados:', error);
       });
+    } else {
+      console.log(JSON.stringify(dados_periodicos))
+      axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
+      .then(response => {
+        if (response.status ==! 400) {
+          console.log('Dados enviados com sucesso:', response.data);
+        } else {
+          alert('Erro de dados submetidos')
+          return
+        }
+        onModalCreateClose();
+        setFlag(flag => flag + 1);
+      }
+      )
+    }
 
   }
 
@@ -377,6 +426,7 @@ export default function Home() {
   }
 
   useEffect(() => {
+    implementRecurrency();
     getGastos();
     getGastosEntrada();
     getSaldos();
@@ -562,6 +612,40 @@ export default function Home() {
                     setSelectedDate(e.target.value)
                   } />
                 </FormControl>
+
+                <FormControl mt={4}>
+                  <Checkbox className='checkbox-peridiocity'
+                    onChange={(e) => setHasPeridiocity(e.target.checked)}>
+                      O gasto é periódico
+                  </Checkbox>
+                </FormControl>
+
+                {hasPeridiocity ? (
+                  <FormControl mt={4}>
+                    <label >Peridiocidade</label>
+                    <br></br>
+                    <Select
+                      placeholder="Selecione uma opção"
+                      onChange={(e) => {
+                        if (e.target.value == 'diario') {
+                          setPeriodicity('Diario')
+                        } else if (e.target.value == 'semanal') {
+                          setPeriodicity('Semanal')
+                        } else if (e.target.value == 'mensal') {
+                          setPeriodicity('Mensal')
+                        } else if (e.target.value == 'anual') {
+                          setPeriodicity('Anual') 
+                        }
+                      }}>
+                      <option value='diario'>Diário</option>
+                      <option value='semanal'>Semanal</option>
+                      <option value='mensal'>Mensal</option>
+                      <option value='anual'>Anual</option>
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <></>
+                  )}
 
                 <FormControl mt={4}>
                   <label>Status</label>
