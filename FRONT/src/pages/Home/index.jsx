@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
-import TagsInputSearch from '../../components/tagInputSearch';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
 
 import AddSaldo from '../../modals/addSald';
@@ -41,7 +40,6 @@ import {
   ModalHeader,
   Select,
   Text,
-  Tooltip,
   useToast
 } from '@chakra-ui/react'
 
@@ -142,17 +140,15 @@ export default function Home() {
 
     const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
 
-    // Reconstruir o objeto gastosPorData com as chaves ordenadas
     const gastosPorDataOrdenado = {};
     sortedKeys.forEach(key => {
       gastosPorDataOrdenado[key] = gastosPorData[key];
     });
 
-    setGastosEntradasPorData(gastosPorDataOrdenado); // Atualize o estado aqui
+    setGastosEntradasPorData(gastosPorDataOrdenado); 
     console.log(gastosEntradasPorData);
 
-    // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-    // console.log(gastosEntradasPorData);
+    // setGastosEntradasPorData(gastosPorData); 
   }
 
   function addFlag() {
@@ -166,10 +162,7 @@ export default function Home() {
       .then(response => {
         setGastosEntrada(response.data)
         organizarGastosEntradasPorData(response.data)
-        // setGastosEntradasPorData(gastosPorData); // Atualize o estado aqui
-        // console.log(gastosEntradasPorData);  
-        // console.log(gastosPorData)
-        // console.log(response.data)        
+        // setGastosEntradasPorData(gastosPorData); 
       })
       .catch(error => {
         console.log("user", username)

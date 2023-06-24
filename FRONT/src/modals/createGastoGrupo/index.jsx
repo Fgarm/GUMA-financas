@@ -3,7 +3,6 @@ import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md'
 
 import PeopleInput from '../../components/peopleInput'
 import {
-  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -181,61 +180,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
     })
   }
 
-  const formatValue = (value) => {
-    return value ? `${value}%` : value
-  }
-
-  function CheckboxList({ usuariosGrupo }) {
-    const inputRef = useRef(null);
-
-    useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [usuariosGrupo]);
-
-    return (
-      <Stack spacing={2}>
-        {usuariosGrupo &&
-          usuariosGrupo.map((user) => (
-            <FormControl key={user.id}>
-              <ChakraProvider>
-                <Grid templateColumns="1fr 1fr" gap={4}>
-                  <GridItem>
-                    <Checkbox
-                      onChange={() => handleCheckboxChange(user.id)}
-                      isChecked={itensSelecionados.includes(user.id)}
-                    >
-                      {user.nome}
-                    </Checkbox>
-                  </GridItem>
-                  <GridItem>
-                    <Input
-
-                      ref={inputRef}
-                      placeholder="Peso"
-                      _placeholder={{ color: 'inherit' }}
-                      borderColor="black"
-                      focusBorderColor="black"
-                      value={formatValue(pesos[user.id] || '')}
-                      onChange={(e) => {
-                        const newValue = e.target.value.replace('%', '')
-
-                        setPesos((prevPesos) => ({
-                          ...prevPesos,
-                          [user.id]: newValue,
-                        }))
-                      }}
-                    />
-                  </GridItem>
-                </Grid>
-              </ChakraProvider>
-            </FormControl>
-          ))}
-      </Stack>
-    )
-  }
-
   useEffect(() => {
   }, [itensCadastrados])
 
@@ -289,7 +233,6 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
       return
     }
 
-
     // Converter as listas de usuários e pesos em strings
     const usuariosString = usuariosSelecionados.join(",")
     const pesosString = pesosSelecionados.join(",")
@@ -321,7 +264,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
 
   function handleClearInput() {
     setNomeItem('')
-    setCusto('')
+    setCusto(0)
     setQuantidade('')
   }
 
@@ -567,7 +510,42 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                   <br></br>
                   <FormLabel>Participantes e consumo</FormLabel>
                   <div>
-                    <CheckboxList usuariosGrupo={usuariosSelecionados} />
+                    <Stack spacing={2}>
+                      {usuariosSelecionados &&
+                        usuariosSelecionados.map((user) => (
+                          <FormControl key={user.id}>
+                            <ChakraProvider>
+                              <Grid templateColumns="1fr 1fr" gap={4}>
+                                <GridItem>
+                                  <Checkbox
+                                    onChange={() => handleCheckboxChange(user.id)}
+                                    isChecked={itensSelecionados.includes(user.id)}
+                                  >
+                                    {user.nome}
+                                  </Checkbox>
+                                </GridItem>
+                                <GridItem>
+                                  <Input
+                                    step="1"
+                                    placeholder="Peso"
+                                    _placeholder={{ color: 'inherit' }}
+                                    borderColor="black"
+                                    focusBorderColor="black"
+                                    value={`${pesos[user.id] || ''}%`}
+                                    onChange={(e) => {
+                                      setPesos((prevPesos) => ({
+                                        ...prevPesos,
+                                        [user.id]: e.target.value.replace('%', ''),
+                                      }))
+                                    }}
+                                  />
+                                </GridItem>
+                              </Grid>
+                            </ChakraProvider>
+                          </FormControl>
+                        ))}
+                    </Stack>
+                    {/* <CheckboxList usuariosGrupo={} /> */}
                   </div>
                   <br></br>
                   <Flex justifyContent="flex-start">
@@ -609,6 +587,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                         setNomeItemError('')
                         setCustoError('')
                         setQuantidadeError('')
+                        handleClearInput()
                         handleButtonClick()
                       }}>Cancelar</Button>
                   </Flex>
