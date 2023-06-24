@@ -485,6 +485,7 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
                         </GridItem>
                         <GridItem>
                           <Input
+                            type='number'
                             placeholder="Quantidade"
                             _placeholder={{ color: 'inherit' }}
                             borderColor="black"

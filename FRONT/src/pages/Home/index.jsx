@@ -60,12 +60,12 @@ export default function Home() {
   const [dataError, setDataError] = useState('')
 
   const [nome, setNome] = useState('')
-  const [valor, setValor] = useState(0);
-  const [data, setSelectedDate] = useState('');
+  const [valor, setValor] = useState(0)
+  const [data, setSelectedDate] = useState('')
   const [pago, setPago] = useState(false)
   const [tagsList, setTagsList] = useState({})
 
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState([])
 
 
   const [gastos, setGastos] = useState([])
@@ -708,6 +708,7 @@ export default function Home() {
 
                 <Button
                   onClick={() => {
+                    handleClearInput()
                     handleClearErros()
                     onModalCreateClose()
                   }}
