@@ -8,7 +8,7 @@
     justify-content: flex-end;
 }
 
-.gasto {
+.gasto_grupo {
     gap: 20px;
     width: 100%;
     min-height: calc(100vh - 12vh);
@@ -20,7 +20,7 @@
     justify-content: space-evenly;
 }
 
-.gasto_information {
+.gasto_information_grupo {
     width: 30%;
     height: 27%;
     padding: 10px;
