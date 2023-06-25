@@ -4,6 +4,7 @@ from .views import GrupoView
 
 urlpatterns = [
     #cadastros
+    path('cadastrar-gastos-itens/', GrupoView.Cadastrar_gastos_itens, name='cadastrar-gastos-itens'),
     path('cadastrar-grupo/', GrupoView.cadastrar_grupo, name='cadastrar-grupo'),
     path('cadastrar-gasto-grupo/', GrupoView.cadastrar_gasto_grupo, name='cadastrar-gasto-grupo'),
     path('cadastrar-item/', GrupoView.cadastrar_item, name='cadastrar-item'),

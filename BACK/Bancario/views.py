@@ -52,11 +52,11 @@ class BancarioView(APIView):
             date_time = datetime.datetime(int(data[0]), int(data[1]), int(data[2]), 0, 0, 0)
             dt_aware = date_time.replace(tzinfo=datetime.timezone.utc)
 
-            gasto_dict = {"nome": gasto.nome, "valor": (gasto.valor * -1), "data": dt_aware, "tag": gasto.tag, "pago": gasto.pago}
+            gasto_dict = {"id": gasto.id ,"nome": gasto.nome, "valor": (gasto.valor * -1), "data": dt_aware, "tag": gasto.tag, "pago": gasto.pago}
             match_array.append(gasto_dict)
 
         for saldo in saldos_list:
-            saldo_dict = {"nome": saldo.nome, "valor": saldo.valor, "data": saldo.date, "tag": None, "pago": None}
+            saldo_dict = {"id": saldo.id,"nome": saldo.nome, "valor": saldo.valor, "data": saldo.date, "tag": None, "pago": None}
             match_array.append(saldo_dict)
 
         match_array.sort(key=lambda x : x["data"])
