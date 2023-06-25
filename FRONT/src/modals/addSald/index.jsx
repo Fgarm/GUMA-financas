@@ -44,7 +44,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
     const dados_periodicos = {
       frequencia: periodicity,
       user: user,
-      data: new Date().split('T')[0],
+      data: new Date().toISOString().split('T')[0],
       nome,
       tipo: 'entrada',
       pago: null,
@@ -70,13 +70,13 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
       console.log(JSON.stringify(dados_periodicos))
       axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
         .then(response => {
-          if (response.status ==! 400) {
+          if (response.status == 200 || response.status == 201) {
             console.log('Dados enviados com sucesso:', response.data);
           } else {
             alert('Erro de dados submetidos')
             return
           }
-          onModalCreateClose();
+          onClose();
           addFlag()        
         }
         )

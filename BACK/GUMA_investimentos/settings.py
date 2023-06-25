@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'Tags',
     'Grupos',
     'Bancario',
-    'DebGroup'
+    'MovimentacaoManager',
+    'DebGroup',
 ]
 
 MIDDLEWARE = [

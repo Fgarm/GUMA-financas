@@ -10,6 +10,7 @@ import GroupPage from "../pages/Grupo";
 import EntrarComLink from "../components/joinGroup";
 import Extratos from "../pages/Extratos"
 import Saldo from "../pages/Saldos/Saldos";
+import ShowRecorrencias from "../pages/Recorrencias";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { elements } from "chart.js";
 
@@ -85,6 +86,11 @@ const Routering = createBrowserRouter([
         <React.StrictMode>
             <EntrarComLink />
         </React.StrictMode>
+    },
+
+    {
+        path: "recorrencias",
+        element: <ShowRecorrencias />,
     },
 
 ]);
