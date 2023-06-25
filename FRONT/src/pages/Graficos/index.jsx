@@ -6,6 +6,7 @@ import LineChartComponent from '../../components/LineChart';
 import DoughnutChartComponent from '../../components/DoughnutChart';
 import Sidebar from '../../components/sidebar';
 import BarChartComponent from '../../components/BarChart';
+import SaldoChartComponent from '../../components/SaldoChart';
 
 
 // componente que renderiza a página Dasboard (todos os gráficos/componentes)
@@ -33,12 +34,13 @@ export default function Graficos() {
           <div className='body-dashboard'>
             
             <div className='first-chart-container'>
-              <LineChartComponent/>
+              <SaldoChartComponent/>
               <DoughnutChartComponent/>
             </div>
 
             <div className='second-chart-container'>
               <BarChartComponent/>
+              <LineChartComponent/>
             </div>
 
           </div>

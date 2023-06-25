@@ -16,7 +16,7 @@
 
 .first-chart-container {
   width: 100%;
-  height: 50%;
+  height: 48%;
 
   margin: 0;
   padding: 2% 4.5% 1.3% 4.5%;
@@ -35,17 +35,18 @@
 
 .second-chart-container {
   width: 100%;
-  height: 50%;
+  height: 52%;
   
   margin: 0;
-  padding: 1.5% 1.5% 1.5% 1.5%;
+  padding: 1.5% 4.5% 2% 4.5%;
   flex-direction: row;
   position: relative;
 
   display: flex;
   justify-content: center;
   justify-items: space-evenly;
-  gap: 2.8em;
+  align-items: center;
+  gap: 2em;
   /* flex-wrap: wrap; */
   
   /* border: 1px solid greenyellow; */
@@ -74,3 +75,22 @@
   }
 }
 
+@media screen and (max-height: 870px) {
+  .first-chart-container {
+    padding: 2% 8% 1.3% 8%;
+  }
+
+  .second-chart-container {
+    padding: 1.5% 8% 2% 8%;
+  }
+}
+
+@media screen and (max-height: 803px) {
+  .first-chart-container {
+    padding: 2% 11% 1.3% 11%;
+  }
+
+  .second-chart-container {
+    padding: 1.5% 11% 2% 11%;
+  }
+}

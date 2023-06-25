@@ -1,6 +1,6 @@
 .BarChartContainer {
     height: 100%;
-    width: 55%;
+    width: 60%;
 
     display: flex;
     /* justify-content: space-around; */
@@ -34,7 +34,7 @@
     flex-direction: row;
     align-items: center;
     position: absolute;
-    bottom: 0;
+    bottom: 2.5%;
     
     justify-content: space-around;
     
