@@ -24,37 +24,63 @@
 }
 
 .DonutChartComponent {
-    height: calc(100% - 75%);
-    width: 100%;
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    top: 2%;
+    /* display: flex;  nao temos controle sobre isto */
+    /* flex-direction: column;
+    align-items: end; */
+
+    align-self: center;
+    top: 10%;
     position: absolute;
     
     /* border: solid 1px red; */
 }
 
+.chart-title-container {
+    width: 100%;
+    height: 15%;
+
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+    /* flex-direction: row; */
+
+    /* border: 1px solid red; */
+}
+
+.chart-title {
+    /* position: absolute; */
+    /* left: 0;
+    margin: 4%; */
+    /* letter-spacing: 0.05em; */
+
+    font-family: 'Inter', 'Manrope', sans-serif;
+    font-style: bold;
+    font-weight: 400;
+    font-size: 1.3rem;
+    /* line-height: 35px; */
+
+    color: var(--60-background-dark);
+
+    /* border: 2px solid greenyellow; */
+}
+
 .month-year-input-container {
-    height: calc(100% - 90%);
-    width: 80%;
+    height: 100%;
+    width: 40%;
     
     display: flex;
     flex-direction: row;
-    justify-content: bottom;
     align-items: center;
-    position: absolute;
-    bottom: 0;
+    justify-content: flex-end;
+    gap: 1rem;
     
-    /* border: 1px solid red; */
-    justify-content: space-evenly;
-    /* color: white; */
+    /* border: 1px solid blue; */
 }
 
 .month-input, .year-input {
-    margin: 0 -15%;
-    width: 17%;
+    /* margin: 0 -15%; */
+    width: 40%;
     
     background-color: var(--dark-gray);
     color: var(--60-background-dark);

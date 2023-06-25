@@ -64,7 +64,7 @@ export const doughnutOptions = {
             position: 'right',
         },
         title: {
-            display: true,
+            display: false,
             text: 'Gastos mais Relevantes do Mês',
             font: {
                 size: 20
@@ -190,27 +190,32 @@ export default function DoughnutChartComponent() {
         <div className="DonutChartContainer">
             <Doughnut className="DonutChartComponent" options={doughnutOptions} data={doughnutChartData} />
             
-            <div className="month-year-input-container">
+            <div className="chart-title-container">
+                
+                <h1 className="chart-title">Gastos mais Relevantes do Mês </h1> { /*{month}/{year} */}
 
-                <select className="month-input" value={month} onChange={handleSelectMonthChange}>
+                <div className="month-year-input-container">
 
-                    {meses.map((mes, index) => (
-                        <option key={index} value={index + 1}>{mes}</option>
-                    ))}
+                    <select className="month-input" value={month} onChange={handleSelectMonthChange}>
 
-                </select>
+                        {meses.map((mes, index) => (
+                            <option key={index} value={index + 1}>{mes}</option>
+                        ))}
 
-                <select className="year-input" value={year} onChange={handleSelectYearChange}> 
+                    </select>
 
-                    {anos.map((ano) => (
-                        <option key={ano} value={ano}>{ano}</option>
-                    ))}
+                    <select className="year-input" value={year} onChange={handleSelectYearChange}> 
 
-                </select>
+                        {anos.map((ano) => (
+                            <option key={ano} value={ano}>{ano}</option>
+                        ))}
+
+                    </select>
 
 
+                </div>
+            
             </div>
-
         </div>
     );
 
