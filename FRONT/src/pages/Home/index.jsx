@@ -94,17 +94,19 @@ export default function Home() {
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
   const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
 
-  function handleAddSaldo() {
-    getTags()
-    onAddSaldoOpen()
-  }
-
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
 
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
+  
+
+  function handleAddSaldo() {
+    getTags()
+    onAddSaldoOpen()
+  }
+
 
   // window.addEventListener("beforeunload", function (event) {
   //   const perfTiming = performance.getEntriesByType("navigation")[0];
@@ -118,12 +120,20 @@ export default function Home() {
   //   }
   // });
 
+  function handleCloseModalCreate() {
+    setHasPeridiocity(false)
+    onModalCreateClose()
+  }
+
+
   function implementRecurrency() {
     console.log('implementando recorrencias')
     
     const dado = {
       user: username
     }
+
+    console.log(dado)
 
     axios.post('http://127.0.0.1:8000/recorrencia/implementar-recorrencias/', dado)
       .then(response => {
@@ -280,7 +290,8 @@ export default function Home() {
       console.log(JSON.stringify(dados_periodicos))
       axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
       .then(response => {
-        if (response.status ==! 400) {
+        if (response.status == 200 || response.status == 201) {
+          setHasPeridiocity(false)
           console.log('Dados enviados com sucesso:', response.data);
         } else {
           alert('Erro de dados submetidos')
@@ -682,7 +693,7 @@ export default function Home() {
                   onClick={handleSubmit}>
                   Criar
                 </Button>
-                <Button onClick={onModalCreateClose}>Cancelar</Button>
+                <Button onClick={handleCloseModalCreate}>Cancelar</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
