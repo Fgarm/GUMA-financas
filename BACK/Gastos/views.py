@@ -122,7 +122,7 @@ class GastoApiView(APIView):
             dados["data"] = str(dados["data"]).split()[0]
         else:
             dados = request.data
-            print("nos gastos:", request.data)
+
         if request.method == 'POST':
         
             data = {}
@@ -159,7 +159,7 @@ class GastoApiView(APIView):
                     conta = Bancario.objects.filter(id_usuario_id=user.id).first()
                     conta.saldo_atual = float(conta.saldo_atual) - float(data["valor"])
                     conta.save()
-                print("foi")
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
