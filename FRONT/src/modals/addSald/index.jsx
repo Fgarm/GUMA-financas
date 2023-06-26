@@ -25,6 +25,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState('');
+  const [data, setData] = useState('');
 
   const [hasPeridiocity, setHasPeridiocity] = useState(false);
   const [periodicity, setPeriodicity] = useState('');
@@ -57,7 +58,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
     const dados_periodicos = {
       frequencia: periodicity,
       user: user,
-      data: new Date().toISOString().split('T')[0],
+      data: data,
       nome,
       tipo: 'entrada',
       pago: null,
@@ -75,6 +76,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
             setNome('')
             setValor(0)
             addFlag()
+            setHasPeridiocity(false)
             onClose()
             toast({
               title: 'Entrada inserida com sucesso.',
@@ -100,10 +102,12 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               duration: 3000,
             })
           } else {
+            setHasPeridiocity(false)
             alert('Erro de dados submetidos')
             return
           }
           onClose();
+          setHasPeridiocity(false)
           addFlag()        
         }).catch((error) => {
           console.log(error)
@@ -149,6 +153,17 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               {nomeError && (
                 <Text color="red" fontSize="sm">{nomeError}</Text>
               )}
+            </FormControl>
+
+            <FormControl mt={4}>
+              <label>Data</label>
+              <br></br>
+              <Input
+                type='date'
+                onChange={(e) => {
+                  setData(e.target.value)
+                }}
+              />
             </FormControl>
 
               <FormControl mt={4}>
@@ -245,6 +260,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
             </Button>
             <Button
               onClick={() => {
+                setHasPeridiocity(false)
                 onClose();
                 setNomeError(null);
                 setValorError(null);

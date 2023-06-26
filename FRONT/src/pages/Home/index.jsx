@@ -526,7 +526,7 @@ export default function Home() {
       <Sidebar user={username} />
       <div className="body">
         <header className='home'>
-          <h1 className='page-title'>Meus Gastos</h1>
+          <h1 className='page-title'>Meus Extratos</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
               novaTag={novaTag}
@@ -743,7 +743,7 @@ export default function Home() {
                 <FormControl mt={4}>
                   <Checkbox className='checkbox-peridiocity'
                     onChange={(e) => setHasPeridiocity(e.target.checked)}>
-                    O gasto é periódico
+                    O gasto é periódico?
                   </Checkbox>
                 </FormControl>
 
@@ -839,6 +839,7 @@ export default function Home() {
 
                 <Button
                   onClick={() => {
+                    setHasPeridiocity(false)
                     handleClearInput()
                     handleClearErros()
                     onModalCreateClose()
