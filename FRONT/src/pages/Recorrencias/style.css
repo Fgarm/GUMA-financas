@@ -1,0 +1,32 @@
+
+
+.recorrencia {
+    gap: 20px;
+    width: 100%;
+    min-height: calc(100vh - 12vh);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 4.5% 1.5% 1.5% 1.5%;
+    /* border-radius: 5px;
+    justify-content: space-evenly; */
+}
+
+
+.recorrencia_information {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Defina o número de colunas desejado */
+    gap: 10px;
+    background-color: #0F1616; /* var(--10-gray) */ /* rgb(151, 226, 148) */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  .recorrencia_information p {
+    margin: 0; /* Remova a margem padrão dos parágrafos */
+  }
+
+  
+  

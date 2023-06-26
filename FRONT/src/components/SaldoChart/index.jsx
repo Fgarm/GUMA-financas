@@ -36,10 +36,10 @@ const lineChartData = {
     {
       id: 1,
       fill: true,
-      label: 'Total de Gastos',
+      label: 'Saldo Total',
       data: [],
-      borderColor: 'rgb(220, 90, 50)',
-      backgroundColor: 'rgb(230, 50, 45, 0.3)',
+      borderColor: 'rgb(90, 135, 0)',
+      backgroundColor: 'rgb(30, 125, 1, 0.3)',
     },
   ],
 };
@@ -52,7 +52,7 @@ export const lineChartOptions = {
     },
     title: {
       display: true,
-      text: 'Total de Gastos dos Meses Anteriores',
+      text: 'Saldo dos Meses Anteriores',
       font: {
         size: 18,
       }
@@ -69,7 +69,7 @@ export function useLineChartData() {
     const user = localStorage.getItem("cadastro_user");
     const request = { user };
     
-    axios.post('http://localhost:8000/api/gastos/total-gastos-meses-anteriores/', request)
+    axios.post('http://localhost:8000/bancario/saldo-meses-anteriores/', request)
     .then(response => {
         console.log("response: ", response.data)
         setChartData(response.data);
@@ -84,7 +84,7 @@ export function useLineChartData() {
 }
 
 
-export default function LineChartComponent() {
+export default function SaldoChartComponent() {
 
   const chartData = useLineChartData();
 
@@ -100,7 +100,7 @@ export default function LineChartComponent() {
   // console.log("dados q importam: ", data.labels)
   
   return (
-    <div className="LineChartComponent">
+    <div className="SaldoChartComponent">
       <Line datasetIdKey='id' options={lineChartOptions} data={lineChartData} />
     </div>
   );

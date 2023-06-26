@@ -6,21 +6,22 @@ import LineChartComponent from '../../components/LineChart';
 import DoughnutChartComponent from '../../components/DoughnutChart';
 import Sidebar from '../../components/sidebar';
 import BarChartComponent from '../../components/BarChart';
-import SaldoChartComponent from '../../components/SaldoChart';
 
 
 // componente que renderiza a página Dasboard (todos os gráficos/componentes)
-export default function Graficos() {
+export default function RateioPage() {
 
   const username = localStorage.getItem('cadastro_user');
 
   return (
       <>
         <Sidebar user={username} />
-        <div className="GraficosPage">
+        <div className="RateioPage">
+
+
           <header className='home'>
                   
-            <h1 className='page-title'>Dashboard</h1>
+            <h1 className='page-title'>Rateio</h1>
 
             <div className='new-tag-and-gasto-button-container'>
                 {/* <Button className='new-tag-and-gasto-button' onClick={handleCreateClick}>
@@ -31,20 +32,28 @@ export default function Graficos() {
 
           </header>
 
-          <div className='body-dashboard'>
+
+
+          <div className='body-rateio'>
             
-            <div className='first-chart-container'>
-              <SaldoChartComponent/>
-              <DoughnutChartComponent/>
+            <div className='left-container'>
+                
+                <div className='container-devendo'></div>
+                <div className='container-receber'></div>
+                {/* <LineChartComponent/>
+                <DoughnutChartComponent/> */}
             </div>
 
-            <div className='second-chart-container'>
-              <BarChartComponent/>
-              <LineChartComponent/>
+            <div className='right-container'>
+                <div className='container-resumo-total'></div>
+              
+                {/* <BarChartComponent/> */}
             </div>
 
           </div>
 
+        
+        
         </div>
       </>
   );

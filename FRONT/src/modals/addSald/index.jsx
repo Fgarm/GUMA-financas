@@ -10,6 +10,8 @@ import {
   Input,
   Button,
   ModalHeader,
+  Checkbox,
+  Select,
   useToast,
   Text,
 } from '@chakra-ui/react'
@@ -18,13 +20,18 @@ import axios from 'axios'
 
 
 export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, addFlag }) {
+  
   const toast = useToast();
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState('');
 
+  const [hasPeridiocity, setHasPeridiocity] = useState(false);
+  const [periodicity, setPeriodicity] = useState('');
+
   const [nomeError, setNomeError] = useState('');
   const [valorError, setValorError] = useState('');
+  
   const handleSubmit = () => {
 
     let n = parseFloat(valor)
@@ -46,26 +53,62 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
       username: user,
     }
 
-    console.log(JSON.stringify(datas))
-    axios.post("http://localhost:8000/bancario/add-saldo/", datas)
-      .then((response) => {
-        console.log(response)
-        if (response.status === 200) {
-          setNome('')
-          setValor(0)
-          addFlag()
-          onClose()
-          toast({
-            title: 'Entrada inserida com sucesso.',
-            status: 'success',
-            isClosable: true,
-            duration: 3000,
-          })
+
+    const dados_periodicos = {
+      frequencia: periodicity,
+      user: user,
+      data: new Date().toISOString().split('T')[0],
+      nome,
+      tipo: 'entrada',
+      pago: null,
+      valor,
+      // tag: tag_submit.categoria,
+    };
+
+    
+    if(hasPeridiocity == false){
+      console.log(JSON.stringify(datas))
+      axios.post("http://localhost:8000/bancario/add-saldo/", datas)
+        .then((response) => {
+          console.log(response)
+          if(response.status === 200){
+            setNome('')
+            setValor(0)
+            addFlag()
+            onClose()
+            toast({
+              title: 'Entrada inserida com sucesso.',
+              status: 'success',
+              isClosable: true,
+              duration: 3000,
+            })
+          }
         }
-      }
       ).catch((error) => {
         console.log(error)
-      })
+      })  
+    } else {
+      console.log(JSON.stringify(dados_periodicos))
+      axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
+        .then(response => {
+          if (response.status == 200 || response.status == 201) {
+            console.log('Dados enviados com sucesso:', response.data);
+            toast({
+              title: 'Entrada recorrente inserida com sucesso.',
+              status: 'success',
+              isClosable: true,
+              duration: 3000,
+            })
+          } else {
+            alert('Erro de dados submetidos')
+            return
+          }
+          onClose();
+          addFlag()        
+        }).catch((error) => {
+          console.log(error)
+        })
+      }
   }
 
   return (
@@ -108,6 +151,50 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               )}
             </FormControl>
 
+              <FormControl mt={4}>
+                  <Checkbox className='checkbox-peridiocity'
+                    onChange={(e) => setHasPeridiocity(e.target.checked)}>
+                      A entrada é periódica?
+                  </Checkbox>
+                </FormControl>
+
+                {hasPeridiocity ? (
+                  <FormControl mt={4}>
+                    <label >Peridiocidade</label>
+                    <br></br>
+                    <Select
+                      placeholder="Selecione uma opção"
+                      onChange={(e) => {
+                        if (e.target.value == 'diario') {
+                          setPeriodicity('Diario')
+                        } else if (e.target.value == 'semanal') {
+                          setPeriodicity('Semanal')
+                        } else if (e.target.value == 'mensal') {
+                          setPeriodicity('Mensal')
+                        } else if (e.target.value == 'anual') {
+                          setPeriodicity('Anual') 
+                        }
+                      }}>
+                      <option value='diario'>Diário</option>
+                      <option value='semanal'>Semanal</option>
+                      <option value='mensal'>Mensal</option>
+                      <option value='anual'>Anual</option>
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <></>
+                  )}
+
+              {/* <FormControl mt={4}>
+                <label>Data</label>
+                <br></br>
+                <Input
+                  type='date'
+                  onChange={(e) => {
+                    setData(e.target.value)
+                  }}
+                />
+              </FormControl> */}
             <FormControl mt={4}>
               <label>Valor</label>
               <br></br>

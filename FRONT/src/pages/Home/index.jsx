@@ -39,6 +39,9 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
+  background,
+  Checkbox,
+  CheckboxGroup,
   Text,
   Tooltip,
   useToast
@@ -60,6 +63,9 @@ export default function Home() {
   const [valorError, setValorError] = useState('')
   const [dataError, setDataError] = useState('')
 
+  const [hasPeridiocity, setHasPeridiocity] = useState(false)
+  const [periodicity, setPeriodicity] = useState('')
+
   const [nome, setNome] = useState('')
   const [valor, setValor] = useState(0)
   const [data, setSelectedDate] = useState('')
@@ -75,6 +81,7 @@ export default function Home() {
   const [editTags, setEditTags] = useState('')
 
   const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
+  const [gastosPorDataFiltrados, setGastosPorDataFiltrados] = useState({});
 
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
@@ -85,6 +92,7 @@ export default function Home() {
 
   const [searchOption, setSearchOption] = useState('');
   const [searchValue, setSearchValue] = useState(null)
+  const [isFilterOn, setIsFilterOn] = useState(false)
 
   const [novaTag, setNovaTag] = useState(0)
 
@@ -94,17 +102,19 @@ export default function Home() {
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
   const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
 
-  function handleAddSaldo() {
-    getTags()
-    onAddSaldoOpen()
-  }
-
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
   const cancelRef = React.useRef()
 
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
+
+
+  function handleAddSaldo() {
+    getTags()
+    onAddSaldoOpen()
+  }
+
 
   function handleClearInput() {
     setNome('');
@@ -119,6 +129,30 @@ export default function Home() {
     setDataError('');
   }
 
+  function handleCloseModalCreate() {
+    setHasPeridiocity(false)
+    onModalCreateClose()
+  }
+
+
+  function implementRecurrency() {
+    console.log('implementando recorrencias')
+
+    const dado = {
+      user: username
+    }
+
+    console.log(dado)
+
+    axios.post('http://127.0.0.1:8000/recorrencia/implementar-recorrencias/', dado)
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   function extrairData(dataHora) {
     const data = dataHora.split('T')[0];
     return formatarData(data);
@@ -127,6 +161,30 @@ export default function Home() {
   function handleCloseAddSaldo() {
     onAddSaldoClose()
   }
+
+  function organizarGastosPorData(params) {
+    let gastosData = {};
+    params.forEach(gasto => {
+      const data = extrairData(gasto.data);
+      if (gastosData[data]) {
+        gastosData[data].push(gasto);
+      } else {
+        gastosData[data] = [gasto];
+      }
+    });
+
+    const sortedKeys = Object.keys(gastosData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
+
+    const gastosOrdenado = {};
+    sortedKeys.forEach(key => {
+      gastosOrdenado[key] = gastosData[key];
+    });
+
+    setGastosPorDataFiltrados(gastosOrdenado); // Atualize o estado aqui
+    console.log(gastosPorDataFiltrados);
+
+  }
+
 
   function organizarGastosEntradasPorData(params) {
     let gastosPorData = {};
@@ -146,7 +204,7 @@ export default function Home() {
       gastosPorDataOrdenado[key] = gastosPorData[key];
     });
 
-    setGastosEntradasPorData(gastosPorDataOrdenado); 
+    setGastosEntradasPorData(gastosPorDataOrdenado);
     // console.log(gastosEntradasPorData);
   }
 
@@ -201,42 +259,75 @@ export default function Home() {
       pago,
       tag: tag_submit.categoria,
       user: username
-
     };
+
+    const dados_periodicos = {
+      frequencia: periodicity,
+      user: username,
+      data,
+      nome,
+      tipo: 'gasto',
+      pago,
+      valor,
+      tag: tag_submit.categoria,
+    };
+
+
 
     console.log(JSON.stringify(dados))
 
-    axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.status == 201) {
-          console.log(response.data);
-          toast({
-            title: 'Gasto criado com sucesso',
-            status: 'success',
-            isClosable: true,
-            duration: 3000,
-          });
-
-          handleClearInput()
-        } else {
-          alert('Erro de dados submetidos')
-          return
+    if (hasPeridiocity == false) {
+      axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-        onModalCreateClose();
-        setFlag(flag => flag + 1);
       })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-      });
+        .then(response => {
+          if (response.status == 201) {
+            console.log(response.data);
+            toast({
+              title: 'Gasto criado com sucesso',
+              status: 'success',
+              isClosable: true,
+              duration: 3000,
+            });
+
+            handleClearInput()
+          } else {
+            alert('Erro de dados submetidos')
+            return
+          }
+          onModalCreateClose();
+          setFlag(flag => flag + 1);
+        })
+        .catch(error => {
+          console.error('Erro ao enviar dados:', error);
+        });
+    } else {
+      console.log(JSON.stringify(dados_periodicos))
+      axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
+        .then(response => {
+          if (response.status == 200 || response.status == 201) {
+            setHasPeridiocity(false)
+            console.log('Dados enviados com sucesso:', response.data);
+          } else {
+            alert('Erro de dados submetidos')
+            return
+          }
+          onModalCreateClose();
+          setFlag(flag => flag + 1);
+        }
+        )
+    }
 
   }
 
   const handleEdit = () => {
     const tag_edit = tagsList;
+
+    if (valor < 0) {
+      setValor(valor * -1)
+    }
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
       user: username,
@@ -301,6 +392,7 @@ export default function Home() {
       .then((response) => {
         const data = response.data;
         setGastos(data);
+        organizarGastosPorData(data);
         setShouldRunEffect(true)
         console.log(response.data)
       })
@@ -364,10 +456,15 @@ export default function Home() {
   }
 
   useEffect(() => {
+    implementRecurrency();
     getGastos();
     getGastosEntrada();
     getSaldos();
   }, [flag]);
+
+  useEffect(() => {
+    organizarGastosPorData(gastos);
+  }, [gastos]);
 
 
   function handleSearchType(type) {
@@ -435,6 +532,7 @@ export default function Home() {
               novaTag={novaTag}
               user={username}
               onGastosChange={setGastos}
+              filterOn={setIsFilterOn}
             />
             <div className='new-tag-and-gasto-button-container'>
               <Button
@@ -642,6 +740,40 @@ export default function Home() {
                     <Text color="red" fontSize="sm">{dataError}</Text>
                   )}
                 </FormControl>
+                <FormControl mt={4}>
+                  <Checkbox className='checkbox-peridiocity'
+                    onChange={(e) => setHasPeridiocity(e.target.checked)}>
+                    O gasto é periódico
+                  </Checkbox>
+                </FormControl>
+
+                {hasPeridiocity ? (
+                  <FormControl mt={4}>
+                    <label >Peridiocidade</label>
+                    <br></br>
+                    <Select
+                      placeholder="Selecione uma opção"
+                      onChange={(e) => {
+                        if (e.target.value == 'diario') {
+                          setPeriodicity('Diario')
+                        } else if (e.target.value == 'semanal') {
+                          setPeriodicity('Semanal')
+                        } else if (e.target.value == 'mensal') {
+                          setPeriodicity('Mensal')
+                        } else if (e.target.value == 'anual') {
+                          setPeriodicity('Anual')
+                        }
+                      }}>
+                      <option value='diario'>Diário</option>
+                      <option value='semanal'>Semanal</option>
+                      <option value='mensal'>Mensal</option>
+                      <option value='anual'>Anual</option>
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <></>
+                )}
+
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
@@ -917,39 +1049,135 @@ export default function Home() {
         </div>
 
         <div className="gasto">
-          {Object.entries(gastosEntradasPorData).length === 0 ? (
-            <p>Não há gastos com os parâmetros especificados</p>
-          ) : (
-            Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
-              <div key={data}>
-                {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
-                {gastos.map((gasto, key) => (
-                  <div key={gasto.id} className="gasto_information">
-                    <p>{gasto.nome}</p>
-                    <p>
-                      {gasto.valor > 0 ? (
-                        <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
-                      ) : (
-                        <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
-                      )}
-                    </p>
-                    {/* <p>{extrairData(gasto.data)}</p> */}
-                    <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
-                    <p>{gasto.tag}</p>
-                    <div>
-                      {gasto.valor < 0 && (
-                        <>
-                          <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
-                          <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
-                        </>
-                      )}
+          {isFilterOn == false ? (
+            Object.entries(gastosEntradasPorData).length === 0 ? (
+              <p>Não há gastos com os parâmetros especificados</p>
+            ) : (
+              Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+                <div key={data}>
+                  {compareDate(data) === true ? (
+                    <h3 className="dia_gasto">Hoje</h3>
+                  ) : (
+                    <h3 className="dia_gasto">{data}</h3>
+                  )}
+                  {gastos.map((gasto, key) => (
+                    <div key={gasto.id} className="gasto_information">
+                      <p>{gasto.nome}</p>
+                      <p>
+                        {gasto.valor > 0 ? (
+                          <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                            +R$ {gasto.valor}{' '}
+                          </p>
+                        ) : (
+                          <p style={{ color: 'red', fontWeight: 'bold' }}>
+                            -R$ {gasto.valor * -1}{' '}
+                          </p>
+                        )}
+                      </p>
+                      <p>
+                        {gasto.pago == null ? (
+                          ''
+                        ) : gasto.pago > 0 ? (
+                          <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                            Pago
+                          </p>
+                        ) : (
+                          <p style={{ color: 'red', fontWeight: 'bold' }}>
+                            Não Pago
+                          </p>
+                        )}
+                      </p>
+                      <p>{gasto.tag}</p>
+                      <div>
+                        {gasto.valor < 0 && (
+                          <>
+                            <Icon
+                              className="edit-icon-gasto"
+                              as={MdOutlineModeEditOutline}
+                              w={5}
+                              h={5}
+                              mr={2}
+                              onClick={() => handleEditClick(gasto)}
+                            />
+                            <Icon
+                              className="delete-icon-gasto"
+                              as={MdDelete}
+                              color="red.500"
+                              w={5}
+                              h={5}
+                              onClick={() => handleDeleteClick(gasto.id)}
+                            />
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ))
+                  ))}
+                </div>
+              ))
+            )
+          ) : (
+            Object.entries(gastosPorDataFiltrados).length === 0 ? (
+              <p>Não há gastos com os parâmetros especificados</p>
+            ) : (
+              Object.entries(gastosPorDataFiltrados).map(([data, gastos]) => (
+                <div key={data}>
+                  {compareDate(data) === true ? (
+                    <h3 className="dia_gasto">Hoje</h3>
+                  ) : (
+                    <h3 className="dia_gasto">{data}</h3>
+                  )}
+                  {gastos.map((gasto, key) => (
+                    <div key={gasto.id} className="gasto_information">
+                      <p>{gasto.nome}</p>
+
+                      <p style={{ color: 'red', fontWeight: 'bold' }}>
+                        -R$ {gasto.valor}
+                      </p>
+
+                      <p>
+                        {gasto.pago == null ? (
+                          ''
+                        ) : gasto.pago > 0 ? (
+                          <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                            Pago
+                          </p>
+                        ) : (
+                          <p style={{ color: 'red', fontWeight: 'bold' }}>
+                            Não Pago
+                          </p>
+                        )}
+                      </p>
+                      <p>{gasto.tag}</p>
+                      <div>
+                        {gasto.valor < 0 && (
+                          <>
+                            <Icon
+                              className="edit-icon-gasto"
+                              as={MdOutlineModeEditOutline}
+                              w={5}
+                              h={5}
+                              mr={2}
+                              onClick={() => handleEditClick(gasto)}
+                            />
+                            <Icon
+                              className="delete-icon-gasto"
+                              as={MdDelete}
+                              color="red.500"
+                              w={5}
+                              h={5}
+                              onClick={() => handleDeleteClick(gasto.id)}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )
           )}
         </div>
+
 
       </div>
     </>
