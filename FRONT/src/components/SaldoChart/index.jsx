@@ -38,8 +38,8 @@ const lineChartData = {
       fill: true,
       label: 'Saldo Total',
       data: [],
-      borderColor: 'rgb(111, 153, 81)',
-      backgroundColor: 'rgb(111, 153, 81, 0.3)',
+      borderColor: 'rgb(90, 135, 0)',
+      backgroundColor: 'rgb(30, 125, 1, 0.3)',
     },
   ],
 };

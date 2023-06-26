@@ -15,13 +15,13 @@
                 -6px -6px 12px #f0f0f0;
 }
 
-.SaldoChartComponent:hover {
+/* .SaldoChartComponent:hover {
     cursor: pointer;
     border-radius: 4%;
     box-shadow:  6px 6px 11px #aeaeae,
                 -6px -6px 12px #f0f0f0;
     transition: 0.5s ease-in-out;
-}
+} */
 
 
 @media screen and (max-width: 1000px) {
