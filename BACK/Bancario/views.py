@@ -102,44 +102,75 @@ class BancarioView(APIView):
 
         return Response(saldo ,status=status.HTTP_200_OK)
     
+    
+    # obtém o último valor de saldo de cada mês dos últimos 12 meses
     @api_view(['GET', 'POST'])
     def get_saldo_meses_anteriores(request):
-        # obter o último valor de saldo de cada mês dos últimos 12 meses
 
-        print("pra nao dar erro na func pq nao tem nada nela")
-        # try:
-        #     gastos = Gasto.objects.filter(user=request.data["user"])
-        #     print("gastos", gastos)
-            
-        # # verificando se o user selecionado existe
-        # except Gasto.DoesNotExist:
-        #     return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
+        # a partir do id do usuáio (request), obter todas (ou somente as entradas dos últimos 12 meses) as entradas (bancario saldos) desse usuário
+        try:
+            print("request:", request.data["user"])
+            user_id = User.objects.filter(username=request.data["user"]).first().id
+            print("user_id:", user_id)
+
+        except User.DoesNotExist:
+            return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            bancario = Bancario.objects.filter(id_usuario_id=user_id).first()
+            print("bancario:", bancario)
+            if bancario is not None:
+                bancario_id = bancario.id
+                print("bancario_id:", bancario_id)
+
+        except Bancario.DoesNotExist:
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhuma entrada", status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            entradas = Saldos.objects.filter(id_bancario_id=bancario_id)
+            print("entradas:", entradas)
+        except Saldos.DoesNotExist:
+            return Response("Username incorreto ou inexistente ou o usuário não tem nenhuma entrada", status=status.HTTP_404_NOT_FOUND)
+
         
-        # meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-        # data = []
-        # labels = []
+        # ordenar as entradas pelo campo date
+        entradas = entradas.order_by('date')
 
-        # # obtendo o mês e o ano atuais
-        # mesAtual = datetime.now().month + 1 # este datetime, neste código, vai dar ERRO (talvez tentar datetime.datetime)
-        # anoAtual = datetime.now().year
+        meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        data = []
+        labels = []
 
-        # # somando todos os gastos de cada mês durante os 12 meses anteriores
-        # for i in range(12):
+        mesAtual = dt.datetime.now().month + 1
+        anoAtual = dt.datetime.now().year
 
-        #     mesAtual -= 1
-        #     if mesAtual == 0:
-        #         mesAtual = 12
-        #         anoAtual -= 1
+        # percorre as entradas dos últimos 12 meses
+        for i in range(12):
 
-        #     # soma todos os gastos do mês/ano daquela iteração
-        #     somaTodosGastosMes = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True]) # incluir apenas gastos pagos? discutir
-            
-        #     # adicionando os meses na lista de labels que será usada no gráfico
-        #     labels.append(meses[mesAtual-1])
+            mesAtual -= 1
+            if mesAtual == 0:
+                mesAtual = 12
+                anoAtual -= 1
 
-        #     # adicionando a soma dos gastos de cada mês na lista de dados que será exibida no gráfico
-        #     data.append(somaTodosGastosMes)
+            # procurando a ÚLTIMA entrada do mês atual: verifica se a próxima entrada da lista tem um valor de mês diferente que o atual
+            ultima_entrada = None
+            for j, entrada in enumerate(entradas):
 
-        # # inverte ambas listas para ficar da forma correta no gráfico
-        # json_response = {'data': data[::-1], 'labels': labels[::-1]}
-        # return Response(json_response, status=status.HTTP_200_OK)
+                # para cada entrada, verifica se ela pertence ao mês e ano da iteração atual
+                if entrada.date.month == mesAtual and entrada.date.year == anoAtual:
+                    
+                    # verifica se estamos na última entrada da lista ou se a próxima entrada não é do mesmo mês
+                    if j == len(entradas) - 1 or entradas[j + 1].date.month != mesAtual:
+                        ultima_entrada = entrada
+
+            if ultima_entrada:
+                # adicionando o saldo de cada mês na lista de dados que será exibida no gráfico
+                data.append(ultima_entrada.saldo)
+                # adicionando os meses na lista de labels que será usada no gráfico
+                labels.append(meses[mesAtual - 1])
+            else:
+                data.append(0.00)
+                labels.append(meses[mesAtual - 1])
+
+        # inverte ambas listas para ficar da forma correta no gráfico
+        json_response = {'data': data[::-1], 'labels': labels[::-1]}
+        return Response(json_response, status=status.HTTP_200_OK)

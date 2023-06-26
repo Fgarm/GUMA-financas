@@ -361,7 +361,7 @@ class GastoApiView(APIView):
         gastos_por_categoria = {}
         gastos_por_categoria['outros'] = 0
         cor_por_categoria = {}
-        cor_por_categoria['outros'] = 'dad8d8'
+        cor_por_categoria['outros'] = 'a2b8a6'
 
         for tag in tags:
             gastos_por_categoria[tag.categoria] = 0
