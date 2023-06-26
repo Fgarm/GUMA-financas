@@ -74,15 +74,11 @@ export default function ShowRecorrencias() {
       <div className="body">
         <header className='home'>
           <h1 className='page-title'>Minhas Recorrências</h1>
-          <div className="bt-sb">
-          </div>
-        </header>
 
-        <div>
-          <Button onClick={handleAdd}>
+          <Button className='new-income-button recorrencia-button' onClick={handleAdd}>
             Nova Recorrência
           </Button>
-        </div>
+        </header>
 
         <div>
           <AddRec isOpen={isAddOpen} onClose={onAddClose} user={username} getRec={getRecorrencias} addFlag={addFlag}>

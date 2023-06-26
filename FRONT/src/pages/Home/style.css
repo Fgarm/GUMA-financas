@@ -21,6 +21,7 @@
     width: 15%;
     /* background-color: var(--10-gray-transparent-2); */
     color: #fff;
+    margin-left: 1.5%;
 }
 
 .add-entrada{
@@ -205,15 +206,20 @@ h2.red {
     color: #fff!important;
 }
 
+
 .new-income-button {
     width: 15%;
     padding: 0 1.5rem 0!important;
     
-    font-size: 1.1em!important;
+    font-size: 1em!important;
     letter-spacing: 0.05em;
     
     background-color: var(--10-gray-transparent-2)!important;
     color: #fff!important;
+}
+
+.recorrencia-button {
+    width: 20%;    
 }
 
 .new-tag-and-gasto-button:hover {

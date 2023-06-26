@@ -527,7 +527,7 @@ export default function Home() {
       <Sidebar user={username} />
       <div className="body">
         <header className='home'>
-          <h1 className='page-title'>Meus Extratos</h1>
+          <h1 className='page-title'>Meu Extrato</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
               novaTag={novaTag}
@@ -1098,6 +1098,7 @@ export default function Home() {
                             <Icon
                               className="edit-icon-gasto"
                               as={MdOutlineModeEditOutline}
+                              color="whiteAlpha.500"
                               w={5}
                               h={5}
                               mr={2}

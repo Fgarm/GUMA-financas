@@ -14,7 +14,7 @@ import { BsCurrencyDollar } from "react-icons/bs"; // $
 import { BsCurrencyBitcoin } from "react-icons/bs"; // B do bitcoin
 import { BsCashCoin } from "react-icons/bs"; // uma nota e uma moeda
 
-import { TbClockDollar } from "react-icons/tb";
+// import { TbClockDollar } from "react-icons/tb";
 
 import { BsCoin } from "react-icons/bs"; // uma moeda
 import { BsCashStack } from "react-icons/bs"; // uma nota normal com outra atras (tipo um bolo de din)
@@ -122,7 +122,7 @@ export default function Sidebar(props) {
             </div> */}
             
             <div className="flex" onClick={handleMyExpenses}>
-                <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Extratos
+                <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meu Extrato
             </div>
             
             {/* <div className="flex" onClick={handleSaldo}>
@@ -130,7 +130,7 @@ export default function Sidebar(props) {
             </div> */}
 
             <div className="flex" onClick={handleRec}>
-                <Icon as={TbClockDollar} w={6} h={6}  /> Recorrências
+                <Icon as={BsCashCoin} w={6} h={6}  /> Recorrências 
             </div>
 
             <div className="flex" onClick={handleDashboard}>
