@@ -188,7 +188,6 @@ class GastoApiView(APIView):
             conta.saldo_atual = conta.saldo_atual + request.data["valor"]
             conta.save()
 
-        
         data = {}
         data["nome"] = request.data["nome"]
         data["valor"] = request.data["valor"]
