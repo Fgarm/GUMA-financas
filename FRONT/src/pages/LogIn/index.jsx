@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 
-import { Input, InputGroup, InputRightElement, Button, Link, Image } from '@chakra-ui/react';
+import { Input, InputGroup, InputRightElement, Button, Link, Image, useToast } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 import { useNavigate } from 'react-router-dom';
@@ -16,16 +16,17 @@ import axios from 'axios';
 
 
 export default function LogIn() {
-  localStorage.clear();
-  const navigate = useNavigate();
+  localStorage.clear()
+  const navigate = useNavigate()
+  const toast = useToast()
 
   const createUserFormSchema = z.object(
     {
       username: z.string()
-        .nonempty('Este item é obrigatório'),
+        .nonempty('Este campo é obrigatório'),
 
       password: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
   )
@@ -34,8 +35,8 @@ export default function LogIn() {
   const [visible, setVisible] = useState(false)
 
   const handleVisibleChange = useCallback(() => {
-    setVisible((prevState) => !prevState);
-  }, []);
+    setVisible((prevState) => !prevState)
+  }, [])
 
 
   const {
@@ -54,19 +55,20 @@ export default function LogIn() {
       .then(response => {
         if (response.status === 200 && response.data.access) {
           localStorage.setItem('cadastro_user', data.username)
-          console.log(localStorage.getItem('cadastro_user'))
-          console.log(response.data.access)
-          localStorage.setItem('token', response.data.token);
-          navigate('/home', { replace: true });
-        } else if (response.status == 401) {
-          alert("Usuário não autorizado")
+          localStorage.setItem('token', response.data.token)
+          navigate('/home', { replace: true })
         } else {
-          alert('Usuário ou senha incorretos')
+          toast({
+            title: 'Usuário ou senha incorretos',
+            status: 'error',
+            isClosable: true,
+            duration: 3000,
+          })
         }
       })
       .catch(error => {
-        console.log(error);
-      });
+        console.log(error)
+      })
   }
 
   return (

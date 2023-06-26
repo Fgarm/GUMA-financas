@@ -75,12 +75,12 @@ const Routering = createBrowserRouter([
     },
 
     {
-        path: "group",
+        path: "/group",
         element: <GroupPage/>,
     },
 
     {
-        path: "join",
+        path: "/join",
         element:
         <React.StrictMode>
             <EntrarComLink />
@@ -95,8 +95,7 @@ const Routering = createBrowserRouter([
         </React.StrictMode>
     },
     
-    {    
-
+    {
         path: "recorrencias",
         element: <ShowRecorrencias />,
     },

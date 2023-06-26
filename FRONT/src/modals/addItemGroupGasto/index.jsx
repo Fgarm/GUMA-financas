@@ -21,6 +21,7 @@ import {
 
 export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRef, nomeGasto, groups_id, gastoId, usuariosGastos, clicks}) {
 
+  const [itensList, setItensList] = useState({})
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
   const [quantidade, setQuantidade] = useState(0);
@@ -41,7 +42,6 @@ export default function AddItemGroupGasto({ isOpen, onClose, initialRef, finalRe
   // }, [usuariosGastos]);
 
   useEffect(() => {
-    console.log(usuariosGastos);
 
     if (usuariosGastos) {
       const usuariosArray = usuariosGastos.map(usuario => ({
