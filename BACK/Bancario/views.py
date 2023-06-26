@@ -7,11 +7,10 @@ from rest_framework.response import Response
 from Gastos.models import Gasto
 from rest_framework import status
 import datetime
-import numpy as np
-from datetime import datetime
 import datetime as dt
 from django.http import QueryDict
 import json
+import numpy as np
 
 class BancarioView(APIView):
     @api_view(['POST'])
@@ -105,44 +104,42 @@ class BancarioView(APIView):
     
     @api_view(['GET', 'POST'])
     def get_saldo_meses_anteriores(request):
+        # obter o último valor de saldo de cada mês dos últimos 12 meses
 
-        # print("request: ", request.data)
-        # print("user: ", request.data["user"])
-
-        # obtendo os gastos do user selecionado
-        try:
-            gastos = Gasto.objects.filter(user=request.data["user"])
-            print("gastos", gastos)
+        print("pra nao dar erro na func pq nao tem nada nela")
+        # try:
+        #     gastos = Gasto.objects.filter(user=request.data["user"])
+        #     print("gastos", gastos)
             
-        # verificando se o user selecionado existe
-        except Gasto.DoesNotExist:
-            return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
+        # # verificando se o user selecionado existe
+        # except Gasto.DoesNotExist:
+        #     return Response("Username incorreto ou inexistente ou o usuário não tem nenhum gasto", status=status.HTTP_404_NOT_FOUND)
         
-        meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-        data = []
-        labels = []
+        # meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        # data = []
+        # labels = []
 
-        # obtendo o mês e o ano atuais
-        mesAtual = datetime.now().month + 1
-        anoAtual = datetime.now().year
+        # # obtendo o mês e o ano atuais
+        # mesAtual = datetime.now().month + 1 # este datetime, neste código, vai dar ERRO (talvez tentar datetime.datetime)
+        # anoAtual = datetime.now().year
 
-        # somando todos os gastos de cada mês durante os 12 meses anteriores
-        for i in range(12):
+        # # somando todos os gastos de cada mês durante os 12 meses anteriores
+        # for i in range(12):
 
-            mesAtual -= 1
-            if mesAtual == 0:
-                mesAtual = 12
-                anoAtual -= 1
+        #     mesAtual -= 1
+        #     if mesAtual == 0:
+        #         mesAtual = 12
+        #         anoAtual -= 1
 
-            # soma todos os gastos do mês/ano daquela iteração
-            somaTodosGastosMes = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True]) # incluir apenas gastos pagos? discutir
+        #     # soma todos os gastos do mês/ano daquela iteração
+        #     somaTodosGastosMes = np.sum([gasto.valor for gasto in gastos if gasto.data.month == mesAtual and gasto.data.year == anoAtual and gasto.pago == True]) # incluir apenas gastos pagos? discutir
             
-            # adicionando os meses na lista de labels que será usada no gráfico
-            labels.append(meses[mesAtual-1])
+        #     # adicionando os meses na lista de labels que será usada no gráfico
+        #     labels.append(meses[mesAtual-1])
 
-            # adicionando a soma dos gastos de cada mês na lista de dados que será exibida no gráfico
-            data.append(somaTodosGastosMes)
+        #     # adicionando a soma dos gastos de cada mês na lista de dados que será exibida no gráfico
+        #     data.append(somaTodosGastosMes)
 
-        # inverte ambas listas para ficar da forma correta no gráfico
-        json_response = {'data': data[::-1], 'labels': labels[::-1]}
-        return Response(json_response, status=status.HTTP_200_OK)
+        # # inverte ambas listas para ficar da forma correta no gráfico
+        # json_response = {'data': data[::-1], 'labels': labels[::-1]}
+        # return Response(json_response, status=status.HTTP_200_OK)
