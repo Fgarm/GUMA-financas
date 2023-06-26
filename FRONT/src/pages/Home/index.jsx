@@ -3,19 +3,22 @@ import './style.css';
 import '../../main.css';
 
 import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
-import { BiLogOut } from "react-icons/bi";
+// import { BiLogOut } from "react-icons/bi";
 
-import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+// import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 
 import { useNavigate } from 'react-router-dom';
 
-
-import SearchBar from '../../components/searchBar';
 import TagsInput from '../../components/tagInput';
 import Sidebar from '../../components/sidebar';
-import formatarData from '../../functions/formatData';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
-import TagsInputSearch from '../../components/tagInputSearch';
+
+import AddSaldo from '../../modals/addSald';
+
+import formatarData from '../../functions/formatData';
+import compareDate from '../../functions/compareDate';
+import usaFormat from '../../functions/usaFormat';
 
 import {
   AlertDialog,
@@ -36,32 +39,47 @@ import {
   useDisclosure,
   ModalHeader,
   Select,
-  background,
+  Text,
+  Tooltip,
+  useToast
 } from '@chakra-ui/react'
 
 import axios from 'axios';
 
 export default function Home() {
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const toast = useToast()
 
   const [flag, setFlag] = useState(0)
 
   const [id, setId] = useState('')
-  const [nome, setNome] = useState('')
-  const [valor, setValor] = useState(0);
-  const [data, setSelectedDate] = useState('');
-  const [pago, setPago] = useState(false)
-  const [tags, setTags] = useState([]);
+  const [inputError, setInputError] = useState('')
+  const [corError, setCorError] = useState('')
+  const [nomeError, setNomeError] = useState('')
+  const [valorError, setValorError] = useState('')
+  const [dataError, setDataError] = useState('')
 
+  const [nome, setNome] = useState('')
+  const [valor, setValor] = useState(0)
+  const [data, setSelectedDate] = useState('')
+  const [pago, setPago] = useState(false)
   const [tagsList, setTagsList] = useState({})
 
+  const [tags, setTags] = useState([])
+
+
   const [gastos, setGastos] = useState([])
+  const [gastosEntrada, setGastosEntrada] = useState([])
   const [editStatus, setEditStatus] = useState(false)
   const [editTags, setEditTags] = useState('')
 
+  const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
+
   const [createdTag, setCreatedTag] = useState('')
   const [tagColor, setTagColor] = useState('')
+
+  const [saldo, setSaldo] = useState(0)
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
@@ -74,6 +92,12 @@ export default function Home() {
   const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
+  const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
+
+  function handleAddSaldo() {
+    getTags()
+    onAddSaldoOpen()
+  }
 
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
@@ -82,17 +106,85 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
-  // window.addEventListener("beforeunload", function (event) {
-  //   const perfTiming = performance.getEntriesByType("navigation")[0];
-  //   if (perfTiming.type === "reload") {
-  //     localStorage.setItem("token", token);
-  //     localStorage.setItem("cadastro_user", username);
-  //     sessionStorage.setItem("reloading", "true");
-  //   } else {
-  //     localStorage.removeItem("token");
-  //     localStorage.removeItem("cadastro_user");
-  //   }
-  // });
+  function handleClearInput() {
+    setNome('');
+    setValor(0);
+    setPago(false);
+    setSelectedDate('');
+  }
+
+  function handleClearErros() {
+    setNomeError('');
+    setValorError('');
+    setDataError('');
+  }
+
+  function extrairData(dataHora) {
+    const data = dataHora.split('T')[0];
+    return formatarData(data);
+  }
+
+  function handleCloseAddSaldo() {
+    onAddSaldoClose()
+  }
+
+  function organizarGastosEntradasPorData(params) {
+    let gastosPorData = {};
+    params.forEach(gasto => {
+      const data = extrairData(gasto.data);
+      if (gastosPorData[data]) {
+        gastosPorData[data].push(gasto);
+      } else {
+        gastosPorData[data] = [gasto];
+      }
+    });
+
+    const sortedKeys = Object.keys(gastosPorData).sort((a, b) => new Date(b.split('/').reverse().join('/')) - new Date(a.split('/').reverse().join('/')));
+
+    const gastosPorDataOrdenado = {};
+    sortedKeys.forEach(key => {
+      gastosPorDataOrdenado[key] = gastosPorData[key];
+    });
+
+    setGastosEntradasPorData(gastosPorDataOrdenado); 
+    // console.log(gastosEntradasPorData);
+  }
+
+  function addFlag() {
+    setFlag(flag => flag + 1);
+  }
+
+  function getGastosEntrada() {
+    axios.post("http://localhost:8000/bancario/extrato-saldo/", {
+      username: username
+    })
+      .then(response => {
+        setGastosEntrada(response.data)
+        organizarGastosEntradasPorData(response.data)
+        // setGastosEntradasPorData(gastosPorData); 
+      })
+      .catch(error => {
+        console.log("user", username)
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+
+
+
+  function getSaldos() {
+    axios.post("http://localhost:8000/bancario/saldo-atual/", {
+      username: username
+    })
+      .then(response => {
+        setSaldo(response.data)
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      }
+      )
+  }
+
 
   function handleTagsChange(newTag) {
     setTagsList(newTag);
@@ -112,6 +204,8 @@ export default function Home() {
 
     };
 
+    console.log(JSON.stringify(dados))
+
     axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -119,7 +213,15 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.data);
+          console.log(response.data);
+          toast({
+            title: 'Gasto criado com sucesso',
+            status: 'success',
+            isClosable: true,
+            duration: 3000,
+          });
+
+          handleClearInput()
         } else {
           alert('Erro de dados submetidos')
           return
@@ -134,7 +236,6 @@ export default function Home() {
   }
 
   const handleEdit = () => {
-
     const tag_edit = tagsList;
 
     axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
@@ -152,11 +253,9 @@ export default function Home() {
     })
       .then(response => {
         if (response.status == 204) {
+          console.log('Gasto atualizado com sucesso');
           onModalEditClose();
-          setNome('');
-          setValor(0);
-          setSelectedDate('');
-          setPago();
+          handleClearInput()
           setFlag(flag => flag + 1);
         } else {
           alert("Erro ao atualizar gasto")
@@ -168,6 +267,7 @@ export default function Home() {
   }
 
   const handleDelete = () => {
+    console.log(id)
     axios.delete(`http://localhost:8000/api/gastos/deletar-gasto/`, {
       data: { id: id },
       headers: {
@@ -176,7 +276,12 @@ export default function Home() {
       }
     })
       .then(response => {
-        console.log('Gasto deletado com sucesso');
+        toast({
+          title: 'Gasto deletado com sucesso',
+          status: 'success',
+          isClosable: true,
+          duration: 3000,
+        });
         onAlertDialogClose();
         setFlag(flag => flag + 1);
       })
@@ -244,8 +349,9 @@ export default function Home() {
     tagsList.categoria = data.tag
     setId(data.id);
     setNome(data.nome)
-    setValor(data.valor)
-    setSelectedDate(data.data)
+    setValor(data.valor * -1)
+    setSelectedDate(usaFormat(data.data))
+    console.log("DIA", data)
     setEditTags(data.tag)
     if (data.pago == true) {
       setEditStatus('pago')
@@ -259,6 +365,8 @@ export default function Home() {
 
   useEffect(() => {
     getGastos();
+    getGastosEntrada();
+    getSaldos();
   }, [flag]);
 
 
@@ -286,26 +394,39 @@ export default function Home() {
       }
     })
       .then(response => {
+        console.log(response.data);
+        toast({
+          title: 'Tag criada com sucesso',
+          status: 'success',
+          isClosable: true,
+          duration: 3000,
+        });
+        setNovaTag(novaTag => novaTag + 1);
+        setNovaTag('');
+        setTagColor('');
+        setCreatedTag('');
+        onModalTagClose();
+        setFlag(flag => flag + 1);
 
-        if (response.status == 201) {
-          console.log('Dados enviados com sucesso:', response.data);
-          setNovaTag(novaTag => novaTag + 1);
-          setCreatedTag('')
-          onModalTagClose()
-          setFlag(flag => flag + 1);
-        } else if (response.status == 400) {
-          alert("Tag já existente")
-        }
       })
       .catch(error => {
-        console.error('Erro ao enviar dados:', error);
+
+        toast({
+          title: 'Tag já existente',
+          status: 'error',
+          isClosable: true,
+          duration: 3000,
+        });
+
+        console.log("AQUI")
+        console.log(error)
       });
-    }
-  
-    
-    return (
-      <>
-      <Sidebar user={username}/>
+  }
+
+
+  return (
+    <>
+      <Sidebar user={username} />
       <div className="body">
         <header className='home'>
           <h1 className='page-title'>Meus Gastos</h1>
@@ -323,6 +444,7 @@ export default function Home() {
                 <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
                 Nova Tag
               </Button>
+
               <Button
                 className='new-tag-and-gasto-button'
                 pr='10px'
@@ -334,57 +456,115 @@ export default function Home() {
           </div>
         </header>
 
+        <div className='add-entrada'>
+
+          <Button onClick={handleAddSaldo}>
+            Adicionar Entrada
+          </Button>
+
+          <div className="saldo-information">
+            {saldo < 0 ? <p style={{ color: 'red' }}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
+          </div>
+        </div>
+
 
         <div>
           <Modal
+            closeOnOverlayClick={false}
             isOpen={isModalTagOpen}
             onClose={onModalTagClose}
           >
             <ModalOverlay />
             <ModalContent>
-
-              <ModalHeader
-                mb={0}
-                className='modal_header'>
+              <ModalHeader mb={0} className='modal_header'>
                 Criando Tag
               </ModalHeader>
-
               <ModalBody>
                 <FormControl mt={4}>
                   <label>Categoria</label>
                   <br></br>
-                  <Input onChange={(e) => {
-                    setCreatedTag(e.target.value)
-                  }} />
+                  <Input
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setCreatedTag(value);
+                        setInputError('');
+                      } else {
+                        setCreatedTag('');
+                        setInputError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+                  {inputError && (
+                    <Text color="red" fontSize="sm">{inputError}</Text>
+                  )}
                 </FormControl>
-
                 <FormControl mt={4}>
                   <label>Cor</label>
                   <br></br>
                   <Input
                     placeholder="Ex: 000000"
                     onChange={(e) => {
-                      setTagColor(e.target.value)
-                    }} />
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setTagColor(value);
+                        setCorError('');
+                      } else {
+                        setTagColor('');
+                        setCorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+                  {corError && (
+                    <Text color="red" fontSize="sm">{corError}</Text>
+                  )}
                 </FormControl>
                 <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
               </ModalBody>
-
               <ModalFooter>
                 <Button
-                  style={{background: '#6F9951'}}
+                  style={{ background: '#6F9951' }}
                   mr={3}
-                  onClick={handleCreateTag}>
+                  onClick={() => {
+                    let hasEmptyFields = false;
+
+                    if (createdTag.trim().length === 0) {
+                      setInputError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setInputError('');
+                    }
+
+                    if (tagColor.trim().length === 0) {
+                      setCorError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setCorError('');
+                    }
+
+                    if (!hasEmptyFields) {
+                      handleCreateTag();
+                    }
+                  }}
+                >
                   Criar
                 </Button>
-                <Button onClick={onModalTagClose}>Cancelar</Button>
+                <Button onClick={() => {
+                  onModalTagClose();
+                  setInputError('');
+                  setCorError('');
+                }}>
+                  Cancelar
+                </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
         </div>
 
+
         <div>
           <Modal
+            closeOnOverlayClick={false}
             initialFocusRef={initialRef}
             finalFocusRef={finalRef}
             isOpen={isModalCreateOpen}
@@ -392,82 +572,157 @@ export default function Home() {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader
-                mb={0}
-                className='modal_header'>
+              <ModalHeader mb={0} className='modal_header'>
                 Criando Gasto
               </ModalHeader>
               <ModalBody>
-
                 <FormControl mt={4}>
-                  <label >Nome</label>
+                  <label>Nome</label>
                   <br></br>
-                  <Input onChange={(e) => {
-                    setNome(e.target.value)
-                  }} />
+                  <Input
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setNome(value);
+                        setNomeError('');
+                      } else {
+                        setNome('');
+                        setNomeError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+                  {nomeError && (
+                    <Text color="red" fontSize="sm">{nomeError}</Text>
+                  )}
                 </FormControl>
-
                 <FormControl mt={4}>
-                  <label >Valor</label>
+                  <label>Valor</label>
                   <br></br>
-                  <Input onChange={(e) => {
-                    setValor(e.target.value);
-                  }} />
+
+                  <Input
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+
+                  {valorError && (
+                    <Text color="red" fontSize="sm">{valorError}</Text>
+                  )}
                 </FormControl>
-
                 <FormControl mt={4}>
-                  <label >Data</label>
+                  <label>Data</label>
                   <br></br>
-                  <Input 
+                  <Input
                     type="date"
-                    onChange={(e) =>
-                    setSelectedDate(e.target.value)
-                  } />
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setSelectedDate(value);
+                        setDataError('');
+                      } else {
+                        setSelectedDate('');
+                        setDataError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+                  {dataError && (
+                    <Text color="red" fontSize="sm">{dataError}</Text>
+                  )}
                 </FormControl>
-
                 <FormControl mt={4}>
                   <label>Status</label>
                   <br></br>
                   <Select
-                  placeholder='Selecione uma opção' 
-                  onChange={(e) => {
-                    if (e.target.value == 'pago') {
-                      setPago(true)
-                    } else if (e.target.value == 'nao-pago') {
-                      setPago(false)
-                    }
-                  }}>
+                    placeholder="Selecione uma opção"
+                    onChange={(e) => {
+                      if (e.target.value == 'pago') {
+                        setPago(true)
+                      } else if (e.target.value == 'nao-pago') {
+                        setPago(false)
+                      }
+                    }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
                 </FormControl>
-
                 <FormControl mt={4}>
-                  <label >Tags</label>
+                  <label>Tags</label>
                   <br></br>
                   <TagsInput
-                    tags={tags} 
+                    tags={tags}
                     defaultValue={editTags}
-                    onTagsChange={handleTagsChange} 
-                    user={username} />
+                    onTagsChange={handleTagsChange}
+                    user={username}
+                  />
                 </FormControl>
               </ModalBody>
-
               <ModalFooter>
                 <Button
-                  style={{background: '#6F9951'}}
+                  style={{ background: '#6F9951' }}
                   mr={3}
-                  onClick={handleSubmit}>
+                  onClick={() => {
+                    let hasEmptyFields = false;
+
+                    if (nome.trim().length === 0) {
+                      setNomeError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setNomeError('');
+                    }
+
+                    if (valor == 0) {
+                      setValorError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setValorError('');
+                    }
+
+                    if (data.trim().length === 0) {
+                      setDataError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setDataError('');
+                    }
+
+                    if (!hasEmptyFields) {
+                      handleSubmit();
+                    }
+                  }}
+                >
                   Criar
                 </Button>
-                <Button onClick={onModalCreateClose}>Cancelar</Button>
+
+                <Button
+                  onClick={() => {
+                    handleClearInput()
+                    handleClearErros()
+                    onModalCreateClose()
+                  }}
+                >
+                  Cancelar
+                </Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
         </div>
 
+
         <div>
           <Modal
+            closeOnOverlayClick={false}
             initialFocusRef={initialRef}
             finalFocusRef={finalRef}
             isOpen={isModalEditOpen}
@@ -475,8 +730,8 @@ export default function Home() {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader 
-                mb={0} 
+              <ModalHeader
+                mb={0}
                 className='modal_header'>
                 Editando Gasto
               </ModalHeader>
@@ -485,32 +740,68 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label >Nome</label>
                   <br></br>
-                  <Input 
+                  <Input
                     defaultValue={nome}
                     onChange={(e) => {
-                      setNome(e.target.value)
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setNome(value);
+                        setNomeError(null);
+                      } else {
+                        setNome('');
+                        setNomeError('Este campo é obrigatório.');
+                      }
                     }} />
+                  {nomeError && (
+                    <Text color="red" fontSize="sm">{nomeError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
                   <label >Valor</label>
                   <br></br>
-                  <Input 
-                    defaultValue={valor}
+                  <Input
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
                     onChange={(e) => {
-                    setValor(e.target.value)
-                  }} />
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
+                  {valorError && (
+                    <Text color="red" fontSize="sm">{valorError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
                   <label >Data</label>
                   <br></br>
-                  <Input 
+                  <Input
                     defaultValue={data}
-                    type="date" 
-                    onChange={(e) =>
-                      setSelectedDate(e.target.value)
-                  } />
+                    type="date"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value.trim().length > 0) {
+                        setSelectedDate(value);
+                        setDataError(null);
+                      } else {
+                        setSelectedDate('');
+                        setDataError('Este campo é obrigatório.');
+                      }
+                    }} />
+                  {dataError && (
+                    <Text color="red" fontSize="sm">{dataError}</Text>
+                  )}
                 </FormControl>
 
                 <FormControl mt={4}>
@@ -518,14 +809,14 @@ export default function Home() {
                   <br></br>
                   <Select
                     defaultValue={editStatus}
-                  placeholder='Selecione uma opção' 
-                  onChange={(e) => {
-                    if (e.target.value == 'pago') {
-                      setPago(true)
-                    } else if (e.target.value == 'nao-pago') {
-                      setPago(false)
-                    }
-                  }}>
+                    placeholder='Selecione uma opção'
+                    onChange={(e) => {
+                      if (e.target.value == 'pago') {
+                        setPago(true)
+                      } else if (e.target.value == 'nao-pago') {
+                        setPago(false)
+                      }
+                    }}>
                     <option value='pago'>Pago</option>
                     <option value='nao-pago'>Não Pago</option>
                   </Select>
@@ -534,23 +825,54 @@ export default function Home() {
                 <FormControl mt={4}>
                   <label>Tags</label>
                   <br></br>
-                  <TagsInput 
-                    tags={tags} 
+                  <TagsInput
+                    tags={tags}
                     editado={editTags}
-                    onTagsChange={handleTagsChange} 
-                    user={username} 
+                    onTagsChange={handleTagsChange}
+                    user={username}
                   />
                 </FormControl>
               </ModalBody>
 
               <ModalFooter>
                 <Button
-                  style={{background: '#6F9951'}}
+                  style={{ background: '#6F9951' }}
                   mr={3}
-                  onClick={handleEdit}>
+                  onClick={() => {
+                    let hasEmptyFields = false;
+
+                    if (nome.trim().length === 0) {
+                      setNomeError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setNomeError(null);
+                    }
+
+                    if (valor == 0) {
+                      setValorError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setValorError(null);
+                    }
+
+                    if (data.trim().length === 0) {
+                      setDataError('Este campo é obrigatório.');
+                      hasEmptyFields = true;
+                    } else {
+                      setDataError(null);
+                    }
+
+                    if (!hasEmptyFields) {
+                      handleEdit();
+                    }
+                  }}
+                >
                   Salvar
                 </Button>
-                <Button onClick={onModalEditClose}>Cancelar</Button>
+                <Button onClick={() => {
+                  handleClearErros()
+                  onModalEditClose()
+                }}>Cancelar</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
@@ -564,8 +886,8 @@ export default function Home() {
           >
             <AlertDialogOverlay>
               <AlertDialogContent>
-                <AlertDialogHeader 
-                  fontSize='lg' 
+                <AlertDialogHeader
+                  fontSize='lg'
                   fontWeight='bold'>
                   Deletar Gastos
                 </AlertDialogHeader>
@@ -588,55 +910,48 @@ export default function Home() {
           </AlertDialog>
         </div>
 
-        
+        <div>
+          <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
+            <Button onClick={handleCloseAddSaldo}>Fechar</Button>
+          </AddSaldo>
+        </div>
 
         <div className="gasto">
-          {gastos.length === 0 ? <p>Não há gastos com os parâmetros especificados</p> : (
-            gastos.map((gasto, key) => (
-              <div key={gasto.id} className="gasto_information">
-                <div className='header'>
-                  <h1>
-                    {gasto.nome}
-                  </h1>
-                  <div>
-                    <Icon
-                      className='edit-icon-gasto' 
-                      as={MdOutlineModeEditOutline} 
-                      w={5} 
-                      h={5} 
-                      mr={2} 
-                      onClick={() => handleEditClick(gasto)} 
-                      />
-                    <Icon 
-                      className='delete-icon-gasto' 
-                      as={MdDelete} 
-                      color='red.500' 
-                      w={5} 
-                      h={5} 
-                      onClick={() => handleDeleteClick(gasto.id)} 
-                    />
+          {Object.entries(gastosEntradasPorData).length === 0 ? (
+            <p>Não há gastos com os parâmetros especificados</p>
+          ) : (
+            Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
+              <div key={data}>
+                {compareDate(data) == true ? <h3 className='dia_gasto'>Hoje</h3> : <h3 className='dia_gasto'>{data}</h3>}
+                {gastos.map((gasto, key) => (
+                  <div key={gasto.id} className="gasto_information">
+                    <p>{gasto.nome}</p>
+                    <p>
+                      {gasto.valor > 0 ? (
+                        <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>+R$ {gasto.valor} </p>
+                      ) : (
+                        <p style={{ color: 'red', fontWeight: 'bold' }}>-R$ {(gasto.valor * -1)} </p>
+                      )}
+                    </p>
+                    {/* <p>{extrairData(gasto.data)}</p> */}
+                    <p>{gasto.pago == null ? "" : (gasto.pago > 0 ? <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>Pago</p> : <p style={{ color: 'red', fontWeight: 'bold' }}>Não Pago</p>)}</p>
+                    <p>{gasto.tag}</p>
+                    <div>
+                      {gasto.valor < 0 && (
+                        <>
+                          <Icon className='edit-icon-gasto' as={MdOutlineModeEditOutline} w={5} h={5} mr={2} onClick={() => handleEditClick(gasto)} />
+                          <Icon className='delete-icon-gasto' as={MdDelete} color='red.500' w={5} h={5} onClick={() => handleDeleteClick(gasto.id)} />
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <h2>
-                  R$ {gasto.valor}
-                </h2>
-                <h2>
-                  {formatarData(gasto.data)}
-                </h2>
-                <h2>
-                </h2>
-                {gasto.pago > 0 ? <h2 style={{ color: 'darkgreen', fontWeight: 'bold'}}>Pago</h2> : <h2 style={{ color: 'red',  fontWeight: 'bold'}}>Não Pago</h2>}
-                <h2>
-                {gasto.tag}
-                </h2>
-
+                ))}
               </div>
             ))
-
           )}
         </div>
 
       </div>
-      </>
-    )
+    </>
+  )
 }

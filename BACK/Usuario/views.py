@@ -20,7 +20,8 @@ import datetime
 def cadastro (request):
 
     serializer = UserSerializer(data=request.data)
-    if (not serializer.is_valid()): return HttpResponse(HTTPStatus.BAD_REQUEST)
+    if not serializer.is_valid(): return HttpResponse(status=409)
+
 
     user = User.objects.filter(username=serializer.data["username"]).first()
     email = User.objects.filter(email=serializer.data["email"]).first()

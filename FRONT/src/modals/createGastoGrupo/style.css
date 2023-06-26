@@ -29,4 +29,14 @@
     border: none;
 }
 
+.icon{
+    align-items: end;
+}
 
+.price-items{
+    align-items: end;
+}
+
+.itens{
+    margin: 15px;
+}

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+// import TagsInput from '../../components/tagInput'
 import {
   Modal,
   ModalOverlay,
@@ -8,69 +8,70 @@ import {
   ModalBody,
   FormControl,
   Input,
-  Textarea,
   Button,
-  useDisclosure,
   ModalHeader,
+  useToast,
   Text,
-  useToast
 } from '@chakra-ui/react'
 
 import axios from 'axios'
 
 
-export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) {
+export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, addFlag }) {
+  const toast = useToast();
 
   const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
+  const [valor, setValor] = useState('');
 
   const [nomeError, setNomeError] = useState('');
-  const [descricaoError, setDescricaoError] = useState('');
-
-  const toast = useToast() 
-  
+  const [valorError, setValorError] = useState('');
   const handleSubmit = () => {
 
-    const data = {
-      username: user,
-      nome: nome,
-      descricao: descricao,
-    }
+    let n = parseFloat(valor)
 
-    if (nome === '' || user === '') {
-      alert('Preencha o campo de nome do grupo')
+    if (valor === '' || n < 0) {
+      toast({
+        title: 'Preencha todos os campos corretamente',
+        status: 'error',
+        isClosable: true,
+        duration: 3000,
+      })
+      // alert('Preencha todos os campos corretamente')
       return
     }
 
-    axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
-      .then(response => {
-        if (response.status === 201) {
+    const datas = {
+      nome: nome,
+      saldo: valor,
+      username: user,
+    }
+
+    console.log(JSON.stringify(datas))
+    axios.post("http://localhost:8000/bancario/add-saldo/", datas)
+      .then((response) => {
+        console.log(response)
+        if (response.status === 200) {
           setNome('')
-          setDescricao('')
+          setValor(0)
+          addFlag()
           onClose()
           toast({
-            title: 'Grupo criado com sucesso.',
+            title: 'Entrada inserida com sucesso.',
             status: 'success',
             isClosable: true,
             duration: 3000,
-        });
-        } else if (response.status === 409) {
-          alert('Grupo de nome já cadastrado no sistema')
-        } else if (response.status === 400) {
-          alert('Dados de cadastro não estão nos parâmetros aceitos')
-        } else {
-          alert('Erro de solicitação')
+          })
         }
+      }
+      ).catch((error) => {
+        console.log(error)
       })
-      .catch(error => {
-        console.log(data);
-        console.log("Erro de solicitação-ERROR");
-        console.log(error);
-      });
   }
 
   return (
+
     <div>
+
       <Modal
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
@@ -82,7 +83,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
           <ModalHeader
             mb={0}
             className='modal_header'>
-            Criando Novo Grupo
+            Adicionar Entrada
           </ModalHeader>
 
           <ModalBody>
@@ -90,6 +91,7 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
               <label>Nome</label>
               <br></br>
               <Input
+                // defaultValue={'Entrada'}
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.trim().length > 0) {
@@ -107,30 +109,29 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
             </FormControl>
 
             <FormControl mt={4}>
-              <label >Descrição</label>
+              <label>Valor</label>
               <br></br>
-              <Textarea
-                placeholder='Sobre oque é o grupo?'
+              <Input
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value.trim().length > 0) {
-                    setDescricao(value);
-                    setDescricaoError(null);
+                    setValor(value);
+                    setValorError(null);
                   } else {
-                    setDescricao('');
-                    setDescricaoError('Este campo é obrigatório.');
+                    setValor(0);
+                    setValorError('Este campo é obrigatório.');
                   }
                 }}
               />
-              {descricaoError && (
-                <Text color="red" fontSize="sm">{descricaoError}</Text>
+              {valorError && (
+                <Text color="red" fontSize="sm">{valorError}</Text>
               )}
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
             <Button
-              style={{ backgroundColor: '#6F9951' }}
+              style={{ background: '#6F9951' }}
               mr={3}
               onClick={() => {
                 let hasEmptyFields = false;
@@ -142,32 +143,32 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
                   setNomeError(null);
                 }
 
-                if (descricao.trim().length === 0) {
-                  setDescricaoError('Este campo é obrigatório.');
+                if (valor == 0) {
+                  setValorError('Este campo é obrigatório.');
                   hasEmptyFields = true;
                 } else {
-                  setDescricaoError(null);
+                  setValorError(null);
                 }
 
                 if (!hasEmptyFields) {
                   handleSubmit();
                 }
+              }}>
+              Adicionar
+            </Button>
+            <Button
+              onClick={() => {
+                onClose();
+                setNomeError(null);
+                setValorError(null);
               }}
             >
-              Criar
+              Cancelar
             </Button>
-            <Button onClick={() => {
-              onClose();
-              setNomeError(null);
-              setDescricaoError(null);
-            }}
-            >
-              Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </div>
 
   );
-
 }

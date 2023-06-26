@@ -6,29 +6,29 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { Input, InputGroup, InputRightElement, Button, Link } from '@chakra-ui/react';
+import { Input, InputGroup, InputRightElement, Button, Link, useToast } from '@chakra-ui/react';
 
 import axios from 'axios';
 
 export default function LogUp() {
-
+  const toast = useToast();
   const navigate = useNavigate();
 
   const createUserFormSchema = z.object(
     {
       username: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos'),
 
       first_name: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/, 'O nome não pode conter números e símbolos')
         .transform(name => {
           return name[0].toLocaleUpperCase().concat(name.substring(1))
         }),
 
       last_name: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .regex(/^[^0-9]*$/, 'O nome não pode conter números')
         .transform(last_name => {
           return last_name[0].toLocaleUpperCase().concat(last_name.substring(1))
@@ -36,12 +36,12 @@ export default function LogUp() {
 
 
       email: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .email('Formato de email inválido')
         .toLowerCase(),
 
       password: z.string()
-        .nonempty('Este item é obrigatório')
+        .nonempty('Este campo é obrigatório')
         .min(6, 'Mínimo de 6 caracteres')
     }
   )
@@ -68,18 +68,36 @@ export default function LogUp() {
     axios.post('http://localhost:8000/auth/cadastro/', data)
       .then(response => {
         if (response.status === 200) {
+          toast({
+            title: 'Usuário cadastrado com sucesso.',
+            status: 'success',
+            isClosable: true,
+            duration: 3000,
+          });
           navigate('/', { replace: true });
-          console.log(response.data);
-        } else if (response.status === 409) {
-          alert('Usuário ou email já cadastrados no sistema')
-        } else if (response.status === 400) {
-          alert('Dados de cadastro não estão nos parâmetros aceitos')
-        } else {
-          alert('Erro de solicitação')
         }
       })
       .catch(error => {
-        console.log(error);
+        if (error.response) {
+          const statusCode = parseInt(error.response.status);
+          if (statusCode === 409) {
+            toast({
+              title: 'Usuário ou email já cadastrados no sistema',
+              status: 'error',
+              isClosable: true,
+              duration: 3000,
+            });
+          } else if (statusCode === 400) {
+            toast({
+              title: 'Dados de cadastro não estão nos parâmetros aceitos',
+              status: 'error',
+              isClosable: true,
+              duration: 3000,
+            });
+          } 
+        } else {
+          console.log("Erro de solicitação:", error.message);
+        }
       });
   }
 
