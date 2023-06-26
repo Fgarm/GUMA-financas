@@ -7,4 +7,4 @@ makemigrations :
 makemigrationapp :
 	python manage.py makemigrations --settings=GUMA_investimentos.local_settings $(app)
 migrate :
-	python manage.py makemigrations --settings=GUMA_investimentos.local_settings
+	python manage.py migrate --settings=GUMA_investimentos.local_settings
