@@ -24,7 +24,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
   const toast = useToast();
 
   const [nome, setNome] = useState('');
-  const [valor, setValor] = useState('');
+  const [valor, setValor] = useState(0);
 
   const [hasPeridiocity, setHasPeridiocity] = useState(false);
   const [periodicity, setPeriodicity] = useState('');
@@ -199,17 +199,23 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               <label>Valor</label>
               <br></br>
               <Input
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.trim().length > 0) {
-                    setValor(value);
-                    setValorError(null);
-                  } else {
-                    setValor(0);
-                    setValorError('Este campo é obrigatório.');
-                  }
-                }}
-              />
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
               {valorError && (
                 <Text color="red" fontSize="sm">{valorError}</Text>
               )}
