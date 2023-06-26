@@ -12,6 +12,8 @@ from datetime import datetime
 import numpy as np
 from django.contrib.auth.models import User
 from Tags.models import Tag
+from django.http import QueryDict
+import json
 from Bancario.models import Bancario
 
 
@@ -113,30 +115,37 @@ class GastoApiView(APIView):
 
     @api_view(['POST'])
     def post_gastos (request):
-        
+        dados = {}
+        if isinstance(request.data, QueryDict):
+            dados = json.loads(list(request.data.keys())[0])
+            #print("nos gastos:", json.loads(list(request.data.keys())[0]))
+            dados["data"] = str(dados["data"]).split()[0]
+        else:
+            dados = request.data
+
         if request.method == 'POST':
         
             data = {}
-            data["nome"] = request.data["nome"]
-            data["valor"] = request.data["valor"]
-            data["data"] = request.data["data"]
-            data["pago"] = request.data["pago"]
+            data["nome"] = dados["nome"]
+            data["valor"] = dados["valor"]
+            data["data"] = dados["data"]
+            data["pago"] = dados["pago"]
 
             try:
-                user = User.objects.get(username=request.data["user"])
+                user = User.objects.get(username=dados["user"])
                 data["user"] = user.username
             except User.DoesNotExist:
                 return Response("Username incorreto ou inexistente", status=status.HTTP_404_NOT_FOUND)
             except User.MultipleObjectsReturned:
                 return Response("Há muitos usuários com msm username", status=HTTPStatus.BAD_REQUEST)
             
-            if "tag" in request.data:
+            if "tag" in dados:
                 try:
-                    tag = Tag.objects.get(categoria=request.data["tag"], user=user.username)
+                    tag = Tag.objects.get(categoria=dados["tag"], user=user.username)
                     data["tag"] = tag.categoria
                 except Tag.DoesNotExist:
-                    #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
-                    # ToDo: descomentar esse code depois da apresentação do Hubner
+                    if dados["tag"]:
+                        return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
                     pass
                 except Tag.MultipleObjectsReturned:
                     return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
@@ -146,10 +155,11 @@ class GastoApiView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 #Retirando valor do saldo
-                if request.data["pago"] == True:
+                if dados["pago"] == True:
                     conta = Bancario.objects.filter(id_usuario_id=user.id).first()
                     conta.saldo_atual = float(conta.saldo_atual) - float(data["valor"])
                     conta.save()
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -163,6 +173,21 @@ class GastoApiView(APIView):
         except Gasto.DoesNotExist:
             return Response("Não há gasto com esse id", status=status.HTTP_404_NOT_FOUND)
         
+        if gasto.pago == False and request.data["pago"] == True:
+            print("if1")
+            user_id = User.objects.filter(username = gasto.user).first().id
+            conta = Bancario.objects.filter(id_usuario_id = user_id).first()
+            conta.saldo_atual = conta.saldo_atual - request.data["valor"]
+            conta.save()
+        if gasto.pago == True and request.data["pago"] == False:
+            print("if2")
+            print(gasto.user)
+            user_id = User.objects.filter(username = gasto.user).first().id
+            print(user_id)
+            conta = Bancario.objects.filter(id_usuario_id = user_id).first()
+            conta.saldo_atual = conta.saldo_atual + request.data["valor"]
+            conta.save()
+
         data = {}
         data["nome"] = request.data["nome"]
         data["valor"] = request.data["valor"]
@@ -193,8 +218,8 @@ class GastoApiView(APIView):
                     data["tag"] = tag.categoria
 
             except Tag.DoesNotExist:
-                #return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
-                #TODO: descomentar esse code depois da apresentação do Hubner
+                if request.data["tag"]:
+                    return Response("Não há essa tag", status=HTTPStatus.BAD_REQUEST)
                 pass
             except Tag.MultipleObjectsReturned:
                 return Response("Há muitas tags com mesmo user e name", status=HTTPStatus.BAD_REQUEST)
@@ -335,7 +360,7 @@ class GastoApiView(APIView):
         gastos_por_categoria = {}
         gastos_por_categoria['outros'] = 0
         cor_por_categoria = {}
-        cor_por_categoria['outros'] = 'dad8d8'
+        cor_por_categoria['outros'] = 'a2b8a6'
 
         for tag in tags:
             gastos_por_categoria[tag.categoria] = 0

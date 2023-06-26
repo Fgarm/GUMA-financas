@@ -1,6 +1,6 @@
-.LineChartComponent {
+.SaldoChartComponent {
     height: 80%;
-    width: 50%;
+    width: 55%; /* 55% */
     
     display: flex;
     justify-content: center;
@@ -10,14 +10,22 @@
     position: relative;
     
     /* border: 1px solid var(--dark); */
-    border-radius: 5%;
+    border-radius: 4%;
     box-shadow:  6px 6px 11px #aeaeae,
                 -6px -6px 12px #f0f0f0;
 }
 
+/* .SaldoChartComponent:hover {
+    cursor: pointer;
+    border-radius: 4%;
+    box-shadow:  6px 6px 11px #aeaeae,
+                -6px -6px 12px #f0f0f0;
+    transition: 0.5s ease-in-out;
+} */
+
 
 @media screen and (max-width: 1000px) {
-    .LineChartComponent {
+    .SaldoChartComponent {
         height: 50%;
         width: 75%;
         /* padding: 4% 2% 4%; */
@@ -27,7 +35,8 @@
 }
 
 @media screen and (min-width: 1350px) {
-    .LineChartComponent {
+    .SaldoChartComponent {
+        height: 100%;
         padding: 1% 1.2% 0% 1.2%;
     }
   }

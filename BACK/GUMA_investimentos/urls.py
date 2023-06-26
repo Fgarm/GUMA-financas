@@ -27,5 +27,8 @@ urlpatterns = [
 
     #Rotas Bancario
     path('bancario/', include('Bancario.urls')),
+    
+    #Rotas Recorrencia
+    path('recorrencia/', include('MovimentacaoManager.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

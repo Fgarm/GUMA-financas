@@ -57,7 +57,7 @@ export default function ToggleSearchStatus(props) {
       .then((response) => {
         if (response.status == 200) {
           const data = response.data;
-            setGastos(data);
+          setGastos(data);
         }
       })
       .catch(error => {
@@ -90,18 +90,23 @@ export default function ToggleSearchStatus(props) {
     console.log(tagsSearch, selectedOption)
     if (tagsSearch === "todas" && selectedOption === "todos") {
       getGastos();
+      props.filterOn(false);
     } else if (tagsSearch === "todas" && selectedOption === "pagos") {
         getGastosPerStatus(true);
+        props.filterOn(true);
     } else if (tagsSearch === "todas" && selectedOption === "naoPagos") {
       getGastosPerStatus(false);
+      props.filterOn(true);
     } else if (tagsSearch !== "todas" && selectedOption === "todos") {
       getGastosPerTag(tagsSearch);
+      props.filterOn(true);
     } else if (tagsSearch !== "todas" && selectedOption !== "todas") {
       // if (selectedOption == "pagos") {
       //   setSearch(false);
       // } else if (selectedOption == "naoPagos"){
       //   setSearch(true);
       // }
+
       axios({
         method: "post",
         url: "http://localhost:8000/api/gastos/gastos-per-tag-por-pago/",
@@ -115,6 +120,7 @@ export default function ToggleSearchStatus(props) {
           // if (response.status == 200) {
             const data = response.data;
             setGastos(data);
+            props.filterOn(true);
           // }
         })
         .catch(error => {
