@@ -23,7 +23,8 @@ export default function GroupPage() {
 
     const [gastoId, setGastoId] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
-    const [itensGasto, setItensGasto] = useState('')
+    const [itensGasto, setItensGasto] = useState([])
+    // const [pesosGasto, setPesosGasto] = useState([])
 
 
     const [clicks, setClicks] = useState(0);
@@ -108,6 +109,23 @@ export default function GroupPage() {
         }
     }
 
+    // function getPesos() {
+    //     if (gastoId !== '') {
+    //         axios({
+    //             method: "post",
+    //             url: "http://localhost:8000/grupos/itens-gastos/",
+    //             data: {
+    //                 gasto_id: gastoId,
+    //             },
+    //         }).then(response => {
+    //             setPesosGasto(response.data)
+    //         }
+    //         ).catch(error => {
+    //             console.log(error)
+    //         })
+    //     }
+    // }
+
     function handleGetInfoGasto(gastoGrupo) {
         setGastoId(gastoGrupo.gasto_id)
         setNomeGasto(gastoGrupo.nome)
@@ -124,6 +142,8 @@ export default function GroupPage() {
     useEffect(() => {
         if (gastoId !== '') {
             getUsuariosGasto();
+            getItens();
+            // getPesos();
         }
     }, [gastoId]);
 
@@ -140,12 +160,6 @@ export default function GroupPage() {
     //         openAddItemGastoGrupo();
     //     }, 100);
     // }
-
-    useEffect(() => {
-        if (gastoId !== '') {
-            getItens();
-        }
-    }, [gastoId]);
 
     function handleCloseItem() {
         closeAddItemGastoGrupo()
