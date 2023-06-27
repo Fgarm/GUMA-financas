@@ -138,21 +138,22 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               <label>Nome</label>
               <br></br>
               <Input
-                // defaultValue={'Entrada'}
+                defaultValue={'Entrada'}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value.trim().length > 0) {
-                    setNome(value);
-                    setNomeError(null);
-                  } else {
-                    setNome('');
-                    setNomeError('Este campo é obrigatório.');
-                  }
+                  setNome(value);
+                  // if (value.trim().length > 0) {
+                  //   setNome(value);
+                  //   setNomeError(null);
+                  // } else {
+                  //   setNome('');
+                  //   setNomeError('Este campo é obrigatório.');
+                  // }
                 }}
               />
-              {nomeError && (
+              {/* {nomeError && (
                 <Text color="red" fontSize="sm">{nomeError}</Text>
-              )}
+              )} */}
             </FormControl>
 
             <FormControl mt={4}>
@@ -214,17 +215,23 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               <label>Valor</label>
               <br></br>
               <Input
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.trim().length > 0) {
-                    setValor(value);
-                    setValorError(null);
-                  } else {
-                    setValor(0);
-                    setValorError('Este campo é obrigatório.');
-                  }
-                }}
-              />
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
               {valorError && (
                 <Text color="red" fontSize="sm">{valorError}</Text>
               )}
@@ -238,12 +245,12 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               onClick={() => {
                 let hasEmptyFields = false;
 
-                if (nome.trim().length === 0) {
-                  setNomeError('Este campo é obrigatório.');
-                  hasEmptyFields = true;
-                } else {
-                  setNomeError(null);
-                }
+                // if (nome.trim().length === 0) {
+                //   setNomeError('Este campo é obrigatório.');
+                //   hasEmptyFields = true;
+                // } else {
+                //   setNomeError(null);
+                // }
 
                 if (valor == 0) {
                   setValorError('Este campo é obrigatório.');

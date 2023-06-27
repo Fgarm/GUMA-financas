@@ -20,29 +20,33 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
 
   function renderContent() {
     if (modalContent === 'nomes') {
-      return usuariosGastos.map((user) =>
-        <UnorderedList>
-          <ListItem>
-            <Text fontSize='lg' color='black'>
-              {user.nome}
-            </Text>
-          </ListItem>
-        </UnorderedList>
+      return (
+        <>
+          <UnorderedList>
+            <Text fontSize='lg' color='black'> Usuários: </Text>
+            <div>
+              {usuariosGastos.map((user) => (
+                <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
+                  {user.nome}
+                </Text>
+              ))}
+            </div>
+            <div>
+              <Text fontSize='lg' color='black'> Itens:  </Text>
+              {itensGasto.map((item) => (
+                <Text fontSize='lg' display="flex" justifyContent="flex-end" color='black'>
+                  {item.quantidade} X {item.descricao} : {parseFloat(item.preco_total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </Text>
+              ))}
+            </div>
+          </UnorderedList>
+        </>
       );
-    } else if (modalContent === 'itens') {
-
-      return itensGasto.map((item) =>
-        <UnorderedList>
-          <ListItem>
-            <Text fontSize='lg' color='black'>
-              {item.quantidade} X {item.descricao} : R${item.preco_total}
-            </Text>
-          </ListItem>
-        </UnorderedList>);
     }
 
     return null;
   };
+
 
   function handleButtonClick(content) {
     setModalContent(content);
@@ -63,23 +67,23 @@ export default function ShowInfoGroup({ isOpen, onClose, user, itensGasto, usuar
           </ModalBody>
 
           <ModalFooter>
-            <Grid templateColumns="repeat(3, 1fr)" columnGap={4} alignItems="center">
-              <Button onClick={() => handleButtonClick('nomes')} style={{ background: modalContent === 'nomes' ? '#6F9951' : '#CBD5E0' }}>
+            {/* <Grid templateColumns="repeat(3, 1fr)" columnGap={4} alignItems="center"> */}
+            {/* <Button onClick={() => handleButtonClick('nomes')} style={{ background: modalContent === 'nomes' ? '#6F9951' : '#CBD5E0' }}>
                 Usuarios
               </Button>
               <Button onClick={() => handleButtonClick('itens')} style={{ background: modalContent === 'itens' ? '#6F9951' : '#CBD5E0' }}>
                 Itens
-              </Button>
-              {/* <Button onClick={() => handleButtonClick('pesos')} colorScheme={modalContent === 'pesos' ? 'blue' : 'gray'}>
+              </Button> */}
+            {/* <Button onClick={() => handleButtonClick('pesos')} colorScheme={modalContent === 'pesos' ? 'blue' : 'gray'}>
                 Pesos
               </Button> */}
-              <Button colorScheme='red' mr={3} onClick={() => {
-                setModalContent('nomes')
-                onClose()
-                }}>
-                Fechar
-              </Button>
-            </Grid>
+            <Button colorScheme='red' mr={3} onClick={() => {
+              setModalContent('nomes')
+              onClose()
+            }}>
+              Fechar
+            </Button>
+            {/* </Grid> */}
           </ModalFooter>
         </ModalContent>
       </Modal>
