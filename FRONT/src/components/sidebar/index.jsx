@@ -34,6 +34,8 @@ import { Button } from "@chakra-ui/react";
 
 
 import axios from 'axios';
+import { TbCalendarDollar } from "react-icons/tb";
+
 import { BsFillTagFill } from 'react-icons/bs';
 
 export default function Sidebar(props) {
@@ -130,7 +132,7 @@ export default function Sidebar(props) {
             </div> */}
 
             <div className="flex" onClick={handleRec}>
-                <Icon as={BsCashCoin} w={6} h={6}  /> Recorrências 
+                <Icon as={TbCalendarDollar} w={6} h={6}  /> Recorrências 
             </div>
 
             <div className="flex" onClick={handleDashboard}>
