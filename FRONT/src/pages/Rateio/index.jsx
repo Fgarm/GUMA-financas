@@ -70,7 +70,7 @@ export default function RateioPage() {
 
               <div className='body-devendo'>
                 {gastos.map((gasto, key) => (
-                  <div key={gasto.id} className="gasto_information">
+                  <div key={gasto.id} className="gasto_information ratieio-info">
                     <p>{gasto.nome}</p>
                     <p>
                       {gasto.valor > 0 ? (
@@ -103,7 +103,7 @@ export default function RateioPage() {
             </div>
 
             <div className='container-receber'>
-              
+
               <div className='container-titles-rateio'>
                 <h3 className='titles-rateio'>Quanto Tenho a Receber</h3>
               </div>
@@ -139,7 +139,7 @@ export default function RateioPage() {
                   </div>
                 ))}
               </div>
-            
+
             </div>
 
             {/* <LineChartComponent/>
@@ -147,10 +147,99 @@ export default function RateioPage() {
 
           </div>
 
+
+
+
+
+
           <div className='right-container'>
 
             <div className='container-resumo-total'>
-              <h3 className='titles-rateio'>Resumo Total</h3>
+
+              <div className='title-container-resumo-total'>
+                <h3 className='titles-rateio'>Resumo Total</h3>
+              </div>
+
+              <div className='body-resumo-total'>
+
+                <div className='por-pessoa'>
+                  <div className='container-titles-rateio container-title-resumo-total'>
+                    <h3 className='titles-rateio titles-resumo-total'>Por Pessoa</h3>
+                  </div>
+
+                  <div className='body-devendo'>
+                    {gastos.map((gasto, key) => (
+                      <div key={gasto.id} className="gasto_information">
+                        <p>{gasto.nome}</p>
+                        <p>
+                          {gasto.valor > 0 ? (
+                            <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
+                              + R$ {gasto.valor}{' '}
+                            </p>
+                          ) : (
+                            <p style={{ color: 'red', fontWeight: 'bold' }}>
+                              - R$ {gasto.valor * -1}{' '}
+                            </p>
+                          )}
+                        </p>
+                        <p>
+                          {gasto.pago == null ? (
+                            ''
+                          ) : gasto.pago > 0 ? (
+                            <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
+                              Pago
+                            </p>
+                          ) : (
+                            <p style={{ color: 'red', fontWeight: 'bold' }}>
+                              Não Pago
+                            </p>
+                          )}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className='por-gasto-grupo'>
+                  <div className='container-titles-rateio container-title-resumo-total'>
+                    <h3 className='titles-rateio titles-resumo-total'>Por Gasto em Grupo</h3>
+                  </div>
+
+                  <div className='body-devendo'>
+                    {gastos.map((gasto, key) => (
+                      <div key={gasto.id} className="gasto_information">
+                        <p>{gasto.nome}</p>
+                        <p>
+                          {gasto.valor > 0 ? (
+                            <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
+                              + R$ {gasto.valor}{' '}
+                            </p>
+                          ) : (
+                            <p style={{ color: 'red', fontWeight: 'bold' }}>
+                              - R$ {gasto.valor * -1}{' '}
+                            </p>
+                          )}
+                        </p>
+                        <p>
+                          {gasto.pago == null ? (
+                            ''
+                          ) : gasto.pago > 0 ? (
+                            <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
+                              Pago
+                            </p>
+                          ) : (
+                            <p style={{ color: 'red', fontWeight: 'bold' }}>
+                              Não Pago
+                            </p>
+                          )}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
             </div>
 
             {/* <BarChartComponent/> */}
