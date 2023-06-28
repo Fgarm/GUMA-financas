@@ -15,6 +15,33 @@
     color: #fff!important;
 } */
 
+/* .edit-icon-gasto:hover {
+    cursor: pointer;
+}
+
+.delete-icon-gasto:hover {
+    cursor: pointer;
+}
+
+.tooltip-edit, .tooltip-delete {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px;
+    background-color: #000;
+    color: #fff;
+    font-size: 14px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.delete-icon-gasto:hover .tooltip-delete {
+    visibility: visible;
+    opacity: 1;
+} */
+
 .tags-input-container {
     border: 1px solid rgb(197, 197, 197);
     padding: .5em;

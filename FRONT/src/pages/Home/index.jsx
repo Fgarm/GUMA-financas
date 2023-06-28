@@ -1107,6 +1107,8 @@ export default function Home() {
                               mr={2}
                               onClick={() => handleEditClick(gasto)}
                             />
+                            {/* <span class="tooltip-edit">Editar gasto</span> */}
+
                             <Icon
                               className="delete-icon-gasto"
                               as={MdDelete}
@@ -1115,6 +1117,7 @@ export default function Home() {
                               h={5}
                               onClick={() => handleDeleteClick(gasto.id)}
                             />
+                            {/* <span class="tooltip-delete">Excliur gasto</span> */}
                           </>
                         )}
                       </div>
