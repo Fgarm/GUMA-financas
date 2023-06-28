@@ -536,12 +536,10 @@ export default function Home() {
               filterOn={setIsFilterOn}
             />
             <div className='new-tag-and-gasto-button-container'>
-              <Button
-                className='new-tag-and-gasto-button'
-                pr='10px'
-                onClick={onModalTagOpen}>
-                <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
-                Nova Tag
+              
+              <Button className='new-tag-and-gasto-button' onClick={handleAddSaldo}> {/*className='new-income-button'*/}
+                <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={GiCash} w={6} h={5} />
+                Nova Entrada
               </Button>
 
               <Button
@@ -551,6 +549,15 @@ export default function Home() {
                 <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={BsCurrencyDollar} w={6} h={5} />
                 Novo Gasto
               </Button>
+            
+              <Button
+                className='new-tag-and-gasto-button'
+                pr='10px'
+                onClick={onModalTagOpen}>
+                <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
+                Nova Tag
+              </Button>
+            
             </div>
           </div>
         </header>
@@ -560,11 +567,7 @@ export default function Home() {
           <div className="saldo-information">
             R$ {saldo}
           </div>
-          
-          <Button className='new-income-button' onClick={handleAddSaldo}>
-            <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={GiCash} w={6} h={5} />
-            Nova Entrada
-          </Button>
+
 
         </div>
 
@@ -1069,12 +1072,12 @@ export default function Home() {
                       <p>{gasto.nome}</p>
                       <p>
                         {gasto.valor > 0 ? (
-                          <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
-                            +R$ {gasto.valor}{' '}
+                          <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
+                            + R$ {gasto.valor}{' '}
                           </p>
                         ) : (
                           <p style={{ color: 'red', fontWeight: 'bold' }}>
-                            -R$ {gasto.valor * -1}{' '}
+                            - R$ {gasto.valor * -1}{' '}
                           </p>
                         )}
                       </p>
@@ -1082,7 +1085,7 @@ export default function Home() {
                         {gasto.pago == null ? (
                           ''
                         ) : gasto.pago > 0 ? (
-                          <p style={{ color: 'darkgreen', fontWeight: 'bold' }}>
+                          <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
                             Pago
                           </p>
                         ) : (
