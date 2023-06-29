@@ -101,7 +101,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'guma_financas',
         'USER': 'root',
-        'PASSWORD': '161023',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }

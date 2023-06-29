@@ -6,12 +6,15 @@ from rest_framework.decorators import api_view
 from .models import Grupo, Gastos_Grupo, Itens, Iten_User, GrupoGasto_User, Grupo_User
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from DebGroup.views import AuxDebitos
 
 class AuxGroup:
     @staticmethod
     def cadastrar_gasto_grupo(request):
+        provedor_id = User.objects.filter(username=request.data["provedor"]).first().id
         gasto = Gastos_Grupo.objects.create(nome_gasto=request.data["nome_gasto"],
-                                    id_grupo_id=request.data["id_grupo_id"])
+                                            id_grupo_id=request.data["id_grupo_id"], 
+                                            provedor_id=provedor_id)
         
         users = request.data["usuarios"].split(",")
         try:
@@ -55,6 +58,15 @@ class AuxGroup:
             gasto_atual = float(gasto_g.valor_total)
             gasto_g.valor_total = gasto_atual + preco_total
             gasto_g.save()
+
+            #Cadastrando Devedores
+            provedor_id = Gastos_Grupo.objects.filter(grupoGasto_id=id_grupo_id).first().provedor_id
+            provedor_username = User.objects.filter(id=provedor_id).first().username
+            for devedor, peso in zip(item["usuarios"], item["pesos"]):
+                if devedor != provedor_username:
+                    preco_fracionado = preco_total*(float(peso)/100)
+                    devedor_username = User.objects.filter(username=devedor).first().id
+                    AuxDebitos.criar_debito(preco_fracionado, devedor_username, provedor_id, item_obj.item_id, id_grupo_id)
         
 
     
@@ -242,4 +254,3 @@ class GrupoView(APIView, AuxGroup):
             ug_dict = {"id": user.id, "username": user.username, "nome": f"{user.first_name} {user.last_name}", "email": user.email}  
             userg_list.append(ug_dict)         
         return Response(userg_list, status=status.HTTP_200_OK)
-

@@ -31,4 +31,7 @@ urlpatterns = [
     #Rotas Recorrencia
     path('recorrencia/', include('MovimentacaoManager.urls')),
 
+    #Rotas DEbitosGrupo
+    path('debitos-grupo/', include('DebGroup.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
