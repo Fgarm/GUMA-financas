@@ -1,44 +1,55 @@
 import { useState, useEffect } from "react";
 
 export default function PeopleInput(props) {
-    const [usuarios, setUsuarios] = useState('')
-    const [people, setPeople] = useState(["Thiago", "João", "Maria", "José", "Pedro", "Paulo", "Lucas", "Luciana", "Luiza", "Luiz", "Luizinho", "Lui"])
-    const [addedPeople, setAddedPeople] = useState([])
+    const [usuarios, setUsuarios] = useState('');
+    const [usuariosItens, setUsuariosItens] = useState([]);
+    const [addedPeople, setAddedPeople] = useState([]);
 
     useEffect(() => {
-        props.onUsuariosChange(usuarios);
-    }, [usuarios]);
+        props.onUsuariosChange(usuarios, usuariosItens);
+    }, [usuarios, usuariosItens]);
 
     function handleChange(e) {
-        const value = e.target.value
-        if (!value.trim()) return
-
+        const value = e.target.value;
+        if (!value.trim()) return;
+    
         if (addedPeople.includes(value)) {
             e.target.value = '';
             return;
         }
-
+    
+        const selectedUser = props.usuarios.find(user => user.username === value);
+        if (selectedUser) {
+            const newUsuariosItens = [...usuariosItens, selectedUser];
+            setUsuariosItens(newUsuariosItens);
+        }
+    
         const newPeople = [...addedPeople, value];
         setAddedPeople(newPeople);
-        e.target.value = ''
-
-        if(usuarios === ''){
-            setUsuarios(value)
-        }else{
-            setUsuarios(usuarios+','+value)
+        e.target.value = '';
+    
+        if (usuarios === '') {
+            setUsuarios(value);
+        } else {
+            setUsuarios(usuarios + ',' + value);
         }
-     }
+    }    
 
-     function removePerson(index, value) {
+    function removePerson(index, value) {
         const newPeoples = addedPeople.filter((el, i) => i !== index);
         setAddedPeople(newPeoples);
-
-        const nomesArray = usuarios.split(','); 
+    
+        const nomesArray = usuarios.split(',');
         const novoArray = nomesArray.filter((item) => item.trim() !== value.trim());
         const novaString = novoArray.join(',');
-        setUsuarios(novaString); 
-    }
-
+        setUsuarios(novaString);
+    
+        const removedUser = props.usuarios.find(user => user.username === value);
+        if (removedUser) {
+            const newUsuariosItens = usuariosItens.filter(item => item.username !== removedUser.username);
+            setUsuariosItens(newUsuariosItens);
+        }
+    }    
 
     return (
         <div>
@@ -50,21 +61,16 @@ export default function PeopleInput(props) {
                     </div>
                 ))}
 
-                <select name="people" id="people" className="people-input" onChange={handleChange}> 
-
+                <select name="people" id="people" className="people-input" onChange={handleChange}>
                     <option value="">Usuários</option>
-
                     {props.usuarios.length === 0 ? <p></p> :
-                     (
-                        props.usuarios.map((nome, key) => (
-                            <option value={nome.username}>{nome.nome}</option>
-                        ))
-                    )}
+                        (
+                            props.usuarios.map((user, key) => (
+                                <option value={user.username} key={key}>{user.nome}</option>
+                            ))
+                        )}
                 </select>
-
             </div>
-
         </div>
-    )
-};
-
+    );
+}

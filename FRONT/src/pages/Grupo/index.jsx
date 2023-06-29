@@ -22,9 +22,9 @@ export default function GroupPage() {
     const username = localStorage.getItem('cadastro_user');
 
     const [gastoId, setGastoId] = useState('')
-    const [grupoID, setGrupoID] = useState('')
     const [nomeGasto, setNomeGasto] = useState('')
-    const [itensGasto, setItensGasto] = useState('')
+    const [itensGasto, setItensGasto] = useState([])
+    // const [pesosGasto, setPesosGasto] = useState([])
 
 
     const [clicks, setClicks] = useState(0);
@@ -34,6 +34,7 @@ export default function GroupPage() {
     const [usuariosGastos, setUsuariosGastos] = useState([])
 
     const [flag, setFlag] = useState(0);
+    
     const handleCreateSuccess = () => {
         setFlag(flag + 1);
     }
@@ -47,7 +48,8 @@ export default function GroupPage() {
         onOpen,
     } = useDisclosure({ defaultIsOpen: false })
 
-    const toast = useToast()
+    const toast = useToast() 
+    
 
     useEffect(() => {
         getGroupInfo();
@@ -99,8 +101,6 @@ export default function GroupPage() {
                     gasto_id: gastoId,
                 },
             }).then(response => {
-                console.log("ITENS GASTO:")
-                console.log(response.data)
                 setItensGasto(response.data)
             }
             ).catch(error => {
@@ -109,9 +109,25 @@ export default function GroupPage() {
         }
     }
 
+    // function getPesos() {
+    //     if (gastoId !== '') {
+    //         axios({
+    //             method: "post",
+    //             url: "http://localhost:8000/grupos/itens-gastos/",
+    //             data: {
+    //                 gasto_id: gastoId,
+    //             },
+    //         }).then(response => {
+    //             setPesosGasto(response.data)
+    //         }
+    //         ).catch(error => {
+    //             console.log(error)
+    //         })
+    //     }
+    // }
+
     function handleGetInfoGasto(gastoGrupo) {
         setGastoId(gastoGrupo.gasto_id)
-        setGrupoID(gastoGrupo.grupo_id)
         setNomeGasto(gastoGrupo.nome)
         getItens()
         getUsuariosGasto()
@@ -126,28 +142,24 @@ export default function GroupPage() {
     useEffect(() => {
         if (gastoId !== '') {
             getUsuariosGasto();
-        }
-    }, [gastoId]);
-
-
-    function handleEditGastoGrupo(gastoGrupo) {
-        setGastoId(gastoGrupo.gasto_id)
-        setGrupoID(gastoGrupo.grupo_id)
-        setNomeGasto(gastoGrupo.nome)
-        getItens()
-        getUsuariosGasto()
-        setClicks(clicks => clicks + 1)
-        setTimeout(() => {
-            setClicks(clicks => clicks + 1)
-            openAddItemGastoGrupo();
-        }, 100);
-    }
-
-    useEffect(() => {
-        if (gastoId !== '') {
             getItens();
+            // getPesos();
         }
     }, [gastoId]);
+
+
+    // function handleEditGastoGrupo(gastoGrupo) {
+    //     setGastoId(gastoGrupo.gasto_id)
+    //     setGrupoID(gastoGrupo.grupo_id)
+    //     setNomeGasto(gastoGrupo.nome)
+    //     getItens()
+    //     getUsuariosGasto()
+    //     setClicks(clicks => clicks + 1)
+    //     setTimeout(() => {
+    //         setClicks(clicks => clicks + 1)
+    //         openAddItemGastoGrupo();
+    //     }, 100);
+    // }
 
     function handleCloseItem() {
         closeAddItemGastoGrupo()
@@ -165,7 +177,12 @@ export default function GroupPage() {
     const handleCopy = () => {
         clipboardCopy(`http://localhost:5173/join/?grupo=${grupoId}`)
             .then(() => {
-                console.log('Texto copiado com sucesso!');
+                toast({
+                    title: 'Link Copiado.',
+                    status: 'success',
+                    isClosable: true,
+                    duration: 3000,
+                });
                 onClose();
             })
             .catch((error) => {
@@ -187,11 +204,6 @@ export default function GroupPage() {
                                 className='link-button'
                                 ml="auto" // Adicione esta propriedade
                                 onClick={() => {
-                                    toast({
-                                        title: 'Link Copiado.',
-                                        status: 'success',
-                                        isClosable: true,
-                                    });
                                     handleCopy();
                                 }}
                             >
@@ -218,7 +230,7 @@ export default function GroupPage() {
                     </div>
                 </header>
 
-                <div className="gasto">
+                <div className="gasto_grupo">
                     {gastos.length === 0 ? (
                         <p>Não há gastos com os parâmetros especificados</p>
                     ) : (
@@ -226,16 +238,16 @@ export default function GroupPage() {
                             const key = gasto.id || index; // Usando gasto.id ou índice como chave
 
                             return (
-                                <div key={key} className="gasto_information">
+                                <div key={key} className="gasto_information_grupo">
                                     <h1>{gasto.nome}</h1>
                                     <div>
-                                        <Icon
+                                        {/* <Icon
                                             as={MdAddShoppingCart}
                                             w={5}
                                             h={5}
                                             mr={2}
                                             onClick={() => handleEditGastoGrupo(gasto)}
-                                        />
+                                        /> */}
                                         <Icon
                                             as={GrCircleInformation}
                                             color="black.500"
@@ -250,15 +262,15 @@ export default function GroupPage() {
                     )}
                 </div>
 
-                <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoID} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
+                <ShowInfoGroup isOpen={isGetInfoGastoOpen} onClose={closeGetInfoGasto} groups_id={grupoId} gasto_id={gastoId} usuariosGastos={usuariosGastos} itensGasto={itensGasto}>
                     <Button onClick={handleGetInfoGasto}>Fechar</Button>
                 </ShowInfoGroup>
 
-                <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked}>
+                <CreateGastoGroup isOpen={isCreateGroupOpen} onClose={closeCreateGroup} handleCreateSuccess={handleCreateSuccess} groups_id={grupoId} userClicked={userClicked} usuariosGastos={usuariosGastos}>
                     <Button onClick={handleClose}>Fechar</Button>
                 </CreateGastoGroup>
 
-                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoID} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
+                <AddItemGroupGasto isOpen={isAddItemGastoGrupoOpen} onClose={closeAddItemGastoGrupo} groups_id={grupoId} nomeGasto={nomeGasto} gastoId={gastoId} usuariosGastos={usuariosGastos} clicks={clicks}>
                     <Button onClick={handleCloseItem}>Fechar</Button>
                 </AddItemGroupGasto>
             </div>

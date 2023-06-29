@@ -14,6 +14,8 @@ import { BsCurrencyDollar } from "react-icons/bs"; // $
 import { BsCurrencyBitcoin } from "react-icons/bs"; // B do bitcoin
 import { BsCashCoin } from "react-icons/bs"; // uma nota e uma moeda
 
+// import { TbClockDollar } from "react-icons/tb";
+
 import { BsCoin } from "react-icons/bs"; // uma moeda
 import { BsCashStack } from "react-icons/bs"; // uma nota normal com outra atras (tipo um bolo de din)
 import { BsCash } from "react-icons/bs"; // só uma nota (igual o de cima, mas só uma)
@@ -32,6 +34,8 @@ import { Button } from "@chakra-ui/react";
 
 
 import axios from 'axios';
+import { TbCalendarDollar } from "react-icons/tb";
+
 import { BsFillTagFill } from 'react-icons/bs';
 
 export default function Sidebar(props) {
@@ -85,6 +89,10 @@ export default function Sidebar(props) {
         navigate('/extratos');
     }
 
+    function handleRec() {
+        navigate('/recorrencias');
+    }
+
     function handleMyExpenses() {
         navigate('/home');
     }
@@ -116,11 +124,15 @@ export default function Sidebar(props) {
             </div> */}
             
             <div className="flex" onClick={handleMyExpenses}>
-                <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meus Gastos
+                <Icon as={BsCurrencyDollar} w={5} h={5}  /> Meu Extrato
             </div>
             
-            <div className="flex" onClick={handleSaldo}>
+            {/* <div className="flex" onClick={handleSaldo}>
                 <Icon as={BsCashStack} w={5} h={5}  /> Saldo
+            </div> */}
+
+            <div className="flex" onClick={handleRec}>
+                <Icon as={TbCalendarDollar} w={6} h={6}  /> Recorrências 
             </div>
 
             <div className="flex" onClick={handleDashboard}>

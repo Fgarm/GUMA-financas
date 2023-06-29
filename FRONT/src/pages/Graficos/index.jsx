@@ -5,10 +5,11 @@ import '../../main.css';
 import LineChartComponent from '../../components/LineChart';
 import DoughnutChartComponent from '../../components/DoughnutChart';
 import Sidebar from '../../components/sidebar';
+import BarChartComponent from '../../components/BarChart';
+import SaldoChartComponent from '../../components/SaldoChart';
 
 
-
-// componente que renderiza a página toda (todos os gráficos/componentes)
+// componente que renderiza a página Dasboard (todos os gráficos/componentes)
 export default function Graficos() {
 
   const username = localStorage.getItem('cadastro_user');
@@ -31,8 +32,17 @@ export default function Graficos() {
           </header>
 
           <div className='body-dashboard'>
-            <LineChartComponent/>
-            <DoughnutChartComponent/>
+            
+            <div className='first-chart-container'>
+              <SaldoChartComponent/>
+              <DoughnutChartComponent/>
+            </div>
+
+            <div className='second-chart-container'>
+              <BarChartComponent/>
+              <LineChartComponent/>
+            </div>
+
           </div>
 
         </div>
