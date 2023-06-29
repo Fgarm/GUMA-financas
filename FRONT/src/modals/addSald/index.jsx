@@ -25,6 +25,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
 
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState('');
+  const [data, setData] = useState('');
 
   const [hasPeridiocity, setHasPeridiocity] = useState(false);
   const [periodicity, setPeriodicity] = useState('');
@@ -57,7 +58,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
     const dados_periodicos = {
       frequencia: periodicity,
       user: user,
-      data: new Date().toISOString().split('T')[0],
+      data: data,
       nome,
       tipo: 'entrada',
       pago: null,
@@ -75,6 +76,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
             setNome('')
             setValor(0)
             addFlag()
+            setHasPeridiocity(false)
             onClose()
             toast({
               title: 'Entrada inserida com sucesso.',
@@ -100,10 +102,12 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               duration: 3000,
             })
           } else {
+            setHasPeridiocity(false)
             alert('Erro de dados submetidos')
             return
           }
           onClose();
+          setHasPeridiocity(false)
           addFlag()        
         }).catch((error) => {
           console.log(error)
@@ -134,21 +138,33 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               <label>Nome</label>
               <br></br>
               <Input
-                // defaultValue={'Entrada'}
+                defaultValue={'Entrada'}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value.trim().length > 0) {
-                    setNome(value);
-                    setNomeError(null);
-                  } else {
-                    setNome('');
-                    setNomeError('Este campo é obrigatório.');
-                  }
+                  setNome(value);
+                  // if (value.trim().length > 0) {
+                  //   setNome(value);
+                  //   setNomeError(null);
+                  // } else {
+                  //   setNome('');
+                  //   setNomeError('Este campo é obrigatório.');
+                  // }
                 }}
               />
-              {nomeError && (
+              {/* {nomeError && (
                 <Text color="red" fontSize="sm">{nomeError}</Text>
-              )}
+              )} */}
+            </FormControl>
+
+            <FormControl mt={4}>
+              <label>Data</label>
+              <br></br>
+              <Input
+                type='date'
+                onChange={(e) => {
+                  setData(e.target.value)
+                }}
+              />
             </FormControl>
 
               <FormControl mt={4}>
@@ -199,17 +215,23 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               <label>Valor</label>
               <br></br>
               <Input
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value.trim().length > 0) {
-                    setValor(value);
-                    setValorError(null);
-                  } else {
-                    setValor(0);
-                    setValorError('Este campo é obrigatório.');
-                  }
-                }}
-              />
+                    value={`R$ ${valor.toLocaleString('pt-BR', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    }) || ''}`}
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, '');
+                      const floatValue = parseFloat(rawValue) / 100;
+
+                      if (rawValue.length > 0) {
+                        setValor(floatValue);
+                        setValorError('');
+                      } else {
+                        setValor(0)
+                        setValorError('Este campo é obrigatório.');
+                      }
+                    }}
+                  />
               {valorError && (
                 <Text color="red" fontSize="sm">{valorError}</Text>
               )}
@@ -223,12 +245,12 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
               onClick={() => {
                 let hasEmptyFields = false;
 
-                if (nome.trim().length === 0) {
-                  setNomeError('Este campo é obrigatório.');
-                  hasEmptyFields = true;
-                } else {
-                  setNomeError(null);
-                }
+                // if (nome.trim().length === 0) {
+                //   setNomeError('Este campo é obrigatório.');
+                //   hasEmptyFields = true;
+                // } else {
+                //   setNomeError(null);
+                // }
 
                 if (valor == 0) {
                   setValorError('Este campo é obrigatório.');
@@ -245,6 +267,7 @@ export default function AddSaldo({ isOpen, onClose, initialRef, finalRef, user, 
             </Button>
             <Button
               onClick={() => {
+                setHasPeridiocity(false)
                 onClose();
                 setNomeError(null);
                 setValorError(null);

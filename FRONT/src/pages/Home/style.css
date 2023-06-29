@@ -13,18 +13,24 @@
     gap: .5em;
 }
 
-.saldo-information{
-    border: 1px solid rgb(175, 226, 107);
+.saldo-information {
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-family: 'Inter', 'Manrope', sans-serif;
     padding: 7.5px;
     width: 15%;
+    /* background-color: var(--10-gray-transparent-2); */
+    color: #fff;
+    margin-left: 1.5%;
 }
 
 .add-entrada{
-    margin-left: 10px;
+    margin: 1% 2%;
     display: flex;
     gap: 10px;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 }
 
 p{
@@ -80,14 +86,16 @@ span.error-message {
     flex-direction: column;
     flex-wrap: wrap;
     margin: 0;
-    padding: 4.5% 1.5% 1.5% 1.5%;
-    /* border-radius: 5px;
-    justify-content: space-evenly; */
+    /* padding: 4.5% 35% 1.5% 2%; pra colocar anúncio */
+    padding: 4.5% 2% 1.5% 2%;
+    /*justify-content: space-evenly; */
 }
 
 .dia_gasto{
-    color: white;
-    font-size: 20px;
+    color: var(--10-gray-transparent);
+    font-family: 'Inter', 'Manrope', sans-serif;
+    font-size: 16px;
+    padding-left: 0.3%;
 }
 
 /* width: 30%;
@@ -117,14 +125,15 @@ span.error-message {
     display: grid;
     grid-template-columns: repeat(5, 1fr); /* Defina o número de colunas desejado */
     gap: 10px;
-    background-color: #0F1616; /* var(--10-gray) */ /* rgb(151, 226, 148) */
+    background-color: #8c939439; /* var(--10-gray) rgb(151, 226, 148) #0F1616 */
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     margin-bottom: 10px;
   }
 
   .gasto_information p {
-    margin: 0; /* Remova a margem padrão dos parágrafos */
+    margin: 0;
+    font-family: 'Inter', 'Manrope', sans-serif;
   }
   
  
@@ -197,7 +206,29 @@ h2.red {
     color: #fff!important;
 }
 
+
+.new-income-button {
+    width: 15%;
+    padding: 0 1.5rem 0!important;
+    
+    font-size: 1em!important;
+    letter-spacing: 0.05em;
+    
+    background-color: var(--10-gray-transparent-2)!important;
+    color: #fff!important;
+}
+
+.recorrencia-button {
+    width: 20%;    
+}
+
 .new-tag-and-gasto-button:hover {
+    background-color: var(--10-green)!important;
+    cursor: pointer;
+    transition: background-color 0.4s ease-out;
+}
+
+.new-income-button:hover {
     background-color: var(--10-green)!important;
     cursor: pointer;
     transition: background-color 0.4s ease-out;

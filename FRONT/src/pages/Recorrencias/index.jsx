@@ -13,6 +13,8 @@ import getMonthDay from '../../functions/getMonthDay';
 
 import { Button, useDisclosure } from '@chakra-ui/react';
 
+import { TbCalendarDollar } from "react-icons/tb";
+
 import axios from 'axios';
 import AddRec from '../../modals/addRec';
 
@@ -74,15 +76,12 @@ export default function ShowRecorrencias() {
       <div className="body">
         <header className='home'>
           <h1 className='page-title'>Minhas Recorrências</h1>
-          <div className="bt-sb">
-          </div>
-        </header>
 
-        <div>
-          <Button onClick={handleAdd}>
+          <Button className='new-income-button recorrencia-button' onClick={handleAdd}>
+            <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={TbCalendarDollar} w={5} h={5}/>
             Nova Recorrência
           </Button>
-        </div>
+        </header>
 
         <div>
           <AddRec isOpen={isAddOpen} onClose={onAddClose} user={username} getRec={getRecorrencias} addFlag={addFlag}>

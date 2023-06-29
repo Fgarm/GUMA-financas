@@ -13,19 +13,19 @@
     justify-content: space-evenly; */
 }
 
-
 .recorrencia_information {
     display: grid;
     grid-template-columns: repeat(6, 1fr); /* Defina o número de colunas desejado */
     gap: 10px;
-    background-color: #0F1616; /* var(--10-gray) */ /* rgb(151, 226, 148) */
+    background-color: #8c939439; /* var(--10-gray) */ /* rgb(151, 226, 148) */
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     margin-bottom: 10px;
   }
 
   .recorrencia_information p {
     margin: 0; /* Remova a margem padrão dos parágrafos */
+    font-family: 'Inter', 'Manrope', sans-serif;
   }
 
   

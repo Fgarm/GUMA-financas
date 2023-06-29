@@ -7,6 +7,7 @@ import { MdOutlineModeEditOutline, MdDelete } from 'react-icons/md';
 
 // import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
+import { GiCash } from "react-icons/gi"
 
 import { useNavigate } from 'react-router-dom';
 
@@ -526,7 +527,7 @@ export default function Home() {
       <Sidebar user={username} />
       <div className="body">
         <header className='home'>
-          <h1 className='page-title'>Meus Gastos</h1>
+          <h1 className='page-title'>Meu Extrato</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
               novaTag={novaTag}
@@ -556,13 +557,15 @@ export default function Home() {
 
         <div className='add-entrada'>
 
-          <Button onClick={handleAddSaldo}>
-            Adicionar Entrada
+          <div className="saldo-information">
+            R$ {saldo}
+          </div>
+          
+          <Button className='new-income-button' onClick={handleAddSaldo}>
+            <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={GiCash} w={6} h={5} />
+            Nova Entrada
           </Button>
 
-          <div className="saldo-information">
-            {saldo < 0 ? <p style={{ color: 'red' }}>Saldo: R$ {saldo}</p> : <p>Saldo: R$ {saldo}</p>}
-          </div>
         </div>
 
 
@@ -743,7 +746,7 @@ export default function Home() {
                 <FormControl mt={4}>
                   <Checkbox className='checkbox-peridiocity'
                     onChange={(e) => setHasPeridiocity(e.target.checked)}>
-                    O gasto é periódico
+                    O gasto é periódico?
                   </Checkbox>
                 </FormControl>
 
@@ -839,6 +842,7 @@ export default function Home() {
 
                 <Button
                   onClick={() => {
+                    setHasPeridiocity(false)
                     handleClearInput()
                     handleClearErros()
                     onModalCreateClose()
@@ -1056,7 +1060,7 @@ export default function Home() {
               Object.entries(gastosEntradasPorData).map(([data, gastos]) => (
                 <div key={data}>
                   {compareDate(data) === true ? (
-                    <h3 className="dia_gasto">Hoje</h3>
+                    <h4 className="dia_gasto">Hoje</h4>
                   ) : (
                     <h3 className="dia_gasto">{data}</h3>
                   )}
@@ -1094,6 +1098,7 @@ export default function Home() {
                             <Icon
                               className="edit-icon-gasto"
                               as={MdOutlineModeEditOutline}
+                              color="whiteAlpha.500"
                               w={5}
                               h={5}
                               mr={2}
@@ -1122,7 +1127,7 @@ export default function Home() {
               Object.entries(gastosPorDataFiltrados).map(([data, gastos]) => (
                 <div key={data}>
                   {compareDate(data) === true ? (
-                    <h3 className="dia_gasto">Hoje</h3>
+                    <h4 className="dia_gasto">Hoje</h4>
                   ) : (
                     <h3 className="dia_gasto">{data}</h3>
                   )}
