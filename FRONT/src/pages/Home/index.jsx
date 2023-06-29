@@ -1077,6 +1077,7 @@ export default function Home() {
                           </p>
                         ) : (
                           <p style={{ color: 'red', fontWeight: 'bold' }}>
+                            
                             - R$ {gasto.valor * -1}{' '}
                           </p>
                         )}
