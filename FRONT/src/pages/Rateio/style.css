@@ -1,132 +1,243 @@
 .RateioPage {
-    height: 100vh; /* remover em algum momento (talvez) */
-    width: calc(100% - 15%);
-    
-    display: flex;
-    float: right;
-    flex-direction: column;
+  height: 100vh;
+  /* remover em algum momento (talvez) */
+  width: calc(100% - 15%);
+
+  display: flex;
+  float: right;
+  flex-direction: column;
+
+  background-color: var(--60-background-dark);
+}
+
+.body-rateio {
+  min-height: calc(100vh - 12vh);
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-container {
+  width: 55%;
+  height: 100%;
+
+  margin: 0;
+  padding: 4.5% 2.5% 5% 4.5%;
+  flex-direction: column;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* flex-wrap: wrap; */
+
+  background-color: var(--10-gray);
+}
+
+.right-container {
+  width: 45%;
+  height: 100%;
+
+  margin: 0;
+  padding: 1.5% 1.5% 1.5% 1.5%;
+  flex-direction: column;
+
+  display: flex;
+  justify-content: center;
+  /* eixo y - vertical */
+  align-items: start;
+  /* eixo x - horizontal */
+  gap: 2.8em;
+  /* flex-wrap: wrap; */
+
+  background-color: var(--10-gray);
+}
+
+.container-devendo {
+  height: 45%;
+  width: 87%;
   
-    background-color: var(--60-background-dark);
-  }
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 2.5% 5% 5% 5%;
+  margin: 0% 0% 0% 5%;
+  position: relative;
   
-  .body-rateio {
-    min-height: calc(100vh - 12vh);
-    display: flex;
-    justify-content: space-between;
-  }
+  /* border: 1px solid var(--dark); */
+  border-radius: 5%;
+  box-shadow: 6px 6px 11px #aeaeae,
+    -6px -6px 12px #f0f0f0;
+}
+
+.body-devendo {
+  width: 100%;
+  height: 80%;
+  max-height: 90%;
+
+  overflow-y: scroll;
+  position: relative;
+}
+
+.container-receber {
+  height: 45%;
+  width: 87%;
   
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 2.5% 5% 5% 5%;
+  margin: 0% 0% 0% 5%;
+  position: relative;
+
+  border-radius: 5%;
+  box-shadow: 6px 6px 11px #aeaeae,
+    -6px -6px 12px #f0f0f0;
+}
+
+
+.container-titles-rateio {
+  width: 100%;
+  height: 20%;
+
+  /* display: flex; */
+  position: relative;
+}
+
+.titles-rateio {
+  position: absolute;
+  /* margin: 2%; */
+  
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 1.55rem;
+  letter-spacing: 0.04em;
+  
+  top: 2%;
+  /* left: 1%; */
+  
+  color: var(--60-background-dark);
+}
+
+/* .ratieio-info p {
+  color: var(--60-background-dark)!important;
+} */
+
+
+
+
+.container-resumo-total {
+  height: 90%;
+  width: 85%;
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  padding: 2.5% 5% 5% 5%;
+  position: relative;
+  flex-direction: column;
+
+  border-radius: 5%;
+  box-shadow: 6px 6px 11px #aeaeae,
+    -6px -6px 12px #f0f0f0;
+}
+
+.title-container-resumo-total {
+  width: 100%;
+  height: 10%;
+
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.body-resumo-total {
+  width: 100%;
+  height: 90%;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  
+  /* border: red 1px solid; */
+}
+
+.por-pessoa {
+  height: 45%;
+  width: 100%;
+  
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 2.5% 5% 5% 5%;
+  position: relative;
+
+  border-radius: 5%;
+  box-shadow: 3px 3px 6px #aeaeae,
+    -3px -3px 6px #f0f0f0;
+}
+
+.por-gasto-grupo {
+  height: 45%;
+  width: 100%;
+  
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 2.5% 5% 5% 5%;
+  position: relative;
+
+  border-radius: 5%;
+  box-shadow: 3px 3px 6px #aeaeae,
+    -3px -3px 6px #f0f0f0;
+}
+
+.container-title-resumo-total {
+  width: 100%;
+  height: 20%;
+
+  /* display: flex; */
+  position: relative;
+}
+
+.titles-resumo-total {
+  /* position: absolute;
+  margin: 2%;
+  top: 2%;
+  
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em; */
+  font-size: 1.3rem;
+  
+  /* color: var(--60-background-dark); */
+}
+
+
+@media screen and (max-width: 1000px) {
   .left-container {
-    width: 100%;
     height: 100%;
-  
-    margin: 0;
-    padding: 2% 4.5% 1.3% 4.5%;
+    padding-top: 5%;
     flex-direction: column;
-    
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    /* flex-wrap: wrap; */
-    
-    /* border: 1px solid red; */
-    background-color: var(--10-gray);
   }
-  
+
   .right-container {
-    width: 100%;
-    height: 100%;
-    
-    margin: 0;
-    padding: 1.5% 1.5% 1.5% 1.5%;
-    flex-direction: column;
-  
-    display: flex;
-    justify-content: center;  /* eixo y - vertical */
-    align-items: start; /* eixo x - horizontal */
-    gap: 2.8em;
-    /* flex-wrap: wrap; */
-    
-    /* border: 1px solid greenyellow; */
-    background-color: var(--10-gray);
+    height: 60%;
+    padding-top: 3%;
   }
 
-  .container-devendo {
-    height: 40%;
-    width: 87%;
-    
-    display: flex;
-    justify-content: center;
-    
-    padding: 1% 0% 1.2% 0%;
-    /* margin: 0 0 10% 0; */
-    position: relative;
-    
-    /* border: 1px solid var(--dark); */
-    border-radius: 5%;
-    box-shadow:  6px 6px 11px #aeaeae,
-                -6px -6px 12px #f0f0f0;
-  }
+  .RateioPage {
+    /* height: 200vh; */
 
-  .container-receber {
-    height: 40%;
-    width: 87%; /* 87% */
-    
     display: flex;
-    justify-content: center;
-    
-    padding: 1% 0% 1.2% 0%;
-    /* margin: 0 0 10% 0; */
-    position: relative;
-    
-    /* border: 1px solid var(--dark); */
-    border-radius: 5%;
-    box-shadow:  6px 6px 11px #aeaeae,
-                -6px -6px 12px #f0f0f0;
-  }
+    /* flex-direction: column; */
+    /* justify-content: space-around; */
 
-  .container-resumo-total {
-    height: 90%;
-    width: 85%;
-    
-    display: flex;
-    justify-content: center;
-    
-    padding: 1% 0% 1.2% 0%;
-    /* margin: 0 0 10% 0; */
-    position: relative;
-    
-    /* border: 1px solid var(--dark); */
-    border-radius: 5%;
-    box-shadow:  6px 6px 11px #aeaeae,
-                -6px -6px 12px #f0f0f0;
   }
-
-  .teste {
-    width: 15%;
-    height: 15%;
-    background-color: blue;
-  }
-  
-  @media screen and (max-width: 1000px) {
-    .left-container {
-      height: 100%;
-      padding-top: 5%;
-      flex-direction: column;
-    }
-  
-    .right-container {
-      height: 60%;
-      padding-top: 3%;
-    }
-    
-    .RateioPage {
-      /* height: 200vh; */
-      
-      display: flex;
-      /* flex-direction: column; */
-      /* justify-content: space-around; */
-  
-    }
-  }
-  
-  
+}

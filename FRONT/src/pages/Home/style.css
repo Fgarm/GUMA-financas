@@ -1,6 +1,48 @@
 .modal_header {
+    font-weight: 400!important;
+    letter-spacing: 0.04rem;
+    font-family: 'Inter', 'Manrope', sans-serif;
+
     background-color: var(--30-dark-green);
+    color: var(--10-gray);
 }
+
+/* .chakra-modal__body {
+    background-color: var(--10-gray)!important;
+} */
+
+/* .chakra-button {
+    color: #fff!important;
+} */
+
+.edit-icon-gasto:hover {
+    cursor: pointer;
+}
+
+.delete-icon-gasto:hover {
+    cursor: pointer;
+}
+
+/*
+
+.tooltip-edit, .tooltip-delete {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px;
+    background-color: #000;
+    color: #fff;
+    font-size: 14px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.delete-icon-gasto:hover .tooltip-delete {
+    visibility: visible;
+    opacity: 1;
+} */
 
 .tags-input-container {
     border: 1px solid rgb(197, 197, 197);
@@ -182,25 +224,34 @@ h2.red {
     padding: 10px;
     display: flex;
     margin-top: 10px;
+    /* margin-right: 5%; */
     align-items: center;
     flex-direction: row;
     justify-content: flex-end;
 }
 
 .new-tag-and-gasto-button-container {
+    height: 100%;
+    width: 30%;
+
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 6%;
+    /* justify-content: center; */
+    
+    /* gap: 6%; */
+    margin-top: 18%;
+
+    /* border: red solid 1px; */
 }
 
 .new-tag-and-gasto-button {
-    width: 95%;
+    width: 100%;
     padding: 0 1.5rem 0!important;
+    margin-bottom: 6%;
     
     font-size: 1.1em!important;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     
     background-color: var(--10-gray-transparent-2)!important;
     color: #fff!important;
@@ -270,7 +321,8 @@ h2.red {
 
 .customCheckBox .inner {
     font-size: 18px;
-    font-weight: 900;
+    font-weight: 400;
+    font-family: 'Inter', 'Manrope', sans-serif;
     pointer-events: none;
     transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     transition-duration: 300ms;

@@ -54,11 +54,13 @@
 
 .month-input, .year-input {
     margin: 0 -15%;
-    width: 17%;
+    width: 23%;
+    height: 100%;
     
     background-color: var(--dark-gray);
     color: var(--60-background-dark);
     border: none;
+    border-radius: 5px; 
 }
 
 .month-input:hover, .year-input:hover {

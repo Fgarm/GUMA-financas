@@ -6,6 +6,15 @@
 }
 
 .tags-input-search {
-    background-color: var(--10-gray-transparent);
-    color: var(--60-background-dark);
+    width: 105%;
+    height: 34px;
+    
+    border: none;
+    border-radius: 5px;
+    font-family: 'Inter', 'Manrope', sans-serif;
+
+    /* background-color: var(--60-background-dark);
+    color: var(--10-gray-transparent); */
+    background-color: var(--10-gray-transparent-2);
+    color: #fff;
 }

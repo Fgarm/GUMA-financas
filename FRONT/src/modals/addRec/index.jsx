@@ -228,6 +228,17 @@ export default function AddRec({ isOpen, onClose, initialRef, finalRef, user, ad
                       }}
                     />
                   </FormControl>
+
+                  <FormControl mt={4}>
+                    <label >Data</label>
+                    <br></br>
+                    <Input
+                      type='date'
+                      onChange={(e) => {
+                        setSelectedDate(e.target.value)
+                      }} />
+                  </FormControl>
+
                   <FormControl mt={4}>
                     <label >Peridiocidade</label>
                     <br></br>
