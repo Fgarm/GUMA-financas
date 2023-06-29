@@ -6,7 +6,7 @@ import LineChartComponent from '../../components/LineChart';
 import DoughnutChartComponent from '../../components/DoughnutChart';
 import Sidebar from '../../components/sidebar';
 import BarChartComponent from '../../components/BarChart';
-
+   
 import axios from 'axios';
 
 // componente que renderiza a página do Rateio
@@ -14,19 +14,19 @@ export default function RateioPage() {
 
   const username = localStorage.getItem('cadastro_user');
 
-  const [gastos, setGastos] = useState([]);
+  const [relacao_devedores, setDevendo] = useState([]);
 
-  const getGastos = () => {
+  const getDevendo = () => {
     axios({
       method: "post",
-      url: "http://localhost:8000/api/gastos/obter-gasto/",
+      url: "http://localhost:8000/debitos-grupo/obter-devedores",
       data: {
         user: username
       },
     })
       .then((response) => {
         const data = response.data;
-        setGastos(data);
+        setDevendo(data);
         console.log(response.data)
       })
       .catch(error => {
@@ -35,7 +35,7 @@ export default function RateioPage() {
   }
 
   useEffect(() => {
-    getGastos();
+    getDevendo();
   }, []);
 
   return (
@@ -69,24 +69,24 @@ export default function RateioPage() {
               </div>
 
               <div className='body-devendo'>
-                {gastos.map((gasto, key) => (
-                  <div key={gasto.id} className="gasto_information ratieio-info">
-                    <p>{gasto.nome}</p>
+                {relacao_devedores.map((devedor, key) => (
+                  <div key={devedor.id} className="gasto_information ratieio-info">
+                    <p>{devedor.nome}</p>
                     <p>
-                      {gasto.valor > 0 ? (
+                      {devedor.valor > 0 ? (
                         <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
-                          + R$ {gasto.valor}{' '}
+                          + R$ {devedor.valor}{' '}
                         </p>
                       ) : (
                         <p style={{ color: 'red', fontWeight: 'bold' }}>
-                          - R$ {gasto.valor * -1}{' '}
+                          - R$ {devedor.valor * -1}{' '}
                         </p>
                       )}
                     </p>
                     <p>
-                      {gasto.pago == null ? (
+                      {devedor.pago == null ? (
                         ''
-                      ) : gasto.pago > 0 ? (
+                      ) : devedor.pago > 0 ? (
                         <p style={{ color: '#6F9951', fontWeight: 'bold' }}>
                           Pago
                         </p>
