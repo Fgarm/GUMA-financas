@@ -16,6 +16,7 @@ import Sidebar from '../../components/sidebar';
 import ToggleSearchStatus from '../../components/toggleSearchStatus';
 
 import AddSaldo from '../../modals/addSald';
+import CreateTag from '../../modals/createTag';
 
 import formatarData from '../../functions/formatData';
 import compareDate from '../../functions/compareDate';
@@ -58,8 +59,6 @@ export default function Home() {
   const [flag, setFlag] = useState(0)
 
   const [id, setId] = useState('')
-  const [inputError, setInputError] = useState('')
-  const [corError, setCorError] = useState('')
   const [nomeError, setNomeError] = useState('')
   const [valorError, setValorError] = useState('')
   const [dataError, setDataError] = useState('')
@@ -116,6 +115,11 @@ export default function Home() {
     onAddSaldoOpen()
   }
 
+  function handleCreateTag() {
+    getTags()
+    onModalTagOpen()
+  }
+
 
   function handleClearInput() {
     setNome('');
@@ -135,6 +139,9 @@ export default function Home() {
     onModalCreateClose()
   }
 
+  function handleCloseCreateTag(){
+    onModalTagClose()
+  }
 
   function implementRecurrency() {
     console.log('implementando recorrencias')
@@ -228,8 +235,6 @@ export default function Home() {
       }
       )
   }
-
-
 
   function getSaldos() {
     axios.post("http://localhost:8000/bancario/saldo-atual/", {
@@ -478,49 +483,6 @@ export default function Home() {
     // setSearchValue(data)
   }
 
-  function handleCreateTag() {
-
-    const categoria = createdTag
-    const cor = tagColor
-    const user = localStorage.getItem('cadastro_user')
-    const newTag = { categoria, cor, user }
-    const tag = newTag
-    console.log(JSON.stringify(tag))
-    axios.post('http://localhost:8000/tags/criar-tag/', tag, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        console.log(response.data);
-        toast({
-          title: 'Tag criada com sucesso',
-          status: 'success',
-          isClosable: true,
-          duration: 3000,
-        });
-        setNovaTag(novaTag => novaTag + 1);
-        setNovaTag('');
-        setTagColor('');
-        setCreatedTag('');
-        onModalTagClose();
-        setFlag(flag => flag + 1);
-
-      })
-      .catch(error => {
-
-        toast({
-          title: 'Tag já existente',
-          status: 'error',
-          isClosable: true,
-          duration: 3000,
-        });
-
-        console.log("AQUI")
-        console.log(error)
-      });
-  }
-
 
   return (
     <>
@@ -530,6 +492,7 @@ export default function Home() {
           <h1 className='page-title'>Meu Extrato</h1>
           <div className="bt-sb">
             <ToggleSearchStatus
+              flag={flag}
               novaTag={novaTag}
               user={username}
               onGastosChange={setGastos}
@@ -553,7 +516,7 @@ export default function Home() {
               <Button
                 className='new-tag-and-gasto-button'
                 pr='10px'
-                onClick={onModalTagOpen}>
+                onClick={handleCreateTag}>
                 <Icon style={{ marginLeft: '-10px', marginRight: '10px' }} as={BsFillTagsFill} w={5} h={5} />
                 Nova Tag
               </Button>
@@ -572,100 +535,7 @@ export default function Home() {
         </div>
 
 
-        <div>
-          <Modal
-            closeOnOverlayClick={false}
-            isOpen={isModalTagOpen}
-            onClose={onModalTagClose}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader mb={0} className='modal_header'>
-                Criando Tag
-              </ModalHeader>
-              <ModalBody>
-                <FormControl mt={4}>
-                  <label>Categoria</label>
-                  <br></br>
-                  <Input
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setCreatedTag(value);
-                        setInputError('');
-                      } else {
-                        setCreatedTag('');
-                        setInputError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-                  {inputError && (
-                    <Text color="red" fontSize="sm">{inputError}</Text>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <label>Cor</label>
-                  <br></br>
-                  <Input
-                    placeholder="Ex: 000000"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setTagColor(value);
-                        setCorError('');
-                      } else {
-                        setTagColor('');
-                        setCorError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-                  {corError && (
-                    <Text color="red" fontSize="sm">{corError}</Text>
-                  )}
-                </FormControl>
-                <span className="hexadecimal">Coloque a cor no formato hexadecimal sem a '#'</span>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  style={{ background: '#6F9951' }}
-                  mr={3}
-                  onClick={() => {
-                    let hasEmptyFields = false;
-
-                    if (createdTag.trim().length === 0) {
-                      setInputError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setInputError('');
-                    }
-
-                    if (tagColor.trim().length === 0) {
-                      setCorError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setCorError('');
-                    }
-
-                    if (!hasEmptyFields) {
-                      handleCreateTag();
-                    }
-                  }}
-                >
-                  Criar
-                </Button>
-                <Button onClick={() => {
-                  onModalTagClose();
-                  setInputError('');
-                  setCorError('');
-                }}>
-                  Cancelar
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-        </div>
-
-
+        
         <div>
           <Modal
             closeOnOverlayClick={false}
@@ -1053,6 +923,12 @@ export default function Home() {
           <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
             <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
+        </div>
+
+        <div>
+          <CreateTag isOpen={isModalTagOpen} onClose={onModalTagClose} user={username} addFlag={addFlag}>
+            <Button onClick={handleCloseCreateTag}>Fechar</Button>
+          </CreateTag>
         </div>
 
         <div className="gasto">
