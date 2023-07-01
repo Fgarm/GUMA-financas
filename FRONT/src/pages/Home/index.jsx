@@ -17,6 +17,7 @@ import ToggleSearchStatus from '../../components/toggleSearchStatus';
 
 import AddSaldo from '../../modals/addSald';
 import CreateTag from '../../modals/createTag';
+import CreateGastoUser from '../../modals/createGastoUser';
 
 import formatarData from '../../functions/formatData';
 import compareDate from '../../functions/compareDate';
@@ -97,7 +98,7 @@ export default function Home() {
   const [novaTag, setNovaTag] = useState(0)
 
   const { isOpen: isAlertDialogOpen, onClose: onAlertDialogClose, onOpen: onAlertDialogOpen } = useDisclosure();
-  const { isOpen: isModalCreateOpen, onClose: onModalCreateClose, onOpen: onModalCreateOpen } = useDisclosure();
+  const { isOpen: isModalCreateGastoOpen, onClose: onModalCreateGastoClose, onOpen: onModalCreateGastoOpen } = useDisclosure();
   const { isOpen: isModalEditOpen, onClose: onModalEditClose, onOpen: onModalEditOpen } = useDisclosure();
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
   const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
@@ -109,6 +110,11 @@ export default function Home() {
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
 
+  function handleTagsChange(newTag) {
+    setTagsList(newTag);
+  }
+
+
 
   function handleAddSaldo() {
     getTags()
@@ -118,6 +124,11 @@ export default function Home() {
   function handleCreateTag() {
     getTags()
     onModalTagOpen()
+  }
+
+  function handleCreateGasto() {
+    getTags()
+    onModalCreateGastoOpen()
   }
 
 
@@ -170,6 +181,10 @@ export default function Home() {
     onAddSaldoClose()
   }
 
+  function handleCloseCreateGasto() {
+    onModalCreateGastoClose()
+  }
+
   function organizarGastosPorData(params) {
     let gastosData = {};
     params.forEach(gasto => {
@@ -217,6 +232,7 @@ export default function Home() {
   }
 
   function addFlag() {
+    console.log('add flag')
     setFlag(flag => flag + 1);
   }
 
@@ -249,84 +265,6 @@ export default function Home() {
       )
   }
 
-
-  function handleTagsChange(newTag) {
-    setTagsList(newTag);
-  }
-
-  const handleSubmit = () => {
-
-    const tag_submit = tagsList;
-
-    const dados = {
-      nome,
-      valor,
-      data,
-      pago,
-      tag: tag_submit.categoria,
-      user: username
-    };
-
-    const dados_periodicos = {
-      frequencia: periodicity,
-      user: username,
-      data,
-      nome,
-      tipo: 'gasto',
-      pago,
-      valor,
-      tag: tag_submit.categoria,
-    };
-
-
-
-    console.log(JSON.stringify(dados))
-
-    if (hasPeridiocity == false) {
-      axios.post('http://localhost:8000/api/gastos/criar-gasto/', dados, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-        .then(response => {
-          if (response.status == 201) {
-            console.log(response.data);
-            toast({
-              title: 'Gasto criado com sucesso',
-              status: 'success',
-              isClosable: true,
-              duration: 3000,
-            });
-
-            handleClearInput()
-          } else {
-            alert('Erro de dados submetidos')
-            return
-          }
-          onModalCreateClose();
-          setFlag(flag => flag + 1);
-        })
-        .catch(error => {
-          console.error('Erro ao enviar dados:', error);
-        });
-    } else {
-      console.log(JSON.stringify(dados_periodicos))
-      axios.post('http://127.0.0.1:8000/recorrencia/criar-recorrencias/', dados_periodicos)
-        .then(response => {
-          if (response.status == 200 || response.status == 201) {
-            setHasPeridiocity(false)
-            console.log('Dados enviados com sucesso:', response.data);
-          } else {
-            alert('Erro de dados submetidos')
-            return
-          }
-          onModalCreateClose();
-          setFlag(flag => flag + 1);
-        }
-        )
-    }
-
-  }
 
   const handleEdit = () => {
     const tag_edit = tagsList;
@@ -431,12 +369,6 @@ export default function Home() {
     // navigate('/');
   }
 
-  const handleCreateClick = (data) => {
-    getTags();
-    tagsList.categoria = ''
-    onModalCreateOpen();
-  }
-
   const handleDeleteClick = (data) => {
     setId(data);
     onAlertDialogOpen();
@@ -508,7 +440,7 @@ export default function Home() {
               <Button
                 className='new-tag-and-gasto-button'
                 pr='10px'
-                onClick={handleCreateClick}>
+                onClick={handleCreateGasto}>
                 <Icon style={{ marginLeft: '-1px', marginRight: '9px' }} as={BsCurrencyDollar} w={6} h={5} />
                 Novo Gasto
               </Button>
@@ -533,201 +465,6 @@ export default function Home() {
 
 
         </div>
-
-
-        
-        <div>
-          <Modal
-            closeOnOverlayClick={false}
-            initialFocusRef={initialRef}
-            finalFocusRef={finalRef}
-            isOpen={isModalCreateOpen}
-            onClose={onModalCreateClose}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader mb={0} className='modal_header'>
-                Criando Gasto
-              </ModalHeader>
-              <ModalBody>
-                <FormControl mt={4}>
-                  <label>Nome</label>
-                  <br></br>
-                  <Input
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setNome(value);
-                        setNomeError('');
-                      } else {
-                        setNome('');
-                        setNomeError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-                  {nomeError && (
-                    <Text color="red" fontSize="sm">{nomeError}</Text>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <label>Valor</label>
-                  <br></br>
-
-                  <Input
-                    value={`R$ ${valor.toLocaleString('pt-BR', {
-                      maximumFractionDigits: 2,
-                      minimumFractionDigits: 2,
-                    }) || ''}`}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/\D/g, '');
-                      const floatValue = parseFloat(rawValue) / 100;
-
-                      if (rawValue.length > 0) {
-                        setValor(floatValue);
-                        setValorError('');
-                      } else {
-                        setValor(0)
-                        setValorError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-
-                  {valorError && (
-                    <Text color="red" fontSize="sm">{valorError}</Text>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <label>Data</label>
-                  <br></br>
-                  <Input
-                    type="date"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setSelectedDate(value);
-                        setDataError('');
-                      } else {
-                        setSelectedDate('');
-                        setDataError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-                  {dataError && (
-                    <Text color="red" fontSize="sm">{dataError}</Text>
-                  )}
-                </FormControl>
-                <FormControl mt={4}>
-                  <Checkbox className='checkbox-peridiocity'
-                    onChange={(e) => setHasPeridiocity(e.target.checked)}>
-                    O gasto é periódico?
-                  </Checkbox>
-                </FormControl>
-
-                {hasPeridiocity ? (
-                  <FormControl mt={4}>
-                    <label >Peridiocidade</label>
-                    <br></br>
-                    <Select
-                      placeholder="Selecione uma opção"
-                      onChange={(e) => {
-                        if (e.target.value == 'diario') {
-                          setPeriodicity('Diario')
-                        } else if (e.target.value == 'semanal') {
-                          setPeriodicity('Semanal')
-                        } else if (e.target.value == 'mensal') {
-                          setPeriodicity('Mensal')
-                        } else if (e.target.value == 'anual') {
-                          setPeriodicity('Anual')
-                        }
-                      }}>
-                      <option value='diario'>Diário</option>
-                      <option value='semanal'>Semanal</option>
-                      <option value='mensal'>Mensal</option>
-                      <option value='anual'>Anual</option>
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <></>
-                )}
-
-                <FormControl mt={4}>
-                  <label>Status</label>
-                  <br></br>
-                  <Select
-                    placeholder="Selecione uma opção"
-                    onChange={(e) => {
-                      if (e.target.value == 'pago') {
-                        setPago(true)
-                      } else if (e.target.value == 'nao-pago') {
-                        setPago(false)
-                      }
-                    }}>
-                    <option value='pago'>Pago</option>
-                    <option value='nao-pago'>Não Pago</option>
-                  </Select>
-                </FormControl>
-                <FormControl mt={4}>
-                  <label>Tags</label>
-                  <br></br>
-                  <TagsInput
-                    tags={tags}
-                    defaultValue={editTags}
-                    onTagsChange={handleTagsChange}
-                    user={username}
-                  />
-                </FormControl>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  style={{ background: '#6F9951' }}
-                  mr={3}
-                  onClick={() => {
-                    let hasEmptyFields = false;
-
-                    if (nome.trim().length === 0) {
-                      setNomeError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setNomeError('');
-                    }
-
-                    if (valor == 0) {
-                      setValorError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setValorError('');
-                    }
-
-                    if (data.trim().length === 0) {
-                      setDataError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setDataError('');
-                    }
-
-                    if (!hasEmptyFields) {
-                      handleSubmit();
-                    }
-                  }}
-                >
-                  Criar
-                </Button>
-
-                <Button
-                  onClick={() => {
-                    setHasPeridiocity(false)
-                    handleClearInput()
-                    handleClearErros()
-                    onModalCreateClose()
-                  }}
-                >
-                  Cancelar
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-        </div>
-
 
         <div>
           <Modal
@@ -923,6 +660,12 @@ export default function Home() {
           <AddSaldo isOpen={isAddSaldoOpen} onClose={onAddSaldoClose} user={username} addFlag={addFlag}>
             <Button onClick={handleCloseAddSaldo}>Fechar</Button>
           </AddSaldo>
+        </div>
+
+        <div>
+          <CreateGastoUser isOpen={isModalCreateGastoOpen} onClose={onModalCreateGastoClose} user={username} addFlag={addFlag} tags={tags}>
+            <Button onClick={handleCloseCreateGasto}>Fechar</Button>
+          </CreateGastoUser>
         </div>
 
         <div>
