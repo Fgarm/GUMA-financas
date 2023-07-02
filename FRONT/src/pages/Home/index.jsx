@@ -18,6 +18,7 @@ import ToggleSearchStatus from '../../components/toggleSearchStatus';
 import AddSaldo from '../../modals/addSald';
 import CreateTag from '../../modals/createTag';
 import CreateGastoUser from '../../modals/createGastoUser';
+import EditGasto from '../../modals/editGasto';
 
 import formatarData from '../../functions/formatData';
 import compareDate from '../../functions/compareDate';
@@ -31,22 +32,8 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   Icon,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalFooter,
-  ModalBody,
-  FormControl,
-  Input,
   Button,
   useDisclosure,
-  ModalHeader,
-  Select,
-  background,
-  Checkbox,
-  CheckboxGroup,
-  Text,
-  Tooltip,
   useToast
 } from '@chakra-ui/react'
 
@@ -60,40 +47,23 @@ export default function Home() {
   const [flag, setFlag] = useState(0)
 
   const [id, setId] = useState('')
-  const [nomeError, setNomeError] = useState('')
-  const [valorError, setValorError] = useState('')
-  const [dataError, setDataError] = useState('')
-
-  const [hasPeridiocity, setHasPeridiocity] = useState(false)
-  const [periodicity, setPeriodicity] = useState('')
-
-  const [nome, setNome] = useState('')
-  const [valor, setValor] = useState(0)
-  const [data, setSelectedDate] = useState('')
-  const [pago, setPago] = useState(false)
-  const [tagsList, setTagsList] = useState({})
 
   const [tags, setTags] = useState([])
 
 
   const [gastos, setGastos] = useState([])
   const [gastosEntrada, setGastosEntrada] = useState([])
-  const [editStatus, setEditStatus] = useState(false)
-  const [editTags, setEditTags] = useState('')
 
   const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
   const [gastosPorDataFiltrados, setGastosPorDataFiltrados] = useState({});
-
-  const [createdTag, setCreatedTag] = useState('')
-  const [tagColor, setTagColor] = useState('')
 
   const [saldo, setSaldo] = useState(0)
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false)
 
-  const [searchOption, setSearchOption] = useState('');
-  const [searchValue, setSearchValue] = useState(null)
   const [isFilterOn, setIsFilterOn] = useState(false)
+
+  const [dadosGasto, setDadosGasto] = useState({})
 
   const [novaTag, setNovaTag] = useState(0)
 
@@ -103,18 +73,11 @@ export default function Home() {
   const { isOpen: isModalTagOpen, onClose: onModalTagClose, onOpen: onModalTagOpen } = useDisclosure();
   const { isOpen: isAddSaldoOpen, onClose: onAddSaldoClose, onOpen: onAddSaldoOpen } = useDisclosure();
 
-  const initialRef = React.useRef(null)
-  const finalRef = React.useRef(null)
+  
   const cancelRef = React.useRef()
 
   const username = localStorage.getItem('cadastro_user')
   const token = localStorage.getItem('token')
-
-  function handleTagsChange(newTag) {
-    setTagsList(newTag);
-  }
-
-
 
   function handleAddSaldo() {
     getTags()
@@ -131,27 +94,21 @@ export default function Home() {
     onModalCreateGastoOpen()
   }
 
-
-  function handleClearInput() {
-    setNome('');
-    setValor(0);
-    setPago(false);
-    setSelectedDate('');
-  }
-
-  function handleClearErros() {
-    setNomeError('');
-    setValorError('');
-    setDataError('');
-  }
-
-  function handleCloseModalCreate() {
-    setHasPeridiocity(false)
-    onModalCreateClose()
-  }
-
   function handleCloseCreateTag(){
     onModalTagClose()
+  }
+
+  function handleCloseAddSaldo() {
+    onAddSaldoClose()
+  }
+
+  function handleCloseCreateGasto() {
+    onModalCreateGastoClose()
+  }
+
+  function handleCloseEditGasto() {
+    setDadosGasto("")
+    onModalEditClose()
   }
 
   function implementRecurrency() {
@@ -177,13 +134,6 @@ export default function Home() {
     return formatarData(data);
   }
 
-  function handleCloseAddSaldo() {
-    onAddSaldoClose()
-  }
-
-  function handleCloseCreateGasto() {
-    onModalCreateGastoClose()
-  }
 
   function organizarGastosPorData(params) {
     let gastosData = {};
@@ -228,7 +178,6 @@ export default function Home() {
     });
 
     setGastosEntradasPorData(gastosPorDataOrdenado);
-    // console.log(gastosEntradasPorData);
   }
 
   function addFlag() {
@@ -243,7 +192,6 @@ export default function Home() {
       .then(response => {
         setGastosEntrada(response.data)
         organizarGastosEntradasPorData(response.data)
-        // setGastosEntradasPorData(gastosPorData); 
       })
       .catch(error => {
         console.log("user", username)
@@ -265,41 +213,6 @@ export default function Home() {
       )
   }
 
-
-  const handleEdit = () => {
-    const tag_edit = tagsList;
-
-    if (valor < 0) {
-      setValor(valor * -1)
-    }
-
-    axios.put("http://localhost:8000/api/gastos/atualizar-gasto/", {
-      user: username,
-      id: id,
-      nome: nome,
-      valor: valor,
-      data: data,
-      pago: pago,
-      tag: tag_edit.categoria
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        if (response.status == 204) {
-          console.log('Gasto atualizado com sucesso');
-          onModalEditClose();
-          handleClearInput()
-          setFlag(flag => flag + 1);
-        } else {
-          alert("Erro ao atualizar gasto")
-        }
-      })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-      });
-  }
 
   const handleDelete = () => {
     console.log(id)
@@ -363,33 +276,14 @@ export default function Home() {
       })
   }
 
-  const handleLogOut = () => {
-    localStorage.removeItem('cadastro_user')
-    localStorage.removeItem('token')
-    // navigate('/');
-  }
-
   const handleDeleteClick = (data) => {
     setId(data);
     onAlertDialogOpen();
   }
 
-  const handleEditClick = (data) => {
+  function handleEditClick(gasto){
+    setDadosGasto(gasto);
     getTags()
-    tagsList.categoria = data.tag
-    setId(data.id);
-    setNome(data.nome)
-    setValor(data.valor * -1)
-    setSelectedDate(usaFormat(data.data))
-    console.log("DIA", data)
-    setEditTags(data.tag)
-    if (data.pago == true) {
-      setEditStatus('pago')
-      setPago(true)
-    } else if (data.pago == false) {
-      setEditStatus('nao-pago')
-      setPago(false)
-    }
     onModalEditOpen();
   }
 
@@ -403,17 +297,6 @@ export default function Home() {
   useEffect(() => {
     organizarGastosPorData(gastos);
   }, [gastos]);
-
-
-  function handleSearchType(type) {
-    console.log(type)
-    // setSearchOption(type)
-  }
-
-  function handleSearch(data) {
-    console.log(data)
-    // setSearchValue(data)
-  }
 
 
   return (
@@ -463,165 +346,6 @@ export default function Home() {
             R$ {saldo}
           </div>
 
-
-        </div>
-
-        <div>
-          <Modal
-            closeOnOverlayClick={false}
-            initialFocusRef={initialRef}
-            finalFocusRef={finalRef}
-            isOpen={isModalEditOpen}
-            onClose={onModalEditClose}
-          >
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader
-                mb={0}
-                className='modal_header'>
-                Editando Gasto
-              </ModalHeader>
-              <ModalBody>
-
-                <FormControl mt={4}>
-                  <label >Nome</label>
-                  <br></br>
-                  <Input
-                    defaultValue={nome}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setNome(value);
-                        setNomeError(null);
-                      } else {
-                        setNome('');
-                        setNomeError('Este campo é obrigatório.');
-                      }
-                    }} />
-                  {nomeError && (
-                    <Text color="red" fontSize="sm">{nomeError}</Text>
-                  )}
-                </FormControl>
-
-                <FormControl mt={4}>
-                  <label >Valor</label>
-                  <br></br>
-                  <Input
-                    value={`R$ ${valor.toLocaleString('pt-BR', {
-                      maximumFractionDigits: 2,
-                      minimumFractionDigits: 2,
-                    }) || ''}`}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/\D/g, '');
-                      const floatValue = parseFloat(rawValue) / 100;
-
-                      if (rawValue.length > 0) {
-                        setValor(floatValue);
-                        setValorError('');
-                      } else {
-                        setValor(0)
-                        setValorError('Este campo é obrigatório.');
-                      }
-                    }}
-                  />
-                  {valorError && (
-                    <Text color="red" fontSize="sm">{valorError}</Text>
-                  )}
-                </FormControl>
-
-                <FormControl mt={4}>
-                  <label >Data</label>
-                  <br></br>
-                  <Input
-                    defaultValue={data}
-                    type="date"
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value.trim().length > 0) {
-                        setSelectedDate(value);
-                        setDataError(null);
-                      } else {
-                        setSelectedDate('');
-                        setDataError('Este campo é obrigatório.');
-                      }
-                    }} />
-                  {dataError && (
-                    <Text color="red" fontSize="sm">{dataError}</Text>
-                  )}
-                </FormControl>
-
-                <FormControl mt={4}>
-                  <label>Status</label>
-                  <br></br>
-                  <Select
-                    defaultValue={editStatus}
-                    placeholder='Selecione uma opção'
-                    onChange={(e) => {
-                      if (e.target.value == 'pago') {
-                        setPago(true)
-                      } else if (e.target.value == 'nao-pago') {
-                        setPago(false)
-                      }
-                    }}>
-                    <option value='pago'>Pago</option>
-                    <option value='nao-pago'>Não Pago</option>
-                  </Select>
-                </FormControl>
-
-                <FormControl mt={4}>
-                  <label>Tags</label>
-                  <br></br>
-                  <TagsInput
-                    tags={tags}
-                    editado={editTags}
-                    onTagsChange={handleTagsChange}
-                    user={username}
-                  />
-                </FormControl>
-              </ModalBody>
-
-              <ModalFooter>
-                <Button
-                  style={{ background: '#6F9951' }}
-                  mr={3}
-                  onClick={() => {
-                    let hasEmptyFields = false;
-
-                    if (nome.trim().length === 0) {
-                      setNomeError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setNomeError(null);
-                    }
-
-                    if (valor == 0) {
-                      setValorError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setValorError(null);
-                    }
-
-                    if (data.trim().length === 0) {
-                      setDataError('Este campo é obrigatório.');
-                      hasEmptyFields = true;
-                    } else {
-                      setDataError(null);
-                    }
-
-                    if (!hasEmptyFields) {
-                      handleEdit();
-                    }
-                  }}
-                >
-                  Salvar
-                </Button>
-                <Button onClick={() => {
-                  handleClearErros()
-                  onModalEditClose()
-                }}>Cancelar</Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
         </div>
 
         <div>
@@ -672,6 +396,12 @@ export default function Home() {
           <CreateTag isOpen={isModalTagOpen} onClose={onModalTagClose} user={username} addFlag={addFlag}>
             <Button onClick={handleCloseCreateTag}>Fechar</Button>
           </CreateTag>
+        </div>
+
+        <div>
+          <EditGasto isOpen={isModalEditOpen} onClose={onModalEditClose} dados={dadosGasto} addFlag={addFlag} tags={tags}>
+            <Button onClick={handleCloseEditGasto}>Fechar</Button>
+          </EditGasto>
         </div>
 
         <div className="gasto">
