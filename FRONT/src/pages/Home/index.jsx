@@ -3,15 +3,10 @@ import "./style.css";
 import "../../main.css";
 
 import { MdOutlineModeEditOutline, MdDelete } from "react-icons/md";
-// import { BiLogOut } from "react-icons/bi";
 
-// import { BsTag, BsTagFill, BsTags, BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 import { BsFillTagsFill, BsCurrencyDollar } from "react-icons/bs";
 import { GiCash } from "react-icons/gi";
 
-import { useNavigate } from "react-router-dom";
-
-import TagsInput from "../../components/tagInput";
 import Sidebar from "../../components/sidebar";
 import ToggleSearchStatus from "../../components/toggleSearchStatus";
 
@@ -21,30 +16,24 @@ import CreateGastoUser from "../../modals/createGastoUser";
 import EditGasto from "../../modals/editGasto";
 import DeleteGasto from "../../modals/deleteGasto";
 
+import ImplementRecurrency from "../../services/implementarRecs";
+
 import formatarData from "../../functions/formatData";
 import compareDate from "../../functions/compareDate";
-import usaFormat from "../../functions/usaFormat";
 
 import { Icon, Button, useDisclosure, useToast } from "@chakra-ui/react";
 
 import axios from "axios";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const toast = useToast();
 
   const [flag, setFlag] = useState(0);
-
   const [id, setId] = useState("");
-
   const [tags, setTags] = useState([]);
-
   const [gastos, setGastos] = useState([]);
-  const [gastosEntrada, setGastosEntrada] = useState([]);
 
   const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
   const [gastosPorDataFiltrados, setGastosPorDataFiltrados] = useState({});
-
   const [saldo, setSaldo] = useState(0);
 
   const [shouldRunEffect, setShouldRunEffect] = useState(false);
@@ -78,7 +67,7 @@ export default function Home() {
     onClose: onModalTagClose,
     onOpen: onModalTagOpen,
   } = useDisclosure();
-  
+
   const {
     isOpen: isAddSaldoOpen,
     onClose: onAddSaldoClose,
@@ -131,25 +120,8 @@ export default function Home() {
     onAlertDialogClose();
   }
 
-  function implementRecurrency() {
-    console.log("implementando recorrencias");
-
-    const dado = {
-      user: username,
-    };
-
-    console.log(dado);
-
-    axios
-      .post("http://127.0.0.1:8000/recorrencia/implementar-recorrencias/", dado)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
+  ImplementRecurrency(username);
+  
   function extrairData(dataHora) {
     const data = dataHora.split("T")[0];
     return formatarData(data);
@@ -217,7 +189,6 @@ export default function Home() {
         username: username,
       })
       .then((response) => {
-        setGastosEntrada(response.data);
         organizarGastosEntradasPorData(response.data);
       })
       .catch((error) => {
@@ -284,7 +255,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    implementRecurrency();
+    ImplementRecurrency(username);
     getGastos();
     getGastosEntrada();
     getSaldos();
@@ -314,7 +285,6 @@ export default function Home() {
                 onClick={handleAddSaldo}
               >
                 {" "}
-                {/*className='new-income-button'*/}
                 <Icon
                   style={{ marginLeft: "-1px", marginRight: "9px" }}
                   as={GiCash}
