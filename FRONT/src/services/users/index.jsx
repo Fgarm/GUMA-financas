@@ -54,11 +54,30 @@ export function GetGastos(username) {
     },
   })
     .then((response) => {
-      const data = response.data;
-      setGastos(data);
-      organizarGastosPorData(data);
+      // const data = response.data;
+      // setGastos(data);
+      // organizarGastosPorData(data);
+      return response.data;
     })
     .catch((error) => {
       console.log(error);
     });
 }
+
+export function GetTags(username){
+  return axios({
+    method: "post",
+    url: "http://localhost:8000/tags/tag-per-user/",
+    data: {
+      user: username,
+    },
+  })
+    .then((response) => {
+      // setTags(response.data);
+      // console.log(tags);
+      return response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};

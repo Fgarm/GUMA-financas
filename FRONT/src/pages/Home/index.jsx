@@ -16,14 +16,12 @@ import CreateGastoUser from "../../modals/createGastoUser";
 import EditGasto from "../../modals/editGasto";
 import DeleteGasto from "../../modals/deleteGasto";
 
-import { ImplementRecurrency, GetSaldos, GetGastosEntrada } from "../../services/users";
+import { ImplementRecurrency, GetSaldos, GetGastosEntrada, GetGastos, GetTags } from "../../services/users";
 
 import formatarData from "../../functions/formatData";
 import compareDate from "../../functions/compareDate";
 
-import { Icon, Button, useDisclosure, useToast } from "@chakra-ui/react";
-
-import axios from "axios";
+import { Icon, Button, useDisclosure } from "@chakra-ui/react";
 
 export default function Home() {
 
@@ -77,18 +75,21 @@ export default function Home() {
   const username = localStorage.getItem("cadastro_user");
   const token = localStorage.getItem("token");
 
-  function handleAddSaldo() {
-    getTags();
+  async function handleAddSaldo() {
+    const req = await GetTags(username);
+    setTags(req);
     onAddSaldoOpen();
   }
 
-  function handleCreateTag() {
-    getTags();
+  async function handleCreateTag() {
+    const req = await GetTags(username);
+    setTags(req);
     onModalTagOpen();
   }
 
-  function handleCreateGasto() {
-    getTags();
+  async function handleCreateGasto() {
+    const req = await GetTags(username);
+    setTags(req);
     onModalCreateGastoOpen();
   }
 
@@ -181,51 +182,15 @@ export default function Home() {
     setFlag((flag) => flag + 1);
   }
 
-  const getGastos = () => {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/api/gastos/obter-gasto/",
-      data: {
-        user: username,
-      },
-    })
-      .then((response) => {
-        const data = response.data;
-        setGastos(data);
-        organizarGastosPorData(data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getTags = () => {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/tags/tag-per-user/",
-      data: {
-        user: username,
-      },
-    })
-      .then((response) => {
-        setTags(response.data);
-        console.log(tags);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  function handleEditClick(gasto) {
+  async function handleEditClick(gasto) {
     setDadosGasto(gasto);
-    getTags();
+    const req = await GetTags(username);
+    setTags(req);
     onModalEditOpen();
   }
   
   useEffect(() => {
     ImplementRecurrency(username);
-    getGastos();
   
     const fetchData = async () => {
       try {
@@ -233,6 +198,9 @@ export default function Home() {
         organizarGastosEntradasPorData(ge);
         const sald = await GetSaldos(username); // Aguarda a resolução da Promessa
         setSaldo(sald);
+        const data = await GetGastos(username);
+        setGastos(data);
+        organizarGastosPorData(data);
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
       }
