@@ -16,7 +16,7 @@ import CreateGastoUser from "../../modals/createGastoUser";
 import EditGasto from "../../modals/editGasto";
 import DeleteGasto from "../../modals/deleteGasto";
 
-import ImplementRecurrency from "../../services/implementarRecs";
+import { ImplementRecurrency, GetSaldos, GetGastosEntrada } from "../../services/users";
 
 import formatarData from "../../functions/formatData";
 import compareDate from "../../functions/compareDate";
@@ -35,8 +35,6 @@ export default function Home() {
   const [gastosEntradasPorData, setGastosEntradasPorData] = useState({});
   const [gastosPorDataFiltrados, setGastosPorDataFiltrados] = useState({});
   const [saldo, setSaldo] = useState(0);
-
-  const [shouldRunEffect, setShouldRunEffect] = useState(false);
 
   const [isFilterOn, setIsFilterOn] = useState(false);
 
@@ -183,33 +181,6 @@ export default function Home() {
     setFlag((flag) => flag + 1);
   }
 
-  function getGastosEntrada() {
-    axios
-      .post("http://localhost:8000/bancario/extrato-saldo/", {
-        username: username,
-      })
-      .then((response) => {
-        organizarGastosEntradasPorData(response.data);
-      })
-      .catch((error) => {
-        console.log("user", username);
-        console.error("Erro ao enviar dados:", error);
-      });
-  }
-
-  function getSaldos() {
-    axios
-      .post("http://localhost:8000/bancario/saldo-atual/", {
-        username: username,
-      })
-      .then((response) => {
-        setSaldo(response.data);
-      })
-      .catch((error) => {
-        console.error("Erro ao enviar dados:", error);
-      });
-  }
-
   const getGastos = () => {
     axios({
       method: "post",
@@ -222,7 +193,6 @@ export default function Home() {
         const data = response.data;
         setGastos(data);
         organizarGastosPorData(data);
-        setShouldRunEffect(true);
         console.log(response.data);
       })
       .catch((error) => {
@@ -241,7 +211,6 @@ export default function Home() {
       .then((response) => {
         setTags(response.data);
         console.log(tags);
-        setShouldRunEffect(true);
       })
       .catch((error) => {
         console.log(error);
@@ -253,14 +222,24 @@ export default function Home() {
     getTags();
     onModalEditOpen();
   }
-
+  
   useEffect(() => {
     ImplementRecurrency(username);
     getGastos();
-    getGastosEntrada();
-    getSaldos();
+  
+    const fetchData = async () => {
+      try {
+        const ge = await GetGastosEntrada(username); // Aguarda a resolução da Promessa
+        organizarGastosEntradasPorData(ge);
+        const sald = await GetSaldos(username); // Aguarda a resolução da Promessa
+        setSaldo(sald);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+    fetchData();
   }, [flag]);
-
+  
   useEffect(() => {
     organizarGastosPorData(gastos);
   }, [gastos]);
@@ -478,7 +457,7 @@ export default function Home() {
                       {gasto.pago == null ? (
                         ""
                       ) : gasto.pago > 0 ? (
-                        <p style={{ color: "darkgreen", fontWeight: "bold" }}>
+                        <p style={{ color: "#6F9951", fontWeight: "bold" }}>
                           Pago
                         </p>
                       ) : (
