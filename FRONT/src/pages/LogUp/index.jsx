@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { Input, InputGroup, InputRightElement, Button, Link, useToast } from '@chakra-ui/react';
 
+import { LogUpFunc } from '../../services/users';
+
 import axios from 'axios';
 
 export default function LogUp() {
@@ -64,41 +66,42 @@ export default function LogUp() {
   )
 
   const onSubmit = (data) => {
-    console.log(data);
-    axios.post('http://localhost:8000/auth/cadastro/', data)
-      .then(response => {
-        if (response.status === 200) {
-          toast({
-            title: 'Usuário cadastrado com sucesso.',
-            status: 'success',
-            isClosable: true,
-            duration: 3000,
-          });
-          navigate('/', { replace: true });
-        }
-      })
-      .catch(error => {
-        if (error.response) {
-          const statusCode = parseInt(error.response.status);
-          if (statusCode === 409) {
-            toast({
-              title: 'Usuário ou email já cadastrados no sistema',
-              status: 'error',
-              isClosable: true,
-              duration: 3000,
-            });
-          } else if (statusCode === 400) {
-            toast({
-              title: 'Dados de cadastro não estão nos parâmetros aceitos',
-              status: 'error',
-              isClosable: true,
-              duration: 3000,
-            });
-          } 
-        } else {
-          console.log("Erro de solicitação:", error.message);
-        }
-      });
+    // console.log(data);
+    // axios.post('http://localhost:8000/auth/cadastro/', data)
+    //   .then(response => {
+    //     if (response.status === 200) {
+    //       toast({
+    //         title: 'Usuário cadastrado com sucesso.',
+    //         status: 'success',
+    //         isClosable: true,
+    //         duration: 3000,
+    //       });
+    //       navigate('/', { replace: true });
+    //     }
+    //   })
+    //   .catch(error => {
+    //     if (error.response) {
+    //       const statusCode = parseInt(error.response.status);
+    //       if (statusCode === 409) {
+    //         toast({
+    //           title: 'Usuário ou email já cadastrados no sistema',
+    //           status: 'error',
+    //           isClosable: true,
+    //           duration: 3000,
+    //         });
+    //       } else if (statusCode === 400) {
+    //         toast({
+    //           title: 'Dados de cadastro não estão nos parâmetros aceitos',
+    //           status: 'error',
+    //           isClosable: true,
+    //           duration: 3000,
+    //         });
+    //       } 
+    //     } else {
+    //       console.log("Erro de solicitação:", error.message);
+    //     }
+    //   });
+    LogUpFunc(data, toast, navigate)
   }
 
   return (

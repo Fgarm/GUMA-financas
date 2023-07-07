@@ -8,17 +8,17 @@ import { MdGroups } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { BsBarChartFill } from "react-icons/bs";
-import { BsFillBarChartLineFill } from "react-icons/bs";
+// import { BsFillBarChartLineFill } from "react-icons/bs";
 
 import { BsCurrencyDollar } from "react-icons/bs"; // $
-import { BsCurrencyBitcoin } from "react-icons/bs"; // B do bitcoin
-import { BsCashCoin } from "react-icons/bs"; // uma nota e uma moeda
+// import { BsCurrencyBitcoin } from "react-icons/bs"; // B do bitcoin
+// import { BsCashCoin } from "react-icons/bs"; // uma nota e uma moeda
 
 // import { TbClockDollar } from "react-icons/tb";
 
-import { BsCoin } from "react-icons/bs"; // uma moeda
-import { BsCashStack } from "react-icons/bs"; // uma nota normal com outra atras (tipo um bolo de din)
-import { BsCash } from "react-icons/bs"; // só uma nota (igual o de cima, mas só uma)
+// import { BsCoin } from "react-icons/bs"; // uma moeda
+// import { BsCashStack } from "react-icons/bs"; // uma nota normal com outra atras (tipo um bolo de din)
+// import { BsCash } from "react-icons/bs"; // só uma nota (igual o de cima, mas só uma)
 
 // import { BsFillBagCheckFill } from "react-icons/bs"; // uma sacola com check
 // import { BsFillBagDashFill } from "react-icons/bs"; // uma sacola com um menos (-)
@@ -36,7 +36,7 @@ import { Button } from "@chakra-ui/react";
 import axios from 'axios';
 import { TbCalendarDollar } from "react-icons/tb";
 
-import { BsFillTagFill } from 'react-icons/bs';
+// import { BsFillTagFill } from 'react-icons/bs';
 
 export default function Sidebar(props) {
 

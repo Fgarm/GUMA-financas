@@ -10,6 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input, InputGroup, InputRightElement, Button, Link, Image, useToast } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
+import { LogInFunc } from '../../services/users';
+
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
@@ -51,24 +53,25 @@ export default function LogIn() {
 
 
   const onSubmit = (data) => {
-    axios.post('http://localhost:8000/auth/login/', data)
-      .then(response => {
-        if (response.status === 200 && response.data.access) {
-          localStorage.setItem('cadastro_user', data.username)
-          localStorage.setItem('token', response.data.token)
-          navigate('/home', { replace: true })
-        } else {
-          toast({
-            title: 'Usuário ou senha incorretos',
-            status: 'error',
-            isClosable: true,
-            duration: 3000,
-          })
-        }
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    // axios.post('http://localhost:8000/auth/login/', data)
+    //   .then(response => {
+    //     if (response.status === 200 && response.data.access) {
+    //       localStorage.setItem('cadastro_user', data.username)
+    //       localStorage.setItem('token', response.data.token)
+    //       navigate('/home', { replace: true })
+    //     } else {
+    //       toast({
+    //         title: 'Usuário ou senha incorretos',
+    //         status: 'error',
+    //         isClosable: true,
+    //         duration: 3000,
+    //       })
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //   })
+    LogInFunc(data, toast, navigate)
   }
 
   return (
