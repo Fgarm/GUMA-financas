@@ -19,6 +19,8 @@ import {
   useToast
 } from '@chakra-ui/react'
 
+import { GetTags } from '../../services/users';
+
 import axios from 'axios'
 
 export default function AddRec({ isOpen, onClose, initialRef, finalRef, user, addFlag }) {
@@ -46,29 +48,43 @@ export default function AddRec({ isOpen, onClose, initialRef, finalRef, user, ad
   }
 
   function handleTagsChange(newTag) {
-    setTagsList(newTag);
+    setTagsList(newTag); 
   }
+
+  // useEffect(() => {
+  //   const res = GetTags(username)
+  //   setTags(res)
+  // }, [])
 
   useEffect(() => {
-    getTags()
-  }, [])
-
-  const getTags = () => {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/tags/tag-per-user/",
-      data: {
-        user: username
-      },
-    })
-      .then((response) => {
-        setTags(response.data);
-        console.log(tags)
-      })
-      .catch(error => {
+    const fetchTags = async () => {
+      try {
+        const res = await GetTags(username);
+        setTags(res);
+      } catch (error) {
         console.log(error);
-      })
-  }
+      }
+    };
+  
+    fetchTags();
+  }, []);
+
+  // const getTags = () => {
+  //   axios({
+  //     method: "post",
+  //     url: "http://localhost:8000/tags/tag-per-user/",
+  //     data: {
+  //       user: username
+  //     },
+  //   })
+  //     .then((response) => {
+  //       setTags(response.data);
+  //       console.log(tags)
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }
 
   const handleSubmit = () => {
 

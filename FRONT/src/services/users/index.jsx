@@ -64,7 +64,7 @@ export function GetGastos(username) {
     });
 }
 
-export function GetTags(username){
+export function GetTags(username) {
   return axios({
     method: "post",
     url: "http://localhost:8000/tags/tag-per-user/",
@@ -80,62 +80,107 @@ export function GetTags(username){
     .catch((error) => {
       console.log(error);
     });
-};
-
-export function LogInFunc(data, toast, navigate){
-  axios.post('http://localhost:8000/auth/login/', data)
-    .then(response => {
-      if (response.status === 200 && response.data.access) {
-        localStorage.setItem('cadastro_user', data.username)
-        localStorage.setItem('token', response.data.token)
-        navigate('/home', { replace: true })
-      } else {
-        toast({
-          title: 'Usuário ou senha incorretos',
-          status: 'error',
-          isClosable: true,
-          duration: 3000,
-        })
-      }
-    })
-    .catch(error => {
-      console.log(error)
-    })
 }
 
-export function LogUpFunc(data, toast, navigate){
-  axios.post('http://localhost:8000/auth/cadastro/', data)
-    .then(response => {
-      if (response.status === 200) {
+export function LogInFunc(data, toast, navigate) {
+  axios
+    .post("http://localhost:8000/auth/login/", data)
+    .then((response) => {
+      if (response.status === 200 && response.data.access) {
+        localStorage.setItem("cadastro_user", data.username);
+        localStorage.setItem("token", response.data.token);
+        navigate("/home", { replace: true });
+      } else {
         toast({
-          title: 'Usuário cadastrado com sucesso.',
-          status: 'success',
+          title: "Usuário ou senha incorretos",
+          status: "error",
           isClosable: true,
           duration: 3000,
         });
-        navigate('/', { replace: true });
       }
     })
-    .catch(error => {
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export function LogUpFunc(data, toast, navigate) {
+  axios
+    .post("http://localhost:8000/auth/cadastro/", data)
+    .then((response) => {
+      if (response.status === 200) {
+        toast({
+          title: "Usuário cadastrado com sucesso.",
+          status: "success",
+          isClosable: true,
+          duration: 3000,
+        });
+        navigate("/", { replace: true });
+      }
+    })
+    .catch((error) => {
       if (error.response) {
         const statusCode = parseInt(error.response.status);
         if (statusCode === 409) {
           toast({
-            title: 'Usuário ou email já cadastrados no sistema',
-            status: 'error',
+            title: "Usuário ou email já cadastrados no sistema",
+            status: "error",
             isClosable: true,
             duration: 3000,
           });
         } else if (statusCode === 400) {
           toast({
-            title: 'Dados de cadastro não estão nos parâmetros aceitos',
-            status: 'error',
+            title: "Dados de cadastro não estão nos parâmetros aceitos",
+            status: "error",
             isClosable: true,
             duration: 3000,
           });
-        } 
+        }
       } else {
         console.log("Erro de solicitação:", error.message);
       }
+    });
+}
+
+export function GetRecorrencias(username) {
+  return axios
+    .post("http://127.0.0.1:8000/recorrencia/get-recorrencias/", {
+      user: username,
+    })
+    .then((response) => {
+      // setRecorrencias(response.data)
+      // console.log(response.data)
+      return response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+export function handleDeleteRec(id, toast, addFlag) {
+  axios
+    .delete("http://127.0.0.1:8000/recorrencia/apagar-recorrencia/", {
+      data: { id: id },
+    })
+    .then((response) => {
+      if (response.status === 204) {
+        addFlag();
+        toast({
+          title: "Recorrência apagada com sucesso.",
+          status: "success",
+          isClosable: true,
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Erro ao apagar recorrência.",
+          status: "error",
+          isClosable: true,
+          duration: 3000,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
