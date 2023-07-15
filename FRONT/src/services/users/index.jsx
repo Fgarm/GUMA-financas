@@ -1,8 +1,6 @@
 import axios from "axios";
 
 export function ImplementRecurrency(username) {
-  console.log("implementando recorrencias");
-
   const dado = {
     user: username,
   };
@@ -62,6 +60,50 @@ export function GetGastos(username) {
     .catch((error) => {
       console.log(error);
     });
+}
+
+export function GetGastosPerTag(username, value) {
+  return axios({
+    method: "post",
+    url: "http://localhost:8000/api/gastos/gastos-per-tag/",
+    data: {
+      user: username,
+      tag: value
+      },
+    })
+      .then((response) => {
+        return response.data;
+        // const data = response.data;
+        // setGastos(data);
+      })
+      .catch(error => {
+        return [];
+        // setGastos([]);
+        console.log(error);
+      })
+}
+
+export function GetGastosPerStatus(username, status){
+  return axios({
+    method: "post",
+    url: "http://localhost:8000/api/gastos/filtrar-por-pago/",
+    data: {
+    user: username,
+      pago: status
+    },
+  })
+  .then((response) => {
+    if (response.status == 200) {
+      return response.data;
+      // const data = response.data;
+      // setGastos(data);
+    }
+  })
+  .catch(error => {
+    return [];
+    // setGastos([]);
+    console.log(error);
+  })
 }
 
 export function GetTags(username) {
@@ -183,4 +225,57 @@ export function handleDeleteRec(id, toast, addFlag) {
     .catch((error) => {
       console.log(error);
     });
+}
+
+export function CreateGasto(dados, periodicidade, toast) {
+  if (periodicidade == false) {
+    axios
+      .post("http://localhost:8000/api/gastos/criar-gasto/", dados)
+      .then((response) => {
+        if (response.status == 201) {
+          console.log(response.data);
+          toast({
+            title: "Gasto criado com sucesso",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+          });
+        } else {
+          toast({
+            title: "Erro ao criar gasto.",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+          });
+          return;
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar dados:", error);
+      });
+  } else {
+    console.log(JSON.stringify(dados));
+    axios
+      .post("http://127.0.0.1:8000/recorrencia/criar-recorrencias/", dados)
+      .then((response) => {
+        if (response.status == 200 || response.status == 201) {
+          setHasPeridiocity(false);
+          console.log("Dados enviados com sucesso:", response.data);
+          toast({
+            title: "Gasto criado com sucesso",
+            status: "success",
+            isClosable: true,
+            duration: 3000,
+          });
+        } else {
+          toast({
+            title: "Erro ao criar gasto.",
+            status: "error",
+            isClosable: true,
+            duration: 3000,
+          });
+          return;
+        }
+      });
+  }
 }

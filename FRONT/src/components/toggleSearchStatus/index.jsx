@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './style.css';
+import { GetTags, GetGastos, GetGastosPerStatus, GetGastosPerTag } from '../../services/users';
 
 export default function ToggleSearchStatus(props) {
 

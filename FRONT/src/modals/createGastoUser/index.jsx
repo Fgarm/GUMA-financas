@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 
 import TagsInput from "../../components/tagInput";
+import { CreateGasto } from "../../services/users";
 import { add } from "lodash";
 
 export default function CreateGastoUser({
@@ -86,53 +87,56 @@ export default function CreateGastoUser({
     console.log(JSON.stringify(dados));
 
     if (hasPeridiocity == false) {
-      axios
-        .post("http://localhost:8000/api/gastos/criar-gasto/", dados, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          if (response.status == 201) {
-            console.log(response.data);
-            toast({
-              title: "Gasto criado com sucesso",
-              status: "success",
-              isClosable: true,
-              duration: 3000,
-            });
+      CreateGasto(dados, hasPeridiocity, toast)
+      // axios
+      //   .post("http://localhost:8000/api/gastos/criar-gasto/", dados, {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   })
+      //   .then((response) => {
+      //     if (response.status == 201) {
+      //       console.log(response.data);
+      //       toast({
+      //         title: "Gasto criado com sucesso",
+      //         status: "success",
+      //         isClosable: true,
+      //         duration: 3000,
+      //       });
 
-          } else {
-            alert("Erro de dados submetidos");
-            return;
-          }
+      //     } else {
+      //       alert("Erro de dados submetidos");
+      //       return;
+      //     }
           onClose();
           handleClearInput();
           addFlag();
-        })
-        .catch((error) => {
-          console.error("Erro ao enviar dados:", error);
-        });
+        
+        // .catch((error) => {
+        //   console.error("Erro ao enviar dados:", error);
+        // });
     } else {
       console.log(JSON.stringify(dados_periodicos));
-      axios
-        .post(
-          "http://127.0.0.1:8000/recorrencia/criar-recorrencias/",
-          dados_periodicos
-        )
-        .then((response) => {
-          if (response.status == 200 || response.status == 201) {
-            setHasPeridiocity(false);
-            console.log("Dados enviados com sucesso:", response.data);
-          } else {
-            alert("Erro de dados submetidos");
-            return;
-          }
+      CreateGasto(dados_periodicos, hasPeridiocity, toast)
+      // axios
+      //   .post(
+      //     "http://127.0.0.1:8000/recorrencia/criar-recorrencias/",
+      //     dados_periodicos
+      //   )
+      //   .then((response) => {
+      //     if (response.status == 200 || response.status == 201) {
+      //       setHasPeridiocity(false);
+      //       console.log("Dados enviados com sucesso:", response.data);
+      //     } else {
+      //       alert("Erro de dados submetidos");
+      //       return;
+      //     }
           onClose();
+          handleClearInput();
           addFlag();
-        });
+        };
     }
-  };
+  
 
   return (
     <div>
