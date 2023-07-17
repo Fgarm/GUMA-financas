@@ -12,7 +12,7 @@ import {
   useToast,
   Text,
   Checkbox,
-  Select
+  Select,
 } from "@chakra-ui/react";
 
 import axios from "axios";
@@ -42,26 +42,24 @@ export default function CreateGastoUser({
 
   const [nomeError, setNomeError] = useState("");
   const [valorError, setValorError] = useState("");
-  const [dataError, setDataError] = useState('')
-
+  const [dataError, setDataError] = useState("");
 
   const username = localStorage.getItem("cadastro_user");
-  const token = localStorage.getItem('token')
-
+  const token = localStorage.getItem("token");
 
   function handleTagsChange(newTag) {
     setTagsList(newTag);
   }
 
   function handleClearInput() {
-    setNome('');
+    setNome("");
     setValor(0);
     setPago(false);
-    setSelectedDate('');
+    setSelectedDate("");
     setHasPeridiocity(false);
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const tag_submit = tagsList;
 
     const dados = {
@@ -87,7 +85,16 @@ export default function CreateGastoUser({
     console.log(JSON.stringify(dados));
 
     if (hasPeridiocity == false) {
-      CreateGasto(dados, hasPeridiocity, toast)
+      console.log(JSON.stringify(dados));
+      try {
+        await CreateGasto(dados, hasPeridiocity, toast);
+        onClose();
+        handleClearInput();
+        addFlag();
+      } catch (error) {
+        console.log(error);
+      }
+
       // axios
       //   .post("http://localhost:8000/api/gastos/criar-gasto/", dados, {
       //     headers: {
@@ -108,16 +115,19 @@ export default function CreateGastoUser({
       //       alert("Erro de dados submetidos");
       //       return;
       //     }
-          onClose();
-          handleClearInput();
-          addFlag();
-        
-        // .catch((error) => {
-        //   console.error("Erro ao enviar dados:", error);
-        // });
+      // .catch((error) => {
+      //   console.error("Erro ao enviar dados:", error);
+      // });
     } else {
       console.log(JSON.stringify(dados_periodicos));
-      CreateGasto(dados_periodicos, hasPeridiocity, toast)
+      try {
+        await CreateGasto(dados_periodicos, hasPeridiocity, toast);
+        onClose();
+        handleClearInput();
+        addFlag();
+      } catch (error) {
+        console.log(error);
+      }
       // axios
       //   .post(
       //     "http://127.0.0.1:8000/recorrencia/criar-recorrencias/",
@@ -131,12 +141,8 @@ export default function CreateGastoUser({
       //       alert("Erro de dados submetidos");
       //       return;
       //     }
-          onClose();
-          handleClearInput();
-          addFlag();
-        };
     }
-  
+  };
 
   return (
     <div>
