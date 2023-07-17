@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { GetTags, GetGastos } from "../../services/users";
 
 export default function TagsInputSearch(props) {
 
