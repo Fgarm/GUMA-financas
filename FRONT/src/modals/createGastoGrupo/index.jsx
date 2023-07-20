@@ -31,6 +31,7 @@ import {
 } from '@chakra-ui/react'
 
 import axios from 'axios'
+import { getUsuariosGroup } from '../../services/grupos'
 
 import './style.css'
 
@@ -71,24 +72,37 @@ export default function CreateGastoGroup({ isOpen, onClose, initialRef, finalRef
   const toast = useToast()
 
   useEffect(() => {
-    getUsuarios()
-  }, [userClicked])
+  
+    const fetchData = async () => {
+      try {
+        const dt = await getUsuariosGroup(groups_id) // Aguarda a resolução da Promessa
+        setUsuariosGrupo(dt)
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    };
+    fetchData();
+  }, [userClicked]);
+
+  // useEffect(() => {
+  //   getUsuarios()
+  // }, [userClicked])
 
 
-  function getUsuarios() {
-    axios({
-      method: "post",
-      url: "http://localhost:8000/grupos/usuarios-grupo/",
-      data: {
-        grupo_id: groups_id,
-      },
-    }).then(response => {
-      setUsuariosGrupo(response.data)
-    }
-    ).catch(error => {
-      console.log(error)
-    })
-  }
+  // function getUsuarios() {
+  //   axios({
+  //     method: "post",
+  //     url: "http://localhost:8000/grupos/usuarios-grupo/",
+  //     data: {
+  //       grupo_id: groups_id,
+  //     },
+  //   }).then(response => {
+  //     setUsuariosGrupo(response.data)
+  //   }
+  //   ).catch(error => {
+  //     console.log(error)
+  //   })
+  // }
 
   function handleUsuariosChange(username, name) {
     setUsuariosGasto(username)

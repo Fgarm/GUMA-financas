@@ -10,13 +10,14 @@ import {
   Input,
   Textarea,
   Button,
-  useDisclosure,
   ModalHeader,
   Text,
   useToast
 } from '@chakra-ui/react'
 
-import axios from 'axios'
+import axios from 'axios';
+
+import { createGroup } from '../../services/grupos';
 
 
 export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) {
@@ -42,32 +43,35 @@ export default function Groups({ isOpen, onClose, initialRef, finalRef, user }) 
       return
     }
 
-    axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
-      .then(response => {
-        if (response.status === 201) {
-          setNome('')
-          setDescricao('')
-          onClose()
-          toast({
-            title: 'Grupo criado com sucesso.',
-            status: 'success',
-            isClosable: true,
-            duration: 3000,
-        });
-        } else if (response.status === 409) {
-          alert('Grupo de nome já cadastrado no sistema')
-        } else if (response.status === 400) {
-          alert('Dados de cadastro não estão nos parâmetros aceitos')
-        } else {
-          alert('Erro de solicitação')
-        }
-      })
-      .catch(error => {
-        console.log(data);
-        console.log("Erro de solicitação-ERROR");
-        console.log(error);
-      });
-  }
+    createGroup(data, toast)
+    setNome('')
+    setDescricao('')
+    onClose()
+
+  //   axios.post('http://localhost:8000/grupos/cadastrar-grupo/', data)
+  //     .then(response => {
+  //       if (response.status === 201) {
+  //         setNome('')
+  //         setDescricao('')
+  //         onClose()
+  //         toast({
+  //           title: 'Grupo criado com sucesso.',
+  //           status: 'success',
+  //           isClosable: true,
+  //           duration: 3000,
+  //       });
+  //       } else if (response.status === 409) {
+  //         alert('Grupo de nome já cadastrado no sistema')
+  //       } else if (response.status === 400) {
+  //         alert('Dados de cadastro não estão nos parâmetros aceitos')
+  //       } else {
+  //         alert('Erro de solicitação')
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+   }
 
   return (
     <div>
